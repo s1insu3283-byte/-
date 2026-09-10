@@ -1,0 +1,30 @@
+{
+  "updated_at": "2026-09-11 00:18:11",
+  "source": "네이버페이 증권 (finance.naver.com)",
+  "rates": {
+    "USD_KRW": 1345.5,
+    "EUR_KRW": 1564.95,
+    "JPY100_KRW": 874.21,
+    "CNY_KRW": 200.48,
+    "EUR_USD": 1.1647,
+    "USD_JPY": 153.21,
+    "USD_CNY": 6.7103
+  },
+  "bonds": {
+    "KR_3Y": 3.93,
+    "KR_CD91": 3.13,
+    "KR_CALL": 3.02,
+    "KR_CORP3Y": 4.6,
+    "KR_10Y": 4.453,
+    "KR_1Y": 3.48,
+    "KR_5Y": 4.15,
+    "KR_30Y": 4.3,
+    "US_10Y": 4.86,
+    "US_3M": 5.02,
+    "US_1Y": 4.88,
+    "US_5Y": 4.52,
+    "US_30Y": 5.01,
+    "BOK_BASE": 3.5,
+    "FED_BASE": 5.25
+  }
+}
