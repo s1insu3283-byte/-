@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>글로벌 매크로 경제 대시보드 (5x3 Grid) | 실시간 금리·환율·통화량·물가</title>
+  
+  <!-- Open Graph 메타태그 (카카오톡 및 SNS 공유 시 썸네일/미리보기 카드 표시) -->
+  <meta property="og:title" content="글로벌 매크로 경제 5x3 대시보드">
+  <meta property="og:description" content="미국·한국·일본·중국·유럽 50년간 국채금리, 환율, 기준금리, 통화량, 물가상승률 실시간 대시보드">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&auto=format&fit=crop">
+  <meta property="og:type" content="website">
+
+  <!-- 파비콘 -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+
+  <!-- 스타일시트 -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- 공식 카카오톡 JavaScript SDK (v2.7.2) -->
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       TOP NAVIGATION BAR
+       ========================================================================== -->
+  <header class="top-nav">
+    <div class="brand-section">
+      <div class="brand-title">
+        <span>🌐 GLOBAL MACRO</span>
+        <span class="brand-badge">5x3 GRID</span>
+      </div>
+      <div class="live-indicator">
+        <span class="pulse-dot"></span>
+        <span id="liveClock">LIVE</span>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <!-- 카카오톡 바로 전송 버튼 -->
+      <button class="btn btn-kakao" id="btnKakaoShare" title="대시보드 요약 및 링크를 카카오톡으로 전송합니다">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3c-5.52 0-10 3.58-10 8 0 2.82 1.84 5.3 4.67 6.69-.17.6-.63 2.29-.72 2.65-.12.44.16.43.34.31.24-.16 3.12-2.12 3.65-2.48.66.1 1.34.15 2.06.15 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+        </svg>
+        <span>카카오톡 전송</span>
+      </button>
+
+      <!-- 이메일 전송 버튼 -->
+      <button class="btn btn-email" id="btnEmailShare" title="현재 주요 금리·환율 현황 브리핑을 이메일로 전송합니다">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        <span>이메일 전송</span>
+      </button>
+
+      <!-- GitHub Pages 배포 가이드 모달 버튼 -->
+      <button class="btn btn-deploy" id="btnDeployGuide" title="GitHub Pages에 내 무료 URI 주소를 생성하여 배포하는 방법">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        <span>GitHub 배포 가이드</span>
+      </button>
+
+      <!-- 테마 토글 버튼 -->
+      <button class="btn btn-icon" id="themeToggleBtn" title="다크/라이트 테마 전환">
+        🌙 다크 모드
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN DASHBOARD: 5x3 GRID (15 CARDS)
+       ========================================================================== -->
+  <main class="dashboard-container">
+    <div class="dashboard-grid" id="dashboardGrid">
+      <!-- JavaScript (dashboard.js)에 의해 1번~15번 카드가 동적으로 렌더링됩니다 -->
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       MODAL 1: 50-YEAR INTERACTIVE TIME-SERIES CHART
+       ========================================================================== -->
+  <div class="modal-overlay" id="chartModal">
+    <div class="modal-card">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="modalTitle">📈 시계열 차트</h2>
+          <div class="modal-subtitle" id="modalSubtitle">1975년 ~ 2026년 50년간 역사적 추이</div>
+        </div>
+        <button class="btn-close" id="btnCloseModal">&times;</button>
+      </div>
+
+      <!-- Controls Toolbar -->
+      <div class="modal-toolbar">
+        <div class="range-presets">
+          <span style="font-size:0.78rem; font-weight:700; color:var(--text-dim); margin-right:4px;">기간:</span>
+          <button class="preset-btn" data-range="1">1년</button>
+          <button class="preset-btn" data-range="5">5년</button>
+          <button class="preset-btn" data-range="10">10년</button>
+          <button class="preset-btn" data-range="20">20년</button>
+          <button class="preset-btn active" data-range="50">50년 (전체)</button>
+        </div>
+
+        <div class="zoom-controls">
+          <button class="zoom-btn" id="btnZoomIn" title="확대 (마우스 휠 위로 스크롤 가능)">➕ 확대</button>
+          <button class="zoom-btn" id="btnZoomOut" title="축소 (마우스 휠 아래로 스크롤 가능)">➖ 축소</button>
+          <button class="zoom-btn" id="btnZoomReset" title="초기 상태로 리셋">↺ 전체 보기</button>
+        </div>
+      </div>
+
+      <!-- 50-Year Summary Statistics Bar -->
+      <div class="stats-summary">
+        <div class="stat-item">최신값: <b id="statCurrent">-</b></div>
+        <div class="stat-item">50년 최고치(Max): <b id="statMax" style="color:var(--up-color);">-</b></div>
+        <div class="stat-item">50년 최저치(Min): <b id="statMin" style="color:var(--down-color);">-</b></div>
+        <div class="stat-item">50년 평균: <b id="statAvg">-</b></div>
+      </div>
+
+      <!-- HTML5 Canvas Interactive Viewport -->
+      <div class="chart-viewport">
+        <canvas id="chartCanvas"></canvas>
+      </div>
+
+      <!-- Modal Footer Guide -->
+      <div class="modal-footer">
+        <span>💡 <b>사용 팁:</b> 차트 위에서 <b>마우스 휠</b>을 굴려 확대/축소하고, 마우스로 <b>좌우 드래그</b>하여 50년간의 특정 시기를 자세히 탐색할 수 있습니다.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: KAKAO TALK SHARE & LINK EXPORT
+       ========================================================================== -->
+  <div class="modal-overlay" id="kakaoModal">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2>💬 카카오톡 전송 및 공유</h2>
+          <div class="modal-subtitle">대시보드 실시간 요약과 접속 주소를 전송합니다</div>
+        </div>
+        <button class="btn-close" id="btnCloseKakao">&times;</button>
+      </div>
+      <div class="guide-content">
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:12px;">
+          아래 내용을 복사하여 카카오톡 대화방 또는 단체 채팅방에 붙여넣기 하시면 즉시 대시보드 링크와 실시간 브리핑이 공유됩니다:
+        </p>
+        <textarea id="kakaoPreviewText" rows="6" style="width:100%; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:8px; padding:12px; font-size:0.85rem; font-family:inherit; resize:none;"></textarea>
+        
+        <div style="margin-top:16px; display:flex; justify-content:flex-end; gap:8px;">
+          <button class="btn btn-kakao" id="btnCopyKakao" style="width:100%; justify-content:center; padding:10px;">
+            📋 카카오톡 전송 문구 및 링크 복사하기
+          </button>
+        </div>
+
+        <div style="margin-top:16px; padding:12px; border-radius:8px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); font-size:0.8rem; color:var(--text-muted);">
+          💡 <b>공식 카카오톡 SDK 카드 발송을 원하시는 경우:</b><br>
+          <a href="https://developers.kakao.com" target="_blank" style="color:var(--primary); font-weight:700;">developers.kakao.com</a>에서 무료 앱 등록 후 발급받은 JavaScript 키를 `index.html` 상단 `Kakao.init('내키')`에 추가하시면 카카오톡 리치 메시지 카드로 직접 발송됩니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: GITHUB PAGES DEPLOYMENT GUIDE (인터넷 URI 발급 가이드)
+       ========================================================================== -->
+  <div class="modal-overlay" id="guideModal">
+    <div class="modal-card" style="max-width: 780px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2>🚀 GitHub Pages 무료 인터넷 URI(주소) 배포 가이드</h2>
+          <div class="modal-subtitle">내 대시보드를 인터넷에 올려 고유 웹 주소로 사용하는 3단계 방법</div>
+        </div>
+        <button class="btn-close" id="btnCloseGuide">&times;</button>
+      </div>
+
+      <div class="guide-content">
+        <div class="guide-step">
+          <h3>1단계: GitHub에 새로운 저장소(Repository) 생성하기</h3>
+          <ol>
+            <li><a href="https://github.com" target="_blank" style="color:var(--primary); font-weight:700;">GitHub.com</a> 로그인 후 우측 상단의 <b>+</b> &rarr; <b>New repository</b>를 클릭합니다.</li>
+            <li>Repository name에 원하는 이름(예: <code>macro-dashboard</code>)을 입력합니다.</li>
+            <li><b>Public</b>(공개)으로 설정하고 하단의 <b>Create repository</b> 버튼을 누릅니다.</li>
+          </ol>
+        </div>
+
+        <div class="guide-step">
+          <h3>2단계: 터미널에서 코드 업로드하기</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:6px;">맥북 터미널에서 아래 명령어를 순서대로 실행합니다:</p>
+          <pre>cd /Users/insooshin/Desktop/macro-dashboard
+git init
+git add .
+git commit -m "Deploy: Global Macro Dashboard 5x3"
+git branch -M main
+git remote add origin https://github.com/&lt;사용자아이디&gt;/macro-dashboard.git
+git push -u origin main</pre>
+          <p style="font-size:0.8rem; color:var(--text-dim);">* 터미널 사용이 익숙하지 않으시면 GitHub 웹사이트에서 <b>'uploading an existing file'</b>을 눌러 해당 폴더의 파일들을 마우스로 끌어다 놓으셔도 됩니다!</p>
+        </div>
+
+        <div class="guide-step">
+          <h3>3단계: GitHub Pages 켜고 나만의 URI(웹 주소) 확인하기</h3>
+          <ol>
+            <li>저장소 상단 메뉴에서 <b>Settings</b>(설정) &rarr; 좌측 <b>Pages</b> 메뉴를 클릭합니다.</li>
+            <li><b>Build and deployment &rarr; Branch</b>에서 <code>main</code> 브랜치와 <code>/ (root)</code> 폴더를 선택하고 <b>Save</b>를 누릅니다.</li>
+            <li>약 1분 후 상단에 <b>"Your site is live at https://&lt;내아이디&gt;.github.io/macro-dashboard/"</b> 라는 나만의 인터넷 고유 URI 주소가 발급됩니다!</li>
+            <li>이 주소를 스마트폰 카카오톡으로 전송하여 사파리나 크롬에서 열고 <b>'홈 화면에 추가'</b>하시면 모바일 전용 앱처럼 사용하실 수 있습니다!</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스크립트 로드 순서 -->
+  <script src="data-store.js"></script>
+  <script src="chart-engine.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
