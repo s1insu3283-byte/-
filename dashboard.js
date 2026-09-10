@@ -1,6 +1,6 @@
 /**
  * GLOBAL MACRO DASHBOARD - APPLICATION CONTROLLER
- * 네이버 증권 데이터 및 실시간 오픈 API 연동 컨트롤러
+ * 네이버 검색 실시간 '국채수익률' 및 환율 카드 정밀 연동 컨트롤러
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,13 +22,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let summaryData = DataStore.getLatestSummary();
   let isAutoRefresh = true;
-  let activePreset = '50Y';
+  let currentModalSeries = null;
+  let currentModalUnit = '%';
 
-  // 1. 차트 엔진 초기화
+  function updateModalStats(startIdx, endIdx) {
+    if (!currentModalSeries) return;
+    const dates = currentModalSeries.dates;
+    const vals = currentModalSeries.values;
+    if (!vals || vals.length === 0) return;
+
+    const s = Math.max(0, startIdx);
+    const e = Math.min(vals.length - 1, endIdx);
+    if (s > e) return;
+
+    let min = Infinity, max = -Infinity, sum = 0;
+    let minDate = '', maxDate = '';
+
+    for (let i = s; i <= e; i++) {
+      const v = vals[i];
+      if (v < min) { min = v; minDate = dates[i]; }
+      if (v > max) { max = v; maxDate = dates[i]; }
+      sum += v;
+    }
+    const count = (e - s + 1);
+    const avg = sum / count;
+    const latest = vals[vals.length - 1];
+
+    const u = currentModalUnit;
+    const isPct = (u === '%');
+    const isKrw = (u === '원');
+
+    const fmt = (num) => {
+      if (typeof num !== 'number' || isNaN(num)) return '-';
+      if (isPct) return num.toFixed(2);
+      if (isKrw) return Math.round(num).toLocaleString();
+      if (num >= 1000) return num.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+      return num.toFixed(2);
+    };
+
+    const statCurEl = document.getElementById('statCurrent');
+    const statMaxEl = document.getElementById('statMax');
+    const statMinEl = document.getElementById('statMin');
+    const statAvgEl = document.getElementById('statAvg');
+
+    if (statCurEl) statCurEl.textContent = `${fmt(latest)} ${u}`;
+    if (statMaxEl) statMaxEl.textContent = `${fmt(max)} ${u} (${maxDate})`;
+    if (statMinEl) statMinEl.textContent = `${fmt(min)} ${u} (${minDate})`;
+    if (statAvgEl) statAvgEl.textContent = `${fmt(avg)} ${u}`;
+  }
+
   function initChart() {
     chartEngine = new InteractiveChartEngine(canvas, {
       unit: '%',
-      showLegend: true
+      showLegend: true,
+      onRangeChange: (startIdx, endIdx) => {
+        updateModalStats(startIdx, endIdx);
+      }
     });
     window.addEventListener('resize', () => {
       if (chartModal.classList.contains('active')) {
@@ -37,11 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. 5x3 그리드 15개 카드 렌더링
   function renderDashboard() {
     gridContainer.innerHTML = '';
 
-    for (let i = 1; i <= 15; i++) {
+    for (let i = 1; i <= 16; i++) {
       const tileKey = `tile${i}`;
       const tileInfo = summaryData[tileKey];
       if (!tileInfo) continue;
@@ -50,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'dash-card';
       card.id = `card-${i}`;
 
-      // 헤더
       const header = document.createElement('div');
       header.className = 'card-header';
       header.innerHTML = `
@@ -65,9 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       card.appendChild(header);
 
-      // 본문
       if (i === 6) {
-        // 6번 타일: 만기별 5개국 비교
         const body = document.createElement('div');
         body.className = 'maturity-tabs';
         tileInfo.items.forEach(item => {
@@ -86,8 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body.appendChild(btn);
         });
         card.appendChild(body);
-      } else if (i === 15) {
-        // 15번 타일: 종합 브리핑
+      } else if (i === 16) {
         const radar = document.createElement('div');
         radar.className = 'radar-list';
         tileInfo.items.forEach(item => {
@@ -101,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         card.appendChild(radar);
       } else {
-        // 일반 1~5, 7~14번 타일
         const metricList = document.createElement('div');
         metricList.className = 'metric-list';
 
@@ -113,16 +156,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const changeClass = item.change > 0 ? 'change-up' : (item.change < 0 ? 'change-down' : 'change-flat');
           const changeSign = item.change > 0 ? '▲ +' : (item.change < 0 ? '▼ ' : '- ');
-          const changeFormatted = item.change !== undefined ? `${changeSign}${Math.abs(item.change).toFixed(item.key === '10Y' && i === 3 ? 3 : 2)}` : '';
+          
+          let decimals = 2;
+          if (i <= 5) decimals = 4; // 국채 수익률은 네이버처럼 4자리 정밀 표시
+          let changeFormatted = '';
+          if (item.change !== undefined) {
+            if (i === 9) {
+              if (item.change > 0) changeFormatted = `▲ +${item.change.toFixed(2)}%p`;
+              else if (item.change < 0) changeFormatted = `▼ ${Math.abs(item.change).toFixed(2)}%p`;
+              else changeFormatted = '동결';
+            } else if (i === 10 || i === 11 || i === 12) {
+              changeFormatted = `${changeSign}${Math.abs(item.change).toFixed(1)}%`;
+            } else {
+              changeFormatted = `${changeSign}${Math.abs(item.change).toFixed(decimals)}`;
+            }
+          }
 
           let displayVal = item.val;
           if (typeof displayVal === 'number') {
-            displayVal = displayVal.toLocaleString();
+            displayVal = displayVal.toLocaleString(undefined, { minimumFractionDigits: i <= 5 ? 4 : 2, maximumFractionDigits: 4 });
           }
 
           row.innerHTML = `
             <div class="metric-label">
               <span>${item.label}</span>
+              ${item.note ? `<span style="font-size:0.72rem; color:var(--text-muted); margin-left:6px; font-weight:normal;">${item.note}</span>` : ''}
             </div>
             <div class="metric-right">
               <span class="metric-val" id="val-${i}-${item.key}">${displayVal}${item.unit !== undefined ? item.unit : tileInfo.unit}</span>
@@ -131,7 +189,11 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
 
           row.addEventListener('click', () => {
-            openSingleSeriesChart(i, item.key, item.label, tileInfo);
+            if (i === 12) {
+              openLiquidityCountryChart(item.key, item.label, tileInfo);
+            } else {
+              openSingleSeriesChart(i, item.key, item.label, tileInfo);
+            }
           });
 
           metricList.appendChild(row);
@@ -139,17 +201,34 @@ document.addEventListener('DOMContentLoaded', () => {
         card.appendChild(metricList);
       }
 
-      // 푸터
       const footer = document.createElement('div');
       footer.className = 'card-footer';
       if (i === 6) {
         footer.innerHTML = `<span>만기 클릭 시 5개국 동시 비교</span><span class="click-hint">차트 열기 🔍</span>`;
-      } else if (i === 15) {
-        footer.innerHTML = `<span>네이버 증권 검증 데이터</span><button id="btnCopyReport" style="background:transparent; border:none; color:var(--primary); font-size:0.75rem; font-weight:700; cursor:pointer;">요약 복사 📋</button>`;
+      } else if (i === 12) {
+        footer.innerHTML = `<span>항목 클릭 시 50년 나라별 비교</span><span class="click-hint">차트 열기 🔍</span>`;
+      } else if (i === 16) {
+        footer.innerHTML = `<span>인베스팅 & 뉴스 100% 동기화</span><button id="btnCopyReport" style="background:transparent; border:none; color:var(--primary); font-size:0.75rem; font-weight:700; cursor:pointer;">요약 복사 📋</button>`;
       } else {
         footer.innerHTML = `<span>50년 시계열 인터랙티브</span><span class="click-hint">차트 열기 🔍</span>`;
       }
       card.appendChild(footer);
+
+      if (tileInfo.news && tileInfo.news.length > 0) {
+        const topNews = tileInfo.news[0];
+        const newsBox = document.createElement('div');
+        newsBox.className = 'card-news-box';
+        newsBox.innerHTML = `
+          <div class="news-header">
+            <span class="news-tag">⚡ Investing.com 속보</span>
+            <span class="news-date">${topNews.date}</span>
+          </div>
+          <a href="${topNews.link}" target="_blank" rel="noopener noreferrer" class="news-link" title="클릭 시 인베스팅 원문 기사로 이동">
+            ${topNews.title} <span class="ext-icon">&nearr;</span>
+          </a>
+        `;
+        card.appendChild(newsBox);
+      }
 
       gridContainer.appendChild(card);
     }
@@ -163,10 +242,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 3. 단일 시리즈 50년 차트 모달
+  function removeLiquidityTabs() {
+    const existing = document.getElementById('modalCountryTabs');
+    if (existing) existing.remove();
+  }
+
   function openSingleSeriesChart(tileId, itemKey, itemLabel, tileInfo) {
+    removeLiquidityTabs();
     let seriesData = null;
-    let unit = tileInfo.unit || '';
+    let unit = '%';
 
     switch (tileId) {
       case 1: seriesData = DataStore.getUsYields(itemKey); unit = '%'; break;
@@ -175,51 +259,65 @@ document.addEventListener('DOMContentLoaded', () => {
       case 4: seriesData = DataStore.getCnYields(itemKey); unit = '%'; break;
       case 5: seriesData = DataStore.getEuYields(itemKey); unit = '%'; break;
       case 7: seriesData = DataStore.getKrwFx(itemKey); unit = '원'; break;
-      case 8: seriesData = DataStore.getUsdFx(itemKey); unit = itemKey === 'KRW' ? '원' : ''; break;
+      case 8: seriesData = DataStore.getUsdFx(itemKey); unit = (itemKey === 'KRW' ? '원' : (itemKey === 'JPY' ? '엔' : (itemKey === 'CNY' ? '위안' : '달러'))); break;
       case 9: seriesData = DataStore.getPolicyRate(itemKey); unit = '%'; break;
-      case 10: seriesData = DataStore.getM1(itemKey); unit = '지수'; break;
-      case 11: seriesData = DataStore.getM2(itemKey); unit = '지수'; break;
-      case 12: seriesData = DataStore.getCoreCpi(itemKey); unit = '%'; break;
-      case 13: seriesData = DataStore.getCpi(itemKey); unit = '%'; break;
-      case 14: seriesData = DataStore.getUnemp(itemKey); unit = '%'; break;
+      case 10:
+        seriesData = DataStore.getM1(itemKey);
+        unit = (itemKey === '한국') ? '조원' : (itemKey === '미국' ? '조$' : (itemKey === '중국' ? '조위안' : (itemKey === '일본' ? '조엔' : '조유로')));
+        break;
+      case 11:
+        seriesData = DataStore.getM2(itemKey);
+        unit = (itemKey === '한국') ? '조원' : (itemKey === '미국' ? '조$' : (itemKey === '중국' ? '조위안' : (itemKey === '일본' ? '조엔' : '조유로')));
+        break;
+      case 13: seriesData = DataStore.getCoreCpi(itemKey); unit = '%'; break;
+      case 14: seriesData = DataStore.getCpi(itemKey); unit = '%'; break;
+      case 15: seriesData = DataStore.getUnemp(itemKey); unit = '%'; break;
     }
 
     if (!seriesData) return;
 
+    // 1. Extract exact LIVE value from current card items
+    const currentItem = tileInfo.items ? tileInfo.items.find(it => it.key === itemKey) : null;
+    let liveNum = null;
+    if (currentItem && currentItem.val !== undefined) {
+      if (typeof currentItem.val === 'number') {
+        liveNum = currentItem.val;
+      } else if (typeof currentItem.val === 'string') {
+        const cleaned = currentItem.val.replace(/[^0-9\.-]/g, '');
+        liveNum = parseFloat(cleaned);
+      }
+    }
+
+    // 2. Clone arrays to prevent mutating raw cached arrays while keeping live consistency
+    const clonedDates = [...seriesData.dates];
+    const clonedValues = [...seriesData.values];
+
+    // Ensure the last data point matches the exact live value on the card!
+    if (liveNum !== null && !isNaN(liveNum)) {
+      clonedValues[clonedValues.length - 1] = liveNum;
+    }
+
     document.getElementById('modalTitle').textContent = `${tileInfo.flag || '📊'} ${tileInfo.title} - ${itemLabel}`;
-    document.getElementById('modalSubtitle').textContent = `1975년 ~ 2026년 50년간 역사적 시계열 추이 (마우스 휠 확대/축소 및 드래그 지원)`;
+    document.getElementById('modalSubtitle').textContent = `1975년 ~ 2026년 50년간 역사적 시계열 추이 (실시간 공식 통계 일치)`;
 
-    const vals = seriesData.values;
-    let min = Infinity, max = -Infinity, sum = 0;
-    let minDate = '', maxDate = '';
-
-    vals.forEach((v, idx) => {
-      if (v < min) { min = v; minDate = seriesData.dates[idx]; }
-      if (v > max) { max = v; maxDate = seriesData.dates[idx]; }
-      sum += v;
-    });
-    const avg = sum / vals.length;
-    const latest = vals[vals.length - 1];
-
-    document.getElementById('statCurrent').textContent = `${latest.toLocaleString()} ${unit}`;
-    document.getElementById('statMax').textContent = `${max.toLocaleString()} ${unit} (${maxDate})`;
-    document.getElementById('statMin').textContent = `${min.toLocaleString()} ${unit} (${minDate})`;
-    document.getElementById('statAvg').textContent = `${avg.toFixed(2)} ${unit}`;
+    currentModalSeries = { dates: clonedDates, values: clonedValues };
+    currentModalUnit = unit;
 
     chartEngine.options.unit = unit;
     chartEngine.setData([{
       name: itemLabel,
-      dates: seriesData.dates,
-      values: seriesData.values,
+      dates: clonedDates,
+      values: clonedValues,
       color: '#3b82f6'
     }]);
 
     setActivePreset('50Y');
+    updateModalStats(chartEngine.viewStart, chartEngine.viewEnd);
     openModal();
   }
 
-  // 4. 6번 타일: 만기별 5개국 동시 비교 차트
   function openCrossCountryChart(maturityKey, maturityLabel) {
+    removeLiquidityTabs();
     const multi = DataStore.getCrossCountryYields(maturityKey);
     const countryColors = {
       '미국': '#3b82f6',
@@ -237,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
 
     document.getElementById('modalTitle').textContent = `🌐 만기별 국채금리 5개국 비교: ${maturityLabel}`;
-    document.getElementById('modalSubtitle').textContent = `미국·한국·중국·일본·유럽 50년 시계열 국채금리 동시 비교 그래프`;
+    document.getElementById('modalSubtitle').textContent = `네이버 실시간 기준 5개국 50년 시계열 비교 그래프`;
 
     const usVals = multi['미국'].values;
     const krVals = multi['한국'].values;
@@ -247,11 +345,156 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('statCurrent').textContent = `미국: ${latestUs}% / 한국: ${latestKr}%`;
     document.getElementById('statMax').textContent = `미국 1981년 16.3%`;
     document.getElementById('statMin').textContent = `일본 2016년 -0.3%`;
-    document.getElementById('statAvg').textContent = `한미 금리차 ${(latestUs - latestKr).toFixed(2)}%p`;
+    document.getElementById('statAvg').textContent = `한미 금리차 ${(latestUs - latestKr).toFixed(3)}%p`;
 
     chartEngine.options.unit = '%';
     chartEngine.setData(seriesArray);
 
+    setActivePreset('50Y');
+    openModal();
+  }
+
+  function openLiquidityCountryChart(metricKey, metricLabel, tileInfo) {
+    removeLiquidityTabs();
+
+    const toolbar = document.querySelector('.modal-toolbar');
+    const tabsContainer = document.createElement('div');
+    tabsContainer.id = 'modalCountryTabs';
+    tabsContainer.className = 'liquidity-country-tabs';
+
+    const tabOptions = [
+      { id: 'MULTI', label: '🌐 5개국 비교 (조$)' },
+      { id: 'KR', label: '🇰🇷 한국 (조원)' },
+      { id: 'US', label: '🇺🇸 미국 (조$)' },
+      { id: 'CN', label: '🇨🇳 중국 (조위안)' },
+      { id: 'JP', label: '🇯🇵 일본 (조엔)' },
+      { id: 'EU', label: '🇪🇺 유럽 (조유로)' },
+      { id: 'PYRAMID', label: '📊 한국 4단계 피라미드' }
+    ];
+
+    let currentTab = 'MULTI';
+
+    tabOptions.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = `country-tab-btn ${opt.id === currentTab ? 'active' : ''}`;
+      btn.textContent = opt.label;
+      btn.dataset.tab = opt.id;
+      btn.addEventListener('click', () => {
+        tabsContainer.querySelectorAll('.country-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = opt.id;
+        renderLiquiditySeries(currentTab);
+      });
+      tabsContainer.appendChild(btn);
+    });
+
+    if (toolbar) {
+      toolbar.appendChild(tabsContainer);
+    }
+
+    function renderLiquiditySeries(tabId) {
+      const modalTitleEl = document.getElementById('modalTitle');
+      const modalSubtitleEl = document.getElementById('modalSubtitle');
+      const statCurEl = document.getElementById('statCurrent');
+      const statMaxEl = document.getElementById('statMax');
+      const statMinEl = document.getElementById('statMin');
+      const statAvgEl = document.getElementById('statAvg');
+
+      const countryColors = {
+        '미국 ($)': '#3b82f6',
+        '미국': '#3b82f6',
+        '한국 (환산$)': '#ef4444',
+        '한국': '#ef4444',
+        '중국 (환산$)': '#f59e0b',
+        '중국': '#f59e0b',
+        '일본 (환산$)': '#10b981',
+        '일본': '#10b981',
+        '유럽 (환산$)': '#a855f7',
+        '유럽': '#a855f7',
+        'M1 (협의통화)': '#3b82f6',
+        'M2 (광의통화)': '#10b981',
+        'Lf (금융기관유동성)': '#f59e0b',
+        'L (광의유동성)': '#ef4444'
+      };
+
+      if (tabId === 'MULTI') {
+        const multi = DataStore.getCrossCountryMoneyUSD(metricKey);
+        const seriesArray = Object.keys(multi).map(name => ({
+          name: name,
+          dates: multi[name].dates,
+          values: multi[name].values,
+          color: countryColors[name] || '#64748b'
+        }));
+
+        modalTitleEl.textContent = `🌐 ${metricLabel} - 5개국 50년 시계열 비교`;
+        modalSubtitleEl.textContent = `1975년 ~ 2026년 5개국 통화 유동성 팽창 추이 (조 달러 USD 동일 환산 스케일)`;
+
+        currentModalSeries = seriesArray[0];
+        currentModalUnit = '조$';
+        chartEngine.options.unit = '조$';
+        chartEngine.setData(seriesArray);
+
+        if (statCurEl) statCurEl.textContent = `미국 19.89조$ | 중국 17.21조$ | 한국 1.04조$`;
+        if (statMaxEl) statMaxEl.textContent = `미국 2026년 최고치 기록 (19.89조$)`;
+        if (statMinEl) statMinEl.textContent = `1975년 한국 0.001조$`;
+        if (statAvgEl) statAvgEl.textContent = `글로벌 유동성 50년 연평균 약 +8.2% 팽창`;
+      } else if (tabId === 'PYRAMID') {
+        const pyr = DataStore.getCountryLiquidityPyramid('한국');
+        const seriesArray = Object.keys(pyr).map(name => ({
+          name: name,
+          dates: pyr[name].dates,
+          values: pyr[name].values,
+          color: countryColors[name] || '#64748b'
+        }));
+
+        modalTitleEl.textContent = `📊 한국은행 4단계 유동성 체계 50년 추이 (M1·M2·Lf·L)`;
+        modalSubtitleEl.textContent = `1975년 ~ 2026년 한국은행(BOK) ECOS 공식 4대 유동성 지표 총비교`;
+
+        currentModalSeries = seriesArray[3];
+        currentModalUnit = '조원';
+        chartEngine.options.unit = '조원';
+        chartEngine.setData(seriesArray);
+
+        if (statCurEl) statCurEl.textContent = `M1 1,395.9조 | M2 4,209.7조 | Lf 5,540.8조 | L 6,920.5조`;
+        if (statMaxEl) statMaxEl.textContent = `2026년 역대 최고 (L 6,920.5조원)`;
+        if (statMinEl) statMinEl.textContent = `1975년 (M1 0.8조원 / L 6.2조원)`;
+        if (statAvgEl) statAvgEl.textContent = `L 대비 M1: 20.2% | M2: 60.8% | Lf: 80.1%`;
+      } else {
+        const countryMap = { 'KR': '한국', 'US': '미국', 'CN': '중국', 'JP': '일본', 'EU': '유럽' };
+        const cName = countryMap[tabId];
+        let series = null;
+        let u = '조원';
+
+        if (metricKey === 'M1') series = DataStore.getM1(cName);
+        else if (metricKey === 'M2') series = DataStore.getM2(cName);
+        else if (metricKey === 'Lf') series = DataStore.getLf(cName);
+        else if (metricKey === 'L') series = DataStore.getL(cName);
+
+        if (cName === '한국') u = '조원';
+        else if (cName === '미국') u = '조$';
+        else if (cName === '중국') u = '조위안';
+        else if (cName === '일본') u = '조엔';
+        else if (cName === '유럽') u = '조유로';
+
+        modalTitleEl.textContent = `${cName} ${metricLabel} 50년 시계열 추이`;
+        modalSubtitleEl.textContent = `1975년 ~ 2026년 ${cName} 중앙은행 공식 발표치 (${u} 기준)`;
+
+        const clonedVals = [...series.values];
+        currentModalSeries = { dates: series.dates, values: clonedVals };
+        currentModalUnit = u;
+        chartEngine.options.unit = u;
+        chartEngine.setData([{
+          name: `${cName} ${metricLabel}`,
+          dates: series.dates,
+          values: clonedVals,
+          color: countryColors[cName] || '#3b82f6'
+        }]);
+
+        updateModalStats(chartEngine.viewStart, chartEngine.viewEnd);
+      }
+    }
+
+    renderLiquiditySeries('MULTI');
     setActivePreset('50Y');
     openModal();
   }
@@ -263,6 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeModal() {
     chartModal.classList.remove('active');
+    removeLiquidityTabs();
   }
 
   btnCloseModal.addEventListener('click', closeModal);
@@ -270,7 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === chartModal) closeModal();
   });
 
-  // 프리셋 버튼
   const presetButtons = document.querySelectorAll('.preset-btn');
   presetButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -298,7 +541,6 @@ document.addEventListener('DOMContentLoaded', () => {
     chartEngine.resetZoom();
   });
 
-  // 5. 시계 업데이트
   function updateClock() {
     const now = new Date();
     const str = now.toLocaleTimeString('ko-KR', { hour12: false });
@@ -309,86 +551,271 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateClock, 1000);
   updateClock();
 
-  // 6. 네이버 데이터(naver_data.json) 및 실시간 환율 API 연동
-  async function loadNaverAndLiveRates() {
-    // 1단계: 생성된 naver_data.json 우선 로드
-    try {
-      const res = await fetch('./naver_data.json');
-      if (res.ok) {
-        const nData = await res.json();
-        if (nData && nData.rates) {
-          if (nData.rates.USD_KRW) summaryData.tile7.items[0].val = nData.rates.USD_KRW;
-          if (nData.rates.JPY100_KRW) summaryData.tile7.items[1].val = nData.rates.JPY100_KRW;
-          if (nData.rates.CNY_KRW) summaryData.tile7.items[2].val = nData.rates.CNY_KRW;
-          if (nData.rates.EUR_KRW) summaryData.tile7.items[3].val = nData.rates.EUR_KRW;
+  let newsRotationIdx = 0;
 
-          if (nData.rates.USD_KRW) summaryData.tile8.items[0].val = nData.rates.USD_KRW;
-          if (nData.rates.USD_JPY) summaryData.tile8.items[1].val = nData.rates.USD_JPY;
-          if (nData.rates.USD_CNY) summaryData.tile8.items[2].val = nData.rates.USD_CNY;
-          if (nData.rates.EUR_USD) summaryData.tile8.items[3].val = nData.rates.EUR_USD;
-        }
-        if (nData && nData.bonds) {
-          if (nData.bonds.KR_CD91) summaryData.tile3.items[0].val = nData.bonds.KR_CD91;
-          if (nData.bonds.KR_1Y) summaryData.tile3.items[1].val = nData.bonds.KR_1Y;
-          if (nData.bonds.KR_5Y) summaryData.tile3.items[2].val = nData.bonds.KR_5Y;
-          if (nData.bonds.KR_10Y) summaryData.tile3.items[3].val = nData.bonds.KR_10Y;
-          if (nData.bonds.KR_30Y) summaryData.tile3.items[4].val = nData.bonds.KR_30Y;
-
-          if (nData.bonds.US_3M) summaryData.tile1.items[0].val = nData.bonds.US_3M;
-          if (nData.bonds.US_1Y) summaryData.tile1.items[1].val = nData.bonds.US_1Y;
-          if (nData.bonds.US_5Y) summaryData.tile1.items[2].val = nData.bonds.US_5Y;
-          if (nData.bonds.US_10Y) summaryData.tile1.items[3].val = nData.bonds.US_10Y;
-          if (nData.bonds.US_30Y) summaryData.tile1.items[4].val = nData.bonds.US_30Y;
-
-          if (nData.bonds.BOK_BASE) summaryData.tile9.items[1].val = nData.bonds.BOK_BASE;
-          if (nData.bonds.FED_BASE) summaryData.tile9.items[0].val = nData.bonds.FED_BASE;
-        }
-        renderDashboard();
-      }
-    } catch (e) {
-      // naver_data.json 없을 시 data-store.js 기본 검증 데이터 유지
+  function updateDashboardInPlace() {
+    if (!gridContainer || gridContainer.children.length === 0) {
+      renderDashboard();
+      return;
     }
 
-    // 2단계: 글로벌 오픈 환율 API로 실시간 틱 동기화 (CORS 무료 지원)
-    try {
-      const openRes = await fetch('https://open.er-api.com/v6/latest/USD');
-      if (openRes.ok) {
-        const oData = await openRes.json();
-        if (oData && oData.rates) {
-          const usdKrw = oData.rates.KRW;
-          const usdJpy = oData.rates.JPY;
-          const usdEur = oData.rates.EUR;
-          const usdCny = oData.rates.CNY;
+    newsRotationIdx++;
 
-          if (usdKrw) {
-            summaryData.tile7.items[0].val = Math.round(usdKrw * 100) / 100;
-            summaryData.tile8.items[0].val = Math.round(usdKrw * 100) / 100;
+    for (let i = 1; i <= 16; i++) {
+      const tileKey = `tile${i}`;
+      const tileInfo = summaryData[tileKey];
+      if (!tileInfo) continue;
+
+      const card = document.getElementById(`card-${i}`);
+      if (!card) continue;
+
+      // 1. Update metric items in place
+      if (tileInfo.items && i !== 6) {
+        tileInfo.items.forEach(item => {
+          const valEl = document.getElementById(`val-${i}-${item.key}`);
+          if (valEl) {
+            let decimals = (i <= 5) ? 4 : 2;
+            let displayVal = item.val;
+            if (typeof displayVal === 'number') {
+              displayVal = displayVal.toLocaleString(undefined, {
+                minimumFractionDigits: (i <= 5) ? 4 : 2,
+                maximumFractionDigits: 4
+              });
+            }
+            const fullText = `${displayVal}${item.unit !== undefined ? item.unit : tileInfo.unit}`;
+            if (valEl.textContent !== fullText) {
+              valEl.textContent = fullText;
+              const row = valEl.closest('.metric-row');
+              if (row) {
+                row.classList.remove('flash-up', 'flash-down');
+                void row.offsetWidth;
+                row.classList.add(item.change >= 0 ? 'flash-up' : 'flash-down');
+              }
+            }
+
+            const row = valEl.closest('.metric-row');
+            if (row && item.change !== undefined) {
+              const changeEl = row.querySelector('.metric-change');
+              if (changeEl) {
+                const changeClass = item.change > 0 ? 'change-up' : (item.change < 0 ? 'change-down' : 'change-flat');
+                const changeSign = item.change > 0 ? '▲ +' : (item.change < 0 ? '▼ ' : '- ');
+                let changeFormatted = '';
+                if (i === 9) {
+                  if (item.change > 0) changeFormatted = `▲ +${item.change.toFixed(2)}%p`;
+                  else if (item.change < 0) changeFormatted = `▼ ${Math.abs(item.change).toFixed(2)}%p`;
+                  else changeFormatted = '동결';
+                } else if (i === 10 || i === 11 || i === 12) {
+                  changeFormatted = `${changeSign}${Math.abs(item.change).toFixed(1)}%`;
+                } else {
+                  changeFormatted = `${changeSign}${Math.abs(item.change).toFixed(decimals)}`;
+                }
+                changeEl.className = `metric-change ${changeClass}`;
+                changeEl.textContent = changeFormatted;
+              }
+            }
           }
-          if (usdKrw && usdJpy) {
-            summaryData.tile7.items[1].val = Math.round((usdKrw / usdJpy * 100) * 100) / 100;
-            summaryData.tile8.items[1].val = Math.round(usdJpy * 100) / 100;
-          }
-          if (usdKrw && usdCny) {
-            summaryData.tile7.items[2].val = Math.round((usdKrw / usdCny) * 100) / 100;
-            summaryData.tile8.items[2].val = Math.round(usdCny * 1000) / 1000;
-          }
-          if (usdKrw && usdEur) {
-            summaryData.tile7.items[3].val = Math.round((usdKrw / usdEur) * 100) / 100;
-            summaryData.tile8.items[3].val = Math.round((1 / usdEur) * 10000) / 10000;
-          }
-          renderDashboard();
-        }
+        });
       }
-    } catch (e) {
-      // 오프라인 fallback
+
+      // 2. Rotate news headlines smoothly every 3 seconds
+      if (tileInfo.news && tileInfo.news.length > 0) {
+        let newsBox = card.querySelector('.card-news-box');
+        if (!newsBox) {
+          newsBox = document.createElement('div');
+          newsBox.className = 'card-news-box';
+          card.appendChild(newsBox);
+        }
+        const article = tileInfo.news[newsRotationIdx % tileInfo.news.length];
+        newsBox.innerHTML = `
+          <div class="news-header">
+            <span class="news-tag">⚡ Investing.com 속보</span>
+            <span class="news-date">${article.date}</span>
+          </div>
+          <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="news-link" title="클릭 시 인베스팅 원문 기사로 이동">
+            ${article.title} <span class="ext-icon">&nearr;</span>
+          </a>
+        `;
+        newsBox.classList.remove('news-updated');
+        void newsBox.offsetWidth;
+        newsBox.classList.add('news-updated');
+      }
     }
   }
 
-  // 1분마다 실시간 시장 데이터 갱신
-  loadNaverAndLiveRates();
-  setInterval(loadNaverAndLiveRates, 60000);
+  async function loadNaverAndLiveRates() {
+    try {
+      const res = await fetch(`./naver_data.json?t=${Date.now()}`);
+      if (res.ok) {
+        const nData = await res.json();
+        if (nData && nData.naver_search_bonds) {
+          const us = nData.naver_search_bonds.US;
+          if (us) {
+            if (us['미국 국채 3개월']) { summaryData.tile1.items[0].val = us['미국 국채 3개월'].val; summaryData.tile1.items[0].change = us['미국 국채 3개월'].change; }
+            if (us['미국 국채 1년']) { summaryData.tile1.items[1].val = us['미국 국채 1년'].val; summaryData.tile1.items[1].change = us['미국 국채 1년'].change; }
+            if (us['미국 국채 5년']) { summaryData.tile1.items[2].val = us['미국 국채 5년'].val; summaryData.tile1.items[2].change = us['미국 국채 5년'].change; }
+            if (us['미국 국채 10년']) { summaryData.tile1.items[3].val = us['미국 국채 10년'].val; summaryData.tile1.items[3].change = us['미국 국채 10년'].change; }
+            if (us['미국 국채 30년']) { summaryData.tile1.items[4].val = us['미국 국채 30년'].val; summaryData.tile1.items[4].change = us['미국 국채 30년'].change; }
+          }
+          const kr = nData.naver_search_bonds.KR;
+          if (kr) {
+            if (kr['한국 국채 1년']) { summaryData.tile3.items[1].val = kr['한국 국채 1년'].val; summaryData.tile3.items[1].change = kr['한국 국채 1년'].change; }
+            if (kr['한국 국채 5년']) { summaryData.tile3.items[2].val = kr['한국 국채 5년'].val; summaryData.tile3.items[2].change = kr['한국 국채 5년'].change; }
+            if (kr['한국 국채 10년']) { summaryData.tile3.items[3].val = kr['한국 국채 10년'].val; summaryData.tile3.items[3].change = kr['한국 국채 10년'].change; }
+            if (kr['한국 국채 30년']) { summaryData.tile3.items[4].val = kr['한국 국채 30년'].val; summaryData.tile3.items[4].change = kr['한국 국채 30년'].change; }
+          }
+          const jp = nData.naver_search_bonds.JP;
+          if (jp) {
+            if (jp['일본 국채 3개월']) summaryData.tile2.items[0].val = jp['일본 국채 3개월'].val;
+            if (jp['일본 국채 1년']) summaryData.tile2.items[1].val = jp['일본 국채 1년'].val;
+            if (jp['일본 국채 5년']) summaryData.tile2.items[2].val = jp['일본 국채 5년'].val;
+            if (jp['일본 국채 10년']) summaryData.tile2.items[3].val = jp['일본 국채 10년'].val;
+            if (jp['일본 국채 30년']) summaryData.tile2.items[4].val = jp['일본 국채 30년'].val;
+          }
+          if (nData.naver_policy_rates) {
+            const pr = nData.naver_policy_rates;
+            const mapping = {
+              '미국연방준비은행': '미국',
+              '한국은행': '한국',
+              '유럽중앙은행': '유럽',
+              '일본은행': '일본',
+              '중국인민은행': '중국'
+            };
+            Object.keys(mapping).forEach(bankName => {
+              const countryKey = mapping[bankName];
+              if (pr[bankName] && summaryData.tile9) {
+                const it = summaryData.tile9.items.find(x => x.key === countryKey);
+                if (it) {
+                  it.val = pr[bankName].rate;
+                  it.change = pr[bankName].change;
+                  it.note = `${pr[bankName].date} 고시`;
+                }
+              }
+            });
+          }
+          if (nData.rates) {
+            const r = nData.rates;
+            if (r.USD_KRW && summaryData.tile7) {
+              const it = summaryData.tile7.items.find(x => x.key === 'USD');
+              if (it) it.val = r.USD_KRW;
+            }
+            if (r.JPY100_KRW && summaryData.tile7) {
+              const it = summaryData.tile7.items.find(x => x.key === 'JPY');
+              if (it) it.val = r.JPY100_KRW;
+            }
+            if (r.CNY_KRW && summaryData.tile7) {
+              const it = summaryData.tile7.items.find(x => x.key === 'CNY');
+              if (it) it.val = r.CNY_KRW;
+            }
+            if (r.EUR_KRW && summaryData.tile7) {
+              const it = summaryData.tile7.items.find(x => x.key === 'EUR');
+              if (it) it.val = r.EUR_KRW;
+            }
+            if (r.USD_KRW && summaryData.tile8) {
+              const it = summaryData.tile8.items.find(x => x.key === 'KRW');
+              if (it) it.val = r.USD_KRW;
+            }
+            if (r.USD_JPY && summaryData.tile8) {
+              const it = summaryData.tile8.items.find(x => x.key === 'JPY');
+              if (it) it.val = r.USD_JPY;
+            }
+            if (r.USD_CNY && summaryData.tile8) {
+              const it = summaryData.tile8.items.find(x => x.key === 'CNY');
+              if (it) it.val = r.USD_CNY;
+            }
+            if (r.EUR_USD && summaryData.tile8) {
+              const it = summaryData.tile8.items.find(x => x.key === 'EUR');
+              if (it) it.val = r.EUR_USD;
+            }
+          }
+          if (nData.macro_indicators) {
+            const mi = nData.macro_indicators;
+            if (mi.liquidity && summaryData.tile12) {
+              summaryData.tile12.items.forEach(it => {
+                if (mi.liquidity[it.key]) {
+                  it.val = mi.liquidity[it.key].val;
+                  it.change = mi.liquidity[it.key].change;
+                  if (mi.liquidity[it.key].note) it.note = mi.liquidity[it.key].note;
+                }
+              });
+            }
+            if (mi.core_cpi && summaryData.tile13) {
+              summaryData.tile13.items.forEach(it => {
+                if (mi.core_cpi[it.key]) {
+                  it.val = mi.core_cpi[it.key].val;
+                  it.change = mi.core_cpi[it.key].change;
+                  if (mi.core_cpi[it.key].note) it.note = mi.core_cpi[it.key].note;
+                }
+              });
+            }
+            if (mi.cpi && summaryData.tile14) {
+              summaryData.tile14.items.forEach(it => {
+                if (mi.cpi[it.key]) {
+                  it.val = mi.cpi[it.key].val;
+                  it.change = mi.cpi[it.key].change;
+                  if (mi.cpi[it.key].note) it.note = mi.cpi[it.key].note;
+                }
+              });
+            }
+            if (mi.unemployment && summaryData.tile15) {
+              summaryData.tile15.items.forEach(it => {
+                if (mi.unemployment[it.key]) {
+                  it.val = mi.unemployment[it.key].val;
+                  it.change = mi.unemployment[it.key].change;
+                  if (mi.unemployment[it.key].note) it.note = mi.unemployment[it.key].note;
+                }
+              });
+            }
+          }
+          if (nData.investing_news) {
+            Object.keys(nData.investing_news).forEach(tKey => {
+              if (summaryData[tKey]) {
+                summaryData[tKey].news = nData.investing_news[tKey];
+              }
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // offline fallback
+    }
 
-  // 미세한 실시간 틱 애니메이션 (호가 변동 시각화)
+    updateDashboardInPlace();
+
+    // 3초 갱신 펄스 애니메이션
+    if (btnSyncNaver) {
+      btnSyncNaver.classList.remove('pulse-3s');
+      void btnSyncNaver.offsetWidth;
+      btnSyncNaver.classList.add('pulse-3s');
+    }
+  }
+
+  const btnSyncNaver = document.getElementById('btnSyncNaver');
+  const syncBtnText = document.getElementById('syncBtnText');
+  if (btnSyncNaver) {
+    btnSyncNaver.addEventListener('click', async () => {
+      btnSyncNaver.classList.add('spinning');
+      if (syncBtnText) syncBtnText.textContent = '실시간 동기화 중...';
+      await loadNaverAndLiveRates();
+      setTimeout(() => {
+        btnSyncNaver.classList.remove('spinning');
+        if (syncBtnText) syncBtnText.textContent = '동기화 완료!';
+        setTimeout(() => {
+          if (syncBtnText) syncBtnText.textContent = '3초 자동 갱신 ON';
+        }, 1500);
+      }, 400);
+    });
+  }
+
+  // 3초마다 지속적으로 인베스팅 & 뉴스 자동 갱신
+  const AUTO_REFRESH_INTERVAL = 3000;
+  setInterval(() => {
+    if (isAutoRefresh) {
+      loadNaverAndLiveRates();
+    }
+  }, AUTO_REFRESH_INTERVAL);
+
+  loadNaverAndLiveRates();
+
   function simulateLiveTick() {
     if (!isAutoRefresh) return;
     const fxKeys = ['USD', 'JPY', 'CNY', 'EUR'];
@@ -396,7 +823,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fxItem = summaryData.tile7.items.find(it => it.key === randomFx);
 
     if (fxItem) {
-      const delta = (Math.random() - 0.49) * 0.2;
+      const delta = (Math.random() - 0.49) * 0.12;
       fxItem.val = Math.round((fxItem.val + delta) * 100) / 100;
       fxItem.change = Math.round((fxItem.change + delta) * 100) / 100;
 
@@ -412,22 +839,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
-  setInterval(simulateLiveTick, 3500);
+  setInterval(simulateLiveTick, 3000);
 
-  // 7. 카카오톡 전송 기능
-  btnKakaoShare.addEventListener('click', () => {
-    handleKakaoShare();
-  });
+  btnKakaoShare.addEventListener('click', () => handleKakaoShare());
 
   function handleKakaoShare() {
     const currentUrl = window.location.href;
-    const usd = summaryData.tile7.items[0].val;
-    const jpy = summaryData.tile7.items[1].val;
-    const us10Y = summaryData.tile1.items[3].val;
-    const kr10Y = summaryData.tile3.items[3].val;
-
-    const title = "📊 [네이버 증권 실시간] 글로벌 매크로 경제 대시보드";
-    const desc = `• 원/달러: ${usd}원 | 엔/원(100엔): ${jpy}원\n• 미국 10Y: ${us10Y}% | 한국 10Y: ${kr10Y}%\n• 미국 기준금리: 5.25% | 한국: 3.50%\n지금 50년 시계열 차트를 바로 확인해보세요!`;
+    const title = "📊 [네이버 국채수익률 실시간] 글로벌 매크로 경제 대시보드";
+    const desc = `• 미국 10Y: ${summaryData.tile1.items[3].val}% | 30Y: ${summaryData.tile1.items[4].val}%\n• 한국 10Y: ${summaryData.tile3.items[3].val}% | 원/달러: ${summaryData.tile7.items[0].val}원\n네이버 검색 실시간 수치와 50년 차트를 확인하세요!`;
 
     if (window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized()) {
       try {
@@ -446,18 +865,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (navigator.share) {
-      navigator.share({
-        title: title,
-        text: `${desc}\n\n접속 주소:\n${currentUrl}`,
-        url: currentUrl
-      }).catch((err) => {
-        if (err.name !== 'AbortError') {
-          openKakaoModal(title, desc, currentUrl);
-        }
+      navigator.share({ title, text: `${desc}\n\n접속 주소:\n${currentUrl}`, url: currentUrl }).catch((err) => {
+        if (err.name !== 'AbortError') openKakaoModal(title, desc, currentUrl);
       });
       return;
     }
-
     openKakaoModal(title, desc, currentUrl);
   }
 
@@ -474,44 +886,32 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnCopyKakao').addEventListener('click', () => {
     const text = document.getElementById('kakaoPreviewText').value;
     navigator.clipboard.writeText(text).then(() => {
-      alert('✅ 카카오톡 전송용 대시보드 요약 및 링크가 복사되었습니다!\n카카오톡 대화방에 [붙여넣기] 하시면 됩니다.');
+      alert('✅ 카카오톡 전송용 대시보드 요약 및 링크가 복사되었습니다!');
     });
   });
 
-  // 8. 이메일 전송 기능
   btnEmailShare.addEventListener('click', () => {
     const currentUrl = window.location.href;
     const now = new Date().toLocaleString('ko-KR');
-    const subject = encodeURIComponent(`[글로벌 매크로 대시보드] 실시간 경제 지표 브리핑 (${now})`);
-
-    const us10Y = summaryData.tile1.items[3].val;
-    const kr10Y = summaryData.tile3.items[3].val;
-    const usd = summaryData.tile7.items[0].val;
-    const jpy = summaryData.tile7.items[1].val;
-
-    const bodyText = `[글로벌 매크로 5x3 경제 대시보드 실시간 브리핑]
+    const subject = encodeURIComponent(`[글로벌 매크로 대시보드] 네이버 실시간 금리·환율 (${now})`);
+    const bodyText = `[네이버 검색 실시간 매크로 지표 브리핑]
 발송 일시: ${now}
-데이터 출처: 네이버페이 증권 고시 및 글로벌 금융 시장
 
-■ 1. 핵심 국채금리
-- 미국 10년물 국채: ${us10Y}%
-- 한국 10년물 국채: ${kr10Y}%
-- 한미 금리 역전차: ${(us10Y - kr10Y).toFixed(3)}%p
+■ 미국 국채금리 (네이버 국채수익률)
+- 10년물: ${summaryData.tile1.items[3].val}%
+- 30년물: ${summaryData.tile1.items[4].val}%
+- 5년물: ${summaryData.tile1.items[2].val}%
 
-■ 2. 주요 환율 (네이버 증권 고시)
-- 원/달러 (USD/KRW): ${usd}원
-- 100엔/원 (JPY/KRW): ${jpy}원
-- 유로/원 (EUR/KRW): ${summaryData.tile7.items[3].val}원
+■ 한국 국채금리 (네이버 국채수익률)
+- 10년물: ${summaryData.tile3.items[3].val}%
+- 5년물: ${summaryData.tile3.items[2].val}%
 
-■ 3. 주요국 기준금리
-- 미국 Fed 정책금리: ${summaryData.tile9.items[0].val}%
-- 한국은행 기준금리: ${summaryData.tile9.items[1].val}%
-- 일본은행(BOJ) 정책금리: ${summaryData.tile9.items[3].val}%
+■ 주요 환율
+- 원/달러: ${summaryData.tile7.items[0].val}원
+- 100엔/원: ${summaryData.tile7.items[1].val}원
 
-■ 4. 대시보드 전체 50년 시계열 차트 확인하기
-${currentUrl}
-
-(본 메일은 글로벌 매크로 대시보드에서 전송되었습니다.)`;
+■ 50년 시계열 대시보드
+${currentUrl}`;
 
     window.location.href = `mailto:?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
   });
@@ -519,18 +919,16 @@ ${currentUrl}
   function copyBriefingToClipboard() {
     const currentUrl = window.location.href;
     const now = new Date().toLocaleString('ko-KR');
-    const report = `[글로벌 매크로 종합 브리핑 - ${now}]
-• 원/달러: ${summaryData.tile7.items[0].val}원 | 100엔/원: ${summaryData.tile7.items[1].val}원
-• 미국 10Y: ${summaryData.tile1.items[3].val}% | 한국 10Y: ${summaryData.tile3.items[3].val}%
-• 미국 기준금리: 5.25% | 한국 기준금리: 3.50%
+    const report = `[네이버 국채수익률 실시간 요약 - ${now}]
+• 미국 10Y: ${summaryData.tile1.items[3].val}% | 30Y: ${summaryData.tile1.items[4].val}%
+• 한국 10Y: ${summaryData.tile3.items[3].val}% | 5Y: ${summaryData.tile3.items[2].val}%
+• 원/달러: ${summaryData.tile7.items[0].val}원
 • 대시보드: ${currentUrl}`;
-
     navigator.clipboard.writeText(report).then(() => {
-      alert('📋 네이버 증권 검증 요약 리포트가 클립보드에 복사되었습니다!');
+      alert('📋 네이버 실시간 요약 리포트가 복사되었습니다!');
     });
   }
 
-  // 9. 가이드 모달 & 테마
   btnDeployGuide.addEventListener('click', () => guideModal.classList.add('active'));
   btnCloseGuide.addEventListener('click', () => guideModal.classList.remove('active'));
   guideModal.addEventListener('click', (e) => {

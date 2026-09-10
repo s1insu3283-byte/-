@@ -237,6 +237,15 @@ class InteractiveChartEngine {
     if (minVal === Infinity) { minVal = 0; maxVal = 10; }
     if (minVal === maxVal) { minVal -= 1; maxVal += 1; }
 
+    // Dispatch onRangeChange to update modal KPI statistics
+    if (typeof this.options.onRangeChange === 'function') {
+      const curRangeKey = `${this.viewStart}_${this.viewEnd}`;
+      if (this._lastRangeKey !== curRangeKey) {
+        this._lastRangeKey = curRangeKey;
+        this.options.onRangeChange(this.viewStart, this.viewEnd);
+      }
+    }
+
     // Value padding
     const valMargin = (maxVal - minVal) * 0.1 || 0.5;
     minVal -= valMargin;
