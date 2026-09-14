@@ -81,6 +81,21 @@
       z-index: 5;
       background-color: var(--card);
     }
+    @keyframes pulseGreen {
+      0% { background-color: rgba(16, 185, 129, 0.35); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+      100% { background-color: var(--background); }
+    }
+    @keyframes pulseRed {
+      0% { background-color: rgba(244, 63, 94, 0.35); box-shadow: 0 0 15px rgba(244, 63, 94, 0.4); }
+      100% { background-color: var(--background); }
+    }
+    @keyframes pulseTick {
+      0% { background-color: rgba(245, 158, 11, 0.25); box-shadow: 0 0 12px rgba(245, 158, 11, 0.3); }
+      100% { background-color: var(--background); }
+    }
+    .pulse-green { animation: pulseGreen 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .pulse-red { animation: pulseRed 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .pulse-tick { animation: pulseTick 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
   </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] min-h-screen p-3 md:p-6 antialiased font-sans">
@@ -94,14 +109,14 @@
           <div>
             <div class="flex items-center gap-2 flex-wrap">
               <h1 class="text-xl md:text-3xl font-extrabold tracking-tight text-[var(--foreground)]">
-                미·한·일 3국 중앙은행 공인 금·거시경제·부동산 대시보드
+                미·한·일 3국 금·거시경제·부동산 100년 실시간 인텔리전스 대시보드
               </h1>
-              <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30">
-                연준(FRED) · 한은(BOK) · 일은(BOJ) 공식 일치
+              <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30 flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block"></span> Yahoo Finance 실시간 · 중앙은행 3국 공인 연동
               </span>
             </div>
             <p class="text-xs md:text-sm text-[var(--muted-foreground)] mt-0.5">
-              1행 미국(연준 FRED) ➔ 2행 한국(한국은행 ECOS & 최신 보도자료) ➔ 3행 일본(일본은행 BOJ) 18대 핵심 지표 다중 연동
+              1행 미국(Yahoo Finance/FRED) ➔ 2행 한국(실시간 외환/국채/한은) ➔ 3행 일본(도쿄외환/BOJ) 18대 핵심 지표 5초 실시간 연동
             </p>
           </div>
         </div>
@@ -136,6 +151,35 @@
         </button>
       </div>
     </header>
+
+    <!-- Real-time Live Synchronization Bar (5초 자동 갱신 및 카운트다운 게이지) -->
+    <div id="live-sync-bar" class="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-amber-950/40 border-2 border-emerald-500/40 rounded-2xl p-3.5 px-4 shadow-lg flex flex-wrap items-center justify-between gap-3 transition-all hover:border-emerald-500/70">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </span>
+          <span class="text-sm font-extrabold text-white tracking-tight flex items-center gap-1.5">
+            🟢 LIVE 5초 실시간 자동 갱신
+          </span>
+        </div>
+        <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/30">
+          Yahoo Finance (금·환율·10Y) · 경제 캘린더 속보
+        </span>
+        <span id="live-countdown-badge" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30 flex items-center gap-1">
+          ⏱️ <span id="countdown-sec" class="text-amber-400 font-extrabold text-sm">5</span>초 후 갱신
+        </span>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <span class="text-[var(--muted-foreground)] text-[11px] hidden sm:inline">
+          마지막 수신: <span id="live-updated-time" class="text-emerald-400 font-mono font-bold">동기화 중...</span>
+        </span>
+        <button onclick="fetchRealtimeData(true)" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm border border-emerald-400/40" title="지금 즉시 데이터 새로고침">
+          <span>⚡ 즉시 갱신</span>
+        </button>
+      </div>
+    </div>
 
     <!-- Mobile Quick Connect Banner (스마트폰 바로보기 QR 및 접속 안내) -->
     <div id="mobile-banner" class="bg-gradient-to-r from-blue-950/40 via-slate-900 to-indigo-950/40 border border-blue-500/30 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
@@ -212,28 +256,28 @@
     <!-- 3-Row Country-by-Country Interactive Metrics (18 Buttons) -->
     <div class="space-y-4">
 
-      <!-- ROW 1: 🇺🇸 미국 지표 (연준 FRED 기준) -->
+      <!-- ROW 1: 🇺🇸 미국 지표 (Yahoo Finance 실시간 & 연준 FRED) -->
       <div class="bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-base">🇺🇸</span>
-            <span class="text-xs font-bold text-blue-400 tracking-wide uppercase">1행: 미국 거시경제 및 자산 지표 (미국 연방준비은행 FRED 단일 기준)</span>
+            <span class="text-xs font-bold text-blue-400 tracking-wide uppercase">1행: 미국 실시간 시장 시세 & 거시 지표 (Yahoo Finance 실시간 · FRED 공식속보)</span>
           </div>
-          <span class="text-[10px] text-[var(--muted-foreground)]">U.S. Federal Reserve (FRED)</span>
+          <span class="text-[10px] text-[var(--muted-foreground)]">Yahoo Finance & Federal Reserve</span>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
           <!-- US Gold -->
           <button onclick="toggleMetric('us_gold')" id="btn-us_gold" style="--active-color: #f59e0b;" class="metric-btn active text-left p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] cursor-pointer">
             <div class="flex items-center justify-between">
               <span class="text-[11px] font-semibold text-amber-500 flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-amber-500"></span> 美 국제 금 (LBMA)
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span> 美 국제 금 (GC=F)
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-500 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-[var(--foreground)] mt-1">$5,042.80</div>
+            <div id="val-us_gold" class="text-base font-extrabold text-[var(--foreground)] mt-1">$4,353.70</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>FRED: GOLDPM</span>
-              <span class="text-amber-500 font-bold">온스당 달러</span>
+              <span id="src-us_gold">Yahoo Finance</span>
+              <span id="tag-us_gold" class="text-amber-500 font-bold">실시간 선물</span>
             </div>
           </button>
 
@@ -245,10 +289,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-purple-400/20 text-purple-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-purple-400 mt-1">+1.65%</div>
+            <div id="val-us_tips" class="text-base font-extrabold text-purple-400 mt-1">+2.67%</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>FRED: DFII10</span>
-              <span class="text-purple-400 font-semibold">우측 실제% 축</span>
+              <span id="src-us_tips">Yahoo Finance (^TNX)</span>
+              <span id="tag-us_tips" class="text-purple-400 font-semibold">10Y: 4.97%</span>
             </div>
           </button>
 
@@ -260,10 +304,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-sky-400/20 text-sky-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-sky-400 mt-1">21.42 조$</div>
+            <div id="val-us_m2" class="text-base font-extrabold text-sky-400 mt-1">21.42 조$</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>2013: 10.75조$</span>
-              <span class="text-sky-400 font-bold">2022최대 21.74T</span>
+              <span id="src-us_m2">연준 FRED M2SL</span>
+              <span id="tag-us_m2" class="text-sky-400 font-bold">최신 공식속보</span>
             </div>
           </button>
 
@@ -275,10 +319,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-rose-400/20 text-rose-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-rose-400 mt-1">324.0 pt</div>
+            <div id="val-us_cs" class="text-base font-extrabold text-rose-400 mt-1">324.0 pt</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>FRED: CSUSHPINSA</span>
-              <span class="text-rose-400 font-bold">2000=100</span>
+              <span id="src-us_cs">S&P Case-Shiller</span>
+              <span id="tag-us_cs" class="text-rose-400 font-bold">2000=100</span>
             </div>
           </button>
 
@@ -290,10 +334,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-[var(--foreground)] mt-1">102.40 pt</div>
+            <div id="val-us_dxy" class="text-base font-extrabold text-[var(--foreground)] mt-1">102.40 pt</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>주요 6개국 통화비</span>
-              <span class="text-slate-400 font-bold">기축통화 지수</span>
+              <span id="src-us_dxy">Yahoo Finance (DXY)</span>
+              <span id="tag-us_dxy" class="text-slate-400 font-bold">기축통화 지수</span>
             </div>
           </button>
 
@@ -305,23 +349,23 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-emerald-400/20 text-emerald-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-emerald-400 mt-1">15.56</div>
+            <div id="val-us_ratio" class="text-base font-extrabold text-emerald-400 mt-1">13.44</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>Gold ÷ Case-Shiller</span>
-              <span class="text-emerald-400 font-bold">역사적 고평가</span>
+              <span id="src-us_ratio">Gold ÷ Case-Shiller</span>
+              <span id="tag-us_ratio" class="text-emerald-400 font-bold">역사적 배율</span>
             </div>
           </button>
         </div>
       </div>
 
-      <!-- ROW 2: 🇰🇷 한국 지표 (한국은행 BOK ECOS & 보도자료 기준) -->
+      <!-- ROW 2: 🇰🇷 한국 지표 (Yahoo Finance 외환 · 한국 국채 · 한은 속보) -->
       <div class="bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-base">🇰🇷</span>
-            <span class="text-xs font-bold text-rose-400 tracking-wide uppercase">2행: 한국 거시경제 및 자산 지표 (한국은행 ECOS & 최신 통화동향 보도자료)</span>
+            <span class="text-xs font-bold text-rose-400 tracking-wide uppercase">2행: 한국 실시간 시장 시세 & 거시 지표 (Yahoo Finance 외환 · 한국 국고채 10년 · 한은 속보)</span>
           </div>
-          <span class="text-[10px] text-[var(--muted-foreground)]">Bank of Korea (ECOS / 보도자료)</span>
+          <span class="text-[10px] text-[var(--muted-foreground)]">Yahoo Finance & Bank of Korea</span>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
           <!-- KR Gold -->
@@ -332,10 +376,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-[var(--foreground)] mt-1">₩6,980,000</div>
+            <div id="val-kr_gold" class="text-base font-extrabold text-[var(--foreground)] mt-1">₩5,857,599</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>g당 ₩224,400</span>
-              <span class="text-amber-500 font-bold">온스당 원화</span>
+              <span id="src-kr_gold">국제금 × 실시간환율</span>
+              <span id="tag-kr_gold" class="text-amber-500 font-bold">g당 ₩188,326</span>
             </div>
           </button>
 
@@ -347,10 +391,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-purple-400 mt-1">+0.95%</div>
+            <div id="val-kr_real" class="text-base font-extrabold text-purple-400 mt-1">+2.53%</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>국고10Y(2.95)-물가</span>
-              <span class="text-purple-400 font-semibold">우측 실제% 축</span>
+              <span id="src-kr_real">한국 국고채 10년 피드</span>
+              <span id="tag-kr_real" class="text-purple-400 font-semibold">국고10Y: 4.53%</span>
             </div>
           </button>
 
@@ -362,10 +406,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-sky-400/20 text-sky-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-sky-400 mt-1">4,209.7 조원</div>
+            <div id="val-kr_m2" class="text-base font-extrabold text-sky-400 mt-1">4,209.7 조원</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>한은 보도자료 최신</span>
-              <span class="text-sky-400 font-bold">환산 3.04조$</span>
+              <span id="src-kr_m2">한국은행 통화동향</span>
+              <span id="tag-kr_m2" class="text-sky-400 font-bold">환산 3.13조$</span>
             </div>
           </button>
 
@@ -377,10 +421,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-blue-400/20 text-blue-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-blue-400 mt-1">102.0 pt</div>
+            <div id="val-kr_housing" class="text-base font-extrabold text-blue-400 mt-1">102.0 pt</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>ECOS 901Y069</span>
-              <span class="text-blue-400 font-bold">2022=100</span>
+              <span id="src-kr_housing">한국부동산원 ECOS</span>
+              <span id="tag-kr_housing" class="text-blue-400 font-bold">2022=100</span>
             </div>
           </button>
 
@@ -392,10 +436,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-[var(--foreground)] mt-1">₩1,384.20</div>
+            <div id="val-kr_fx" class="text-base font-extrabold text-[var(--foreground)] mt-1">₩1,345.43</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>서울외환시장 고시</span>
-              <span class="text-rose-400 font-bold">고환율 유지</span>
+              <span id="src-kr_fx">Yahoo Finance (KRW=X)</span>
+              <span id="tag-kr_fx" class="text-rose-400 font-bold">외환시장 실시간</span>
             </div>
           </button>
 
@@ -407,23 +451,23 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-emerald-400 mt-1">16.80</div>
+            <div id="val-kr_ratio" class="text-base font-extrabold text-emerald-400 mt-1">5.74</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>원화금 ÷ 주택지수</span>
-              <span class="text-emerald-400 font-bold">금 상대 강세</span>
+              <span id="src-kr_ratio">원화금 ÷ 주택지수</span>
+              <span id="tag-kr_ratio" class="text-emerald-400 font-bold">상대 강도</span>
             </div>
           </button>
         </div>
       </div>
 
-      <!-- ROW 3: 🇯🇵 일본 지표 (일본은행 BOJ 기준) -->
+      <!-- ROW 3: 🇯🇵 일본 지표 (Yahoo Finance 도쿄외환 · 일본 국채 · BOJ 속보) -->
       <div class="bg-[var(--card)] p-3.5 rounded-2xl border border-[var(--border)] space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-base">🇯🇵</span>
-            <span class="text-xs font-bold text-emerald-400 tracking-wide uppercase">3행: 일본 거시경제 및 자산 지표 (일본은행 BOJ 공식 통계 & 국토교통성)</span>
+            <span class="text-xs font-bold text-emerald-400 tracking-wide uppercase">3행: 일본 실시간 시장 시세 & 거시 지표 (Yahoo Finance 도쿄외환 · 일본 국채 10년 · BOJ 속보)</span>
           </div>
-          <span class="text-[10px] text-[var(--muted-foreground)]">Bank of Japan (BOJ Time-Series)</span>
+          <span class="text-[10px] text-[var(--muted-foreground)]">Yahoo Finance & Bank of Japan</span>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
           <!-- JP Gold -->
@@ -434,10 +478,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-[var(--foreground)] mt-1">¥763,500</div>
+            <div id="val-jp_gold" class="text-base font-extrabold text-[var(--foreground)] mt-1">¥672,600</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>g당 ¥24,550</span>
-              <span class="text-amber-500 font-bold">온스당 엔화</span>
+              <span id="src-jp_gold">국제금 × 실시간환율</span>
+              <span id="tag-jp_gold" class="text-amber-500 font-bold">g당 ¥21,624</span>
             </div>
           </button>
 
@@ -449,10 +493,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-purple-400 mt-1">-1.75%</div>
+            <div id="val-jp_real" class="text-base font-extrabold text-purple-400 mt-1">-1.75%</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>JGB10Y(1.05)-물가</span>
-              <span class="text-purple-400 font-semibold">마이너스 실질금리</span>
+              <span id="src-jp_real">일본 국채 10년 피드</span>
+              <span id="tag-jp_real" class="text-purple-400 font-semibold">일본10Y: 1.05%</span>
             </div>
           </button>
 
@@ -464,10 +508,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-sky-400/20 text-sky-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-sky-400 mt-1">1,296.4 조엔</div>
+            <div id="val-jp_m2" class="text-base font-extrabold text-sky-400 mt-1">1,296.4 조엔</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>BOJ 머니스톡 통계</span>
-              <span class="text-sky-400 font-bold">환산 8.56조$</span>
+              <span id="src-jp_m2">BOJ 머니스톡 통계</span>
+              <span id="tag-jp_m2" class="text-sky-400 font-bold">환산 8.39조$</span>
             </div>
           </button>
 
@@ -479,10 +523,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-emerald-400/20 text-emerald-400 font-bold">ON</span>
             </div>
-            <div class="text-base font-extrabold text-emerald-400 mt-1">138.5 pt</div>
+            <div id="val-jp_housing" class="text-base font-extrabold text-emerald-400 mt-1">138.5 pt</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>국토교통성/BOJ</span>
-              <span class="text-emerald-400 font-bold">2010=100</span>
+              <span id="src-jp_housing">국토교통성 지수</span>
+              <span id="tag-jp_housing" class="text-emerald-400 font-bold">2010=100</span>
             </div>
           </button>
 
@@ -494,10 +538,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-[var(--foreground)] mt-1">¥151.40</div>
+            <div id="val-jp_fx" class="text-base font-extrabold text-[var(--foreground)] mt-1">¥154.49</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>도쿄외환시장 고시</span>
-              <span class="text-amber-400 font-bold">역사적 엔저</span>
+              <span id="src-jp_fx">Yahoo Finance (JPY=X)</span>
+              <span id="tag-jp_fx" class="text-amber-400 font-bold">도쿄외환 실시간</span>
             </div>
           </button>
 
@@ -509,10 +553,10 @@
               </span>
               <span class="indicator-badge text-[10px] px-1.5 py-0.2 rounded bg-slate-500/10 text-[var(--muted-foreground)] font-bold">OFF</span>
             </div>
-            <div class="text-base font-extrabold text-emerald-400 mt-1">17.20</div>
+            <div id="val-jp_ratio" class="text-base font-extrabold text-emerald-400 mt-1">4.86</div>
             <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 flex justify-between">
-              <span>엔화금 ÷ 주택지수</span>
-              <span class="text-emerald-400 font-bold">엔화가치 하락 반영</span>
+              <span id="src-jp_ratio">엔화금 ÷ 부동산지수</span>
+              <span id="tag-jp_ratio" class="text-emerald-400 font-bold">상대 강도</span>
             </div>
           </button>
         </div>
@@ -1420,10 +1464,12 @@ const rawHistoricalData = [
         }
 
         // US Housing
-        let usHousingStr = d.us_housing != null ? d.us_housing.toFixed(1) : '-';
-        if (prev && d.us_housing != null && prev.us_housing != null && Math.abs(d.us_housing - prev.us_housing) > 5) {
-          const usDiff = d.us_housing - prev.us_housing;
-          const usYoy = (usDiff / prev.us_housing) * 100;
+        const usVal = d.us_cs != null ? d.us_cs : d.us_housing;
+        let usHousingStr = usVal != null ? Number(usVal).toFixed(1) : '-';
+        const prevUsVal = prev ? (prev.us_cs != null ? prev.us_cs : prev.us_housing) : null;
+        if (prevUsVal != null && usVal != null && Math.abs(usVal - prevUsVal) > 2) {
+          const usDiff = usVal - prevUsVal;
+          const usYoy = (usDiff / prevUsVal) * 100;
           const usColor = usYoy < -5 ? 'text-rose-400 font-bold' : (usYoy > 5 ? 'text-emerald-400 font-bold' : 'text-slate-300');
           usHousingStr += ` <span class="text-[10px] ${usColor}">(${usYoy > 0 ? '+' : ''}${usYoy.toFixed(1)}%)</span>`;
         }
@@ -1432,21 +1478,27 @@ const rawHistoricalData = [
         const isCrisis = d.year === 1929 || d.year === 1971 || d.year === 1980 || d.year === 1990 || d.year === 1997 || d.year === 1998 || d.year === 2008 || d.year === 2020 || d.year === 2022;
         const rowBg = is1998 ? 'bg-rose-950/40 border-l-4 border-rose-500 font-semibold' : (isCrisis ? 'bg-amber-950/20' : 'hover:bg-slate-800/40');
 
+        const goldVal = d.us_gold != null ? d.us_gold : d.gold;
+        const usRealVal = d.us_tips != null ? d.us_tips : d.us_real_yield;
+        const usM2Val = d.us_m2 != null ? d.us_m2 : d.m2_us;
+        const krRealVal = d.kr_real != null ? d.kr_real : d.kr_real_yield;
+        const eventText = d.us_event || d.kr_event || d.jp_event || d.event || '-';
+
         html += `
           <tr class="${rowBg} transition-colors">
             <td class="p-2 font-bold ${is1998 ? 'text-rose-400' : 'text-amber-400'}">${d.year}</td>
-            <td class="p-2 text-amber-300 font-mono">$${d.gold != null ? Number(d.gold).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1}) : '-'}</td>
-            <td class="p-2 text-purple-300">${d.us_real_yield != null ? (d.us_real_yield > 0 ? '+' : '') + d.us_real_yield.toFixed(2) + '%' : '-'}</td>
-            <td class="p-2 text-sky-300 font-mono">${d.m2_us != null ? d.m2_us.toFixed(2) : '-'}</td>
+            <td class="p-2 text-amber-300 font-mono">$${goldVal != null ? Number(goldVal).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1}) : '-'}</td>
+            <td class="p-2 text-purple-300">${usRealVal != null ? (usRealVal > 0 ? '+' : '') + Number(usRealVal).toFixed(2) + '%' : '-'}</td>
+            <td class="p-2 text-sky-300 font-mono">${usM2Val != null ? Number(usM2Val).toFixed(2) : '-'}</td>
             <td class="p-2 text-rose-300 font-mono">${usHousingStr}</td>
             <td class="p-2 text-blue-300 font-mono">${krHousingStr}</td>
-            <td class="p-2 text-rose-300 font-mono">${d.kr_fx != null ? d.kr_fx.toLocaleString() : '-'}</td>
-            <td class="p-2 text-purple-300">${d.kr_real_yield != null ? (d.kr_real_yield > 0 ? '+' : '') + d.kr_real_yield.toFixed(2) + '%' : '-'}</td>
-            <td class="p-2 text-sky-300 font-mono">${d.kr_m2 != null ? d.kr_m2.toLocaleString() : '-'}</td>
-            <td class="p-2 text-emerald-300 font-mono">${d.jp_housing != null ? d.jp_housing.toFixed(1) : '-'}</td>
-            <td class="p-2 text-amber-300 font-mono">${d.jp_fx != null ? d.jp_fx.toFixed(1) : '-'}</td>
-            <td class="p-2 text-sky-300 font-mono">${d.jp_m2 != null ? d.jp_m2.toLocaleString() : '-'}</td>
-            <td class="p-2 text-slate-300 text-[11px] truncate max-w-xs" title="${d.event || ''}">${d.event || '-'}</td>
+            <td class="p-2 text-rose-300 font-mono">${d.kr_fx != null ? Number(d.kr_fx).toLocaleString() : '-'}</td>
+            <td class="p-2 text-purple-300">${krRealVal != null ? (krRealVal > 0 ? '+' : '') + Number(krRealVal).toFixed(2) + '%' : '-'}</td>
+            <td class="p-2 text-sky-300 font-mono">${d.kr_m2 != null ? Number(d.kr_m2).toLocaleString() : '-'}</td>
+            <td class="p-2 text-emerald-300 font-mono">${d.jp_housing != null ? Number(d.jp_housing).toFixed(1) : '-'}</td>
+            <td class="p-2 text-amber-300 font-mono">${d.jp_fx != null ? Number(d.jp_fx).toFixed(1) : '-'}</td>
+            <td class="p-2 text-sky-300 font-mono">${d.jp_m2 != null ? Number(d.jp_m2).toLocaleString() : '-'}</td>
+            <td class="p-2 text-slate-300 text-[11px] truncate max-w-xs" title="${eventText}">${eventText}</td>
           </tr>
         `;
       }
@@ -1542,12 +1594,139 @@ const rawHistoricalData = [
       }, 2500);
     }
 
+    // =========================================================================
+    // ⚡ Real-Time 5-Second Synchronization Engine (Yahoo Finance & Macro Feeds)
+    // =========================================================================
+    let realtimeTimer = null;
+    let countdownTimer = null;
+    let countdownSec = 5;
+    let prevMetricValues = {};
+
+    async function fetchRealtimeData(isManual = false) {
+      const countdownEl = document.getElementById('countdown-sec');
+      const timeEl = document.getElementById('live-updated-time');
+
+      if (isManual) {
+        countdownSec = 5;
+        if (countdownEl) countdownEl.innerText = '5';
+      }
+
+      try {
+        // Try macro_realtime.json first, fallback to data.json, then naver_data.json
+        let res = await fetch(`./macro_realtime.json?t=${Date.now()}`);
+        if (!res.ok) res = await fetch(`./data.json?t=${Date.now()}`);
+        if (!res.ok) res = await fetch(`./naver_data.json?t=${Date.now()}`);
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.metrics) {
+            updateDashboardWithRealtimeMetrics(data.metrics, data.updated_at);
+            if (timeEl) timeEl.innerText = data.updated_at || new Date().toLocaleTimeString();
+            if (isManual) showToast('실시간 시세 동기화 완료!', '⚡');
+          }
+        }
+      } catch (err) {
+        console.warn('Real-time fetch note:', err);
+      }
+    }
+
+    function updateDashboardWithRealtimeMetrics(metrics, updatedAt) {
+      // 1. Update each of the 18 cards
+      Object.keys(metrics).forEach(key => {
+        const item = metrics[key];
+        const valEl = document.getElementById(`val-${key}`);
+        const srcEl = document.getElementById(`src-${key}`);
+        const tagEl = document.getElementById(`tag-${key}`);
+        const btnEl = document.getElementById(`btn-${key}`);
+
+        if (!valEl) return;
+
+        const newVal = item.val;
+        const oldVal = prevMetricValues[key];
+
+        // Trigger dynamic color pulse flash on change
+        if (oldVal !== undefined && btnEl) {
+          btnEl.classList.remove('pulse-green', 'pulse-red', 'pulse-tick');
+          void btnEl.offsetWidth; // force browser layout reflow
+          if (typeof newVal === 'number' && typeof oldVal === 'number') {
+            if (newVal > oldVal) {
+              btnEl.classList.add('pulse-green');
+            } else if (newVal < oldVal) {
+              btnEl.classList.add('pulse-red');
+            } else {
+              btnEl.classList.add('pulse-tick');
+            }
+          } else {
+            btnEl.classList.add('pulse-tick');
+          }
+        }
+
+        prevMetricValues[key] = newVal;
+
+        valEl.innerText = item.formatted || (typeof newVal === 'number' ? newVal.toLocaleString() : newVal);
+        if (srcEl && item.source) srcEl.innerText = item.source;
+        if (tagEl && item.tag) tagEl.innerText = item.tag;
+      });
+
+      // 2. Synchronize the 2026/current data point on the 100-year chart
+      const latestDataIndex = rawHistoricalData.findIndex(d => d.year === 2026);
+      if (latestDataIndex !== -1) {
+        const d = rawHistoricalData[latestDataIndex];
+        if (metrics.us_gold?.val) d.us_gold = metrics.us_gold.val;
+        if (metrics.us_tips?.val) d.us_tips = metrics.us_tips.val;
+        if (metrics.us_m2?.val) d.us_m2 = metrics.us_m2.val;
+        if (metrics.us_cs?.val) d.us_cs = metrics.us_cs.val;
+        if (metrics.us_dxy?.val) d.us_dxy = metrics.us_dxy.val;
+        if (metrics.kr_fx?.val) d.kr_fx = metrics.kr_fx.val;
+        if (metrics.kr_real?.val) d.kr_real = metrics.kr_real.val;
+        if (metrics.kr_m2?.val) d.kr_m2 = metrics.kr_m2.val;
+        if (metrics.kr_housing?.val) d.kr_housing = metrics.kr_housing.val;
+        if (metrics.jp_fx?.val) d.jp_fx = metrics.jp_fx.val;
+        if (metrics.jp_real?.val) d.jp_real = metrics.jp_real.val;
+        if (metrics.jp_m2?.val) d.jp_m2 = metrics.jp_m2.val;
+        if (metrics.jp_housing?.val) d.jp_housing = metrics.jp_housing.val;
+
+        // Auto calculate cross rates
+        d.kr_gold = metrics.kr_gold?.val || Math.round(d.us_gold * d.kr_fx);
+        d.jp_gold = metrics.jp_gold?.val || Math.round(d.us_gold * d.jp_fx);
+        d.us_ratio = metrics.us_ratio?.val || parseFloat((d.us_gold / d.us_cs).toFixed(2));
+        d.kr_ratio = metrics.kr_ratio?.val || parseFloat(((d.kr_gold / 10000) / d.kr_housing).toFixed(2));
+        d.jp_ratio = metrics.jp_ratio?.val || parseFloat(((d.jp_gold / 1000) / d.jp_housing).toFixed(2));
+
+        // Redraw chart and re-render audit table
+        drawMasterChart();
+        renderAuditTable();
+      }
+    }
+
+    function initRealtime5sSync() {
+      // 1. Immediate first fetch
+      fetchRealtimeData();
+
+      // 2. 5-second polling interval
+      if (realtimeTimer) clearInterval(realtimeTimer);
+      realtimeTimer = setInterval(() => {
+        fetchRealtimeData();
+        countdownSec = 5;
+      }, 5000);
+
+      // 3. 1-second countdown tick
+      if (countdownTimer) clearInterval(countdownTimer);
+      countdownTimer = setInterval(() => {
+        countdownSec--;
+        if (countdownSec <= 0) countdownSec = 5;
+        const el = document.getElementById('countdown-sec');
+        if (el) el.innerText = countdownSec;
+      }, 1000);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       initTheme();
       updateRangeLabels();
       updateMasterCheckboxUI();
       drawMasterChart();
       renderAuditTable();
+      initRealtime5sSync();
     });
     window.addEventListener('resize', () => {
       drawMasterChart();
