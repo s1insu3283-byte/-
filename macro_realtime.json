@@ -1,7 +1,7 @@
 {
   "status": "success",
-  "updated_at": "2026-09-14 17:27:11",
-  "timestamp": 1789374437776,
+  "updated_at": "2026-09-14 17:53:04",
+  "timestamp": 1789375990556,
   "source_pipeline": {
     "realtime_market": "Yahoo Finance (^TNX, KRW=X, JPY=X, GC=F) & 채권/외환 실시간 피드",
     "macro_releases": "경제 캘린더 발표치 & 한국은행·연준·일본은행 최신 고시",
@@ -39,8 +39,8 @@
       "tag": "2000=100"
     },
     "us_dxy": {
-      "val": 102.4,
-      "formatted": "102.40 pt",
+      "val": 99.57,
+      "formatted": "99.57 pt",
       "unit": "pt",
       "source": "Yahoo Finance (DXY)",
       "tag": "기축통화 지수"
@@ -53,11 +53,11 @@
       "tag": "역사적 배율"
     },
     "kr_gold": {
-      "val": 5857599,
-      "formatted": "₩5,857,599",
+      "val": 5856118,
+      "formatted": "₩5,856,118",
       "unit": "원",
       "source": "국제금 × 실시간환율",
-      "tag": "g당 ₩188,326"
+      "tag": "g당 ₩188,278"
     },
     "kr_real": {
       "val": 2.53,
@@ -82,8 +82,8 @@
       "tag": "2022=100"
     },
     "kr_fx": {
-      "val": 1345.43,
-      "formatted": "₩1,345.4",
+      "val": 1345.09,
+      "formatted": "₩1,345.1",
       "unit": "원",
       "source": "Yahoo Finance (KRW=X)",
       "tag": "외환시장 실시간"
@@ -103,12 +103,12 @@
       "tag": "g당 ¥21,625"
     },
     "jp_real": {
-      "val": 0.19,
-      "formatted": "+0.19%",
-      "nominal_10y": 2.987,
+      "val": 0.2,
+      "formatted": "+0.20%",
+      "nominal_10y": 2.996,
       "unit": "%",
       "source": "일본 국채 10년 피드",
-      "tag": "일본10Y: 2.99%"
+      "tag": "일본10Y: 3.00%"
     },
     "jp_m2": {
       "val": 1296.4,

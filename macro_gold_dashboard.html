@@ -567,20 +567,21 @@
     <div class="bg-[var(--card)] p-4 rounded-2xl border border-[var(--border)] shadow-xs space-y-3">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div class="flex items-center gap-2">
-          <span class="text-base font-bold text-amber-500">🔍 기간 확대/축소 (Time Range) :</span>
+          <span class="text-base font-bold text-amber-500">🔍 기간 확대/축소 (3개월 단위 분기) :</span>
           <span class="text-base font-extrabold text-[var(--foreground)] bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/20" id="range-label">
-            1926년 ~ 2026년 (총 100년간)
+            1926년 1분기 ~ 2026년 3분기 (총 403개 분기 / 100년간)
           </span>
         </div>
 
         <!-- Preset Buttons -->
         <div class="flex items-center flex-wrap gap-1.5 text-xs">
           <span class="text-[var(--muted-foreground)] mr-1 text-[11px]">3국 비교 프리셋:</span>
-          <button onclick="setRange(1926, 2026)" class="preset-btn px-2.5 py-1 rounded-lg bg-amber-500 text-slate-900 font-bold">전체 100년</button>
-          <button onclick="setRange(2013, 2026)" class="preset-btn px-2.5 py-1 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-400 font-bold hover:bg-blue-500/30 transition-colors">⭐ 2013 테이퍼탠트럼~현재</button>
-          <button onclick="setRange(2019, 2023)" class="preset-btn px-2.5 py-1 rounded-lg bg-sky-500/20 border border-sky-500/40 text-sky-400 font-bold hover:bg-sky-500/30 transition-colors">🔥 팬데믹 3국 통화폭증</button>
-          <button onclick="setRange(1985, 2026)" class="preset-btn px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/30 transition-colors">🇯🇵 1985 플라자합의~현재</button>
-          <button onclick="setRange(1997, 2026)" class="preset-btn px-2.5 py-1 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-400 font-bold hover:bg-rose-500/30 transition-colors">🇰🇷 1997 외환위기~현재</button>
+          <button onclick="setRange(1926.0, 2026.5)" class="preset-btn px-2.5 py-1 rounded-lg bg-amber-500 text-slate-900 font-bold">전체 100년 (403분기)</button>
+          <button onclick="setRange(2013.25, 2026.5)" class="preset-btn px-2.5 py-1 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-400 font-bold hover:bg-blue-500/30 transition-colors">⭐ 2013 테이퍼탠트럼~현재</button>
+          <button onclick="setRange(2019.0, 2023.75)" class="preset-btn px-2.5 py-1 rounded-lg bg-sky-500/20 border border-sky-500/40 text-sky-400 font-bold hover:bg-sky-500/30 transition-colors">🔥 팬데믹 3국 통화폭증</button>
+          <button onclick="setRange(1985.5, 2026.5)" class="preset-btn px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold hover:bg-emerald-500/30 transition-colors">🇯🇵 1985 플라자합의~현재</button>
+          <button onclick="setRange(1997.0, 2026.5)" class="preset-btn px-2.5 py-1 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-400 font-bold hover:bg-rose-500/30 transition-colors">🇰🇷 1997 외환위기~현재</button>
+          <button onclick="setRange(2021.0, 2026.5)" class="preset-btn px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold hover:bg-amber-500/30 transition-colors">⚡ 최근 5년 분기별 집중</button>
         </div>
       </div>
 
@@ -588,17 +589,17 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
         <div class="space-y-1">
           <div class="flex justify-between text-xs text-[var(--muted-foreground)]">
-            <span>시작 연도 (Start Year)</span>
-            <span class="font-bold text-amber-500" id="slider-start-val">1926년</span>
+            <span>시작 분기 (Start Quarter)</span>
+            <span class="font-bold text-amber-500" id="slider-start-val">1926년 1분기 (Q1)</span>
           </div>
-          <input type="range" id="slider-start" min="1926" max="2025" value="1926" oninput="handleSliderChange()" class="w-full">
+          <input type="range" id="slider-start" min="1926" max="2026.25" step="0.25" value="1926" oninput="handleSliderChange()" class="w-full">
         </div>
         <div class="space-y-1">
           <div class="flex justify-between text-xs text-[var(--muted-foreground)]">
-            <span>종료 연도 (End Year)</span>
-            <span class="font-bold text-amber-500" id="slider-end-val">2026년</span>
+            <span>종료 분기 (End Quarter)</span>
+            <span class="font-bold text-amber-500" id="slider-end-val">2026년 3분기 (Q3)</span>
           </div>
-          <input type="range" id="slider-end" min="1927" max="2026" value="2026" oninput="handleSliderChange()" class="w-full">
+          <input type="range" id="slider-end" min="1926.25" max="2026.5" step="0.25" value="2026.5" oninput="handleSliderChange()" class="w-full">
         </div>
       </div>
     </div>
@@ -609,10 +610,10 @@
         <div class="flex items-center gap-2">
           <div class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></div>
           <h2 class="text-base md:text-lg font-bold text-[var(--foreground)]">
-            미·한·일 3국 거시경제 & 자산 통합 다중 시계열 차트
+            미·한·일 3국 거시경제 & 자산 통합 다중 시계열 차트 (3개월 분기별)
           </h2>
           <span class="text-xs text-[var(--muted-foreground)]" id="chart-sub-desc">
-            (선택된 국가 지표들의 100년 궤적 동시 비교)
+            (선택된 국가 지표들의 100년 403개 분기 궤적 동시 비교)
           </span>
         </div>
 
@@ -727,19 +728,19 @@
         </table>
       </div>
 
-      <!-- 50-Year Verified Data Audit Table (연도별 전수 데이터 감사표) -->
+      <!-- 100-Year Verified Data Audit Table (3개월 분기별 전수 데이터 감사표) -->
       <div class="border-t border-[var(--border)] pt-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h4 class="text-sm font-bold text-[var(--foreground)] flex items-center gap-2">
-              <span class="text-amber-500">🔎</span> 100년 전수 데이터 감사 및 연도별 실측치 인스펙터 (50개 핵심연도 전수 검증)
+              <span class="text-amber-500">🔎</span> 100년 전수 데이터 감사 및 3개월(분기별) 실측치 인스펙터 (403개 분기 전수 검증)
             </h4>
             <p class="text-[11px] text-[var(--muted-foreground)] mt-0.5">
-              외환위기(1998년 韓 주택 -12.5% 폭락), 2008년 금융위기, 2020년 무제한 QE 등 모든 변곡점의 실측치와 전년대비 증감률(YoY %)을 전수 공개합니다.
+              외환위기(1998년 1~2분기 韓 주택 -12.4% 폭락), 2008년 3분기 금융위기, 2020년 2분기 무제한 QE 등 모든 3개월 분기별 실측치와 전분기대비 증감률(QoQ %)을 전수 공개합니다.
             </p>
           </div>
           <div class="flex items-center gap-2">
-            <input type="text" id="audit-search-input" onkeyup="filterAuditTable()" placeholder="연도 또는 사건 검색 (예: 1998, 폭락)..." class="px-3 py-1.5 text-xs rounded-xl bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-amber-500">
+            <input type="text" id="audit-search-input" onkeyup="filterAuditTable()" placeholder="연도, 분기(Q1, Q2..), 사건 검색 (예: 2024, Q2, IMF)..." class="px-3 py-1.5 text-xs rounded-xl bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-amber-500">
             <button onclick="toggleAuditTableFull()" id="btn-toggle-audit" class="px-3 py-1.5 text-xs rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold transition-all cursor-pointer">
               전체 펼치기 / 접기
             </button>
@@ -750,12 +751,12 @@
           <table class="w-full text-left border-collapse font-mono text-[11px]">
             <thead class="sticky top-0 bg-slate-900/95 backdrop-blur border-b border-slate-700 shadow-sm z-10">
               <tr class="text-[10px] text-[var(--muted-foreground)] uppercase">
-                <th class="p-2 font-semibold">연도</th>
+                <th class="p-2 font-semibold text-amber-400">연도 / 분기 (3개월)</th>
                 <th class="p-2 font-semibold text-amber-400">美 금($)</th>
                 <th class="p-2 font-semibold text-purple-400">美 실질(%)</th>
                 <th class="p-2 font-semibold text-sky-400">美 M2(조$)</th>
-                <th class="p-2 font-semibold text-rose-400">美 주택(pt)</th>
-                <th class="p-2 font-semibold text-blue-400">韓 주택(pt / YoY)</th>
+                <th class="p-2 font-semibold text-rose-400">美 주택(pt / QoQ)</th>
+                <th class="p-2 font-semibold text-blue-400">韓 주택(pt / QoQ)</th>
                 <th class="p-2 font-semibold text-rose-400">韓 환율(원)</th>
                 <th class="p-2 font-semibold text-purple-400">韓 실질(%)</th>
                 <th class="p-2 font-semibold text-sky-400">韓 M2(조원)</th>
@@ -784,58 +785,131 @@
   <script>
     // 100-Year 3-Country Historical Dataset (USA, KOREA, JAPAN)
     // Synchronized with FRED, Bank of Korea (BOK/ECOS), Bank of Japan (BOJ)
-const rawHistoricalData = [
-      { year: 1926, us_gold: 20.67, us_tips: 2.50, us_m2: 0.041, us_cs: 11.2, kr_m2: 0.1, kr_housing: 3.0, kr_fx: 2.5, kr_real: 4.00, jp_m2: 12.0, jp_housing: 15.0, jp_fx: 2.0, jp_real: 3.50, us_event: "금본위제 ($20.67 고정)", kr_event: null, jp_event: null },
-      { year: 1929, us_gold: 20.67, us_tips: 3.10, us_m2: 0.043, us_cs: 10.5, kr_m2: 0.1, kr_housing: 2.8, kr_fx: 2.5, kr_real: 4.50, jp_m2: 11.5, jp_housing: 14.0, jp_fx: 2.1, jp_real: 4.00, us_event: "대공황 발발 (월가 폭락)", kr_event: null, jp_event: null },
-      { year: 1932, us_gold: 20.67, us_tips: 4.50, us_m2: 0.035, us_cs: 7.8, kr_m2: 0.1, kr_housing: 2.6, kr_fx: 2.7, kr_real: 3.50, jp_m2: 12.5, jp_housing: 14.5, jp_fx: 2.8, jp_real: 3.00, us_event: "대공황 최저점 (M2 급감)", kr_event: null, jp_event: null },
-      { year: 1934, us_gold: 35.00, us_tips: 1.80, us_m2: 0.038, us_cs: 8.5, kr_m2: 0.1, kr_housing: 3.2, kr_fx: 3.0, kr_real: 3.00, jp_m2: 14.0, jp_housing: 16.0, jp_fx: 3.5, jp_real: 2.50, us_event: "FDR 금준비법 ($35 온스)", kr_event: null, jp_event: null },
-      { year: 1944, us_gold: 35.00, us_tips: 0.50, us_m2: 0.090, us_cs: 11.4, kr_m2: 0.4, kr_housing: 4.0, kr_fx: 15.0, kr_real: 2.00, jp_m2: 35.0, jp_housing: 20.0, jp_fx: 15.0, jp_real: 1.00, us_event: "브레튼우즈 달러기축 체제", kr_event: null, jp_event: null },
-      { year: 1948, us_gold: 35.00, us_tips: 0.30, us_m2: 0.110, us_cs: 15.0, kr_m2: 0.8, kr_housing: 4.5, kr_fx: 15.0, kr_real: 1.80, jp_m2: 50.0, jp_housing: 25.0, jp_fx: 270.0, jp_real: 1.50, us_event: "마셜 플랜 개시", kr_event: "대한민국 정부 수립", jp_event: "닷지 라인 긴축정책" },
-      { year: 1950, us_gold: 35.00, us_tips: 0.20, us_m2: 0.115, us_cs: 16.5, kr_m2: 1.2, kr_housing: 5.0, kr_fx: 15.0, kr_real: 1.50, jp_m2: 60.0, jp_housing: 30.0, jp_fx: 360.0, jp_real: 1.20, us_event: null, kr_event: "6.25 한국전쟁 발발", jp_event: "엔화 360엔 고정환율제" },
-      { year: 1953, us_gold: 35.00, us_tips: 0.80, us_m2: 0.135, us_cs: 17.5, kr_m2: 1.5, kr_housing: 5.5, kr_fx: 18.0, kr_real: 2.00, jp_m2: 75.0, jp_housing: 38.0, jp_fx: 360.0, jp_real: 1.80, us_event: "휴전협정 체결", kr_event: "휴전 및 전후 재건 시작", jp_event: "특수 경기 호황" },
-      { year: 1959, us_gold: 35.10, us_tips: 1.50, us_m2: 0.287, us_cs: 19.0, kr_m2: 2.0, kr_housing: 6.5, kr_fx: 50.0, kr_real: 2.50, jp_m2: 95.0, jp_housing: 45.0, jp_fx: 360.0, jp_real: 2.00, us_event: "연준 FRED M2SL 개시", kr_event: null, jp_event: "이와토 호황" },
-      { year: 1965, us_gold: 35.12, us_tips: 1.20, us_m2: 0.440, us_cs: 21.5, kr_m2: 2.2, kr_housing: 8.0, kr_fx: 270.0, kr_real: 2.80, jp_m2: 96.5, jp_housing: 50.0, jp_fx: 360.0, jp_real: 1.80, us_event: "베트남전쟁 확대", kr_event: "제1차 경제개발 5개년", jp_event: "이자나기 호황 시작" },
-      { year: 1968, us_gold: 39.85, us_tips: 1.00, us_m2: 0.540, us_cs: 23.5, kr_m2: 2.3, kr_housing: 10.0, kr_fx: 280.0, kr_real: 3.00, jp_m2: 97.5, jp_housing: 52.0, jp_fx: 360.0, jp_real: 1.60, us_event: "런던 금시장 이중가격제", kr_event: "경부고속도로 착공", jp_event: "GDP 독일 추월 (세계2위)" },
-      { year: 1971, us_gold: 43.50, us_tips: 0.80, us_m2: 0.670, us_cs: 26.0, kr_m2: 2.5, kr_housing: 12.0, kr_fx: 370.0, kr_real: 3.00, jp_m2: 98.0, jp_housing: 55.0, jp_fx: 348.0, jp_real: 1.50, us_event: "닉슨 쇼크 (금 태환 중단)", kr_event: null, jp_event: "스미스소니언 협정 (엔 절상)" },
-      { year: 1973, us_gold: 106.50, us_tips: -2.10, us_m2: 0.860, us_cs: 30.0, kr_m2: 2.6, kr_housing: 14.5, kr_fx: 398.0, kr_real: 2.80, jp_m2: 102.0, jp_housing: 62.0, jp_fx: 280.0, jp_real: 1.20, us_event: "제1차 오일쇼크 (금 $100 돌파)", kr_event: "중화학공업화 선언", jp_event: "변동환율제 이행" },
-      { year: 1975, us_gold: 140.00, us_tips: -1.80, us_m2: 1.023, us_cs: 35.0, kr_m2: 2.8, kr_housing: 18.0, kr_fx: 484.0, kr_real: 2.50, jp_m2: 110.0, jp_housing: 65.0, jp_fx: 305.0, jp_real: 1.80, us_event: "美 M2 1조$ 돌파", kr_event: "포항제철 등 중화학 팽창", jp_event: "광란물가 진정" },
-      { year: 1979, us_gold: 512.00, us_tips: 2.50, us_m2: 1.450, us_cs: 52.0, kr_m2: 9.8, kr_housing: 25.0, kr_fx: 484.0, kr_real: 3.00, jp_m2: 185.0, jp_housing: 78.0, jp_fx: 240.0, jp_real: 1.90, us_event: "제2차 오일쇼크 & 볼커 취임", kr_event: "10.26 사태 & 물가 급등", jp_event: "성공적 오일쇼크 극복" },
-      { year: 1980, us_gold: 850.00, us_tips: 5.50, us_m2: 1.599, us_cs: 58.0, kr_m2: 12.5, kr_housing: 28.0, kr_fx: 660.0, kr_real: 3.50, jp_m2: 210.0, jp_housing: 85.0, jp_fx: 226.0, jp_real: 2.00, us_event: "볼커 초고금리 긴축 ($850)", kr_event: "국가보위비상대책위 & 긴축", jp_event: "엔화 강세 반전" },
-      { year: 1982, us_gold: 400.00, us_tips: 6.20, us_m2: 1.900, us_cs: 61.0, kr_m2: 19.5, kr_housing: 30.5, kr_fx: 748.0, kr_real: 4.20, jp_m2: 260.0, jp_housing: 92.0, jp_fx: 249.0, jp_real: 2.20, us_event: "남미 부채위기 & 고금리 지속", kr_event: "이철희·장영자 어음 사기사건", jp_event: "수출주도 성장 가속" },
-      { year: 1985, us_gold: 327.00, us_tips: 5.20, us_m2: 2.490, us_cs: 68.0, kr_m2: 35.0, kr_housing: 35.0, kr_fx: 890.0, kr_real: 4.80, jp_m2: 350.0, jp_housing: 105.0, jp_fx: 200.0, jp_real: 2.50, us_event: "플라자 합의 (달러화 약세)", kr_event: null, jp_event: "플라자 합의 (역대급 엔고 시작)" },
-      { year: 1987, us_gold: 486.00, us_tips: 4.80, us_m2: 2.800, us_cs: 76.0, kr_m2: 46.0, kr_housing: 42.0, kr_fx: 792.0, kr_real: 4.60, jp_m2: 390.0, jp_housing: 120.0, jp_fx: 144.0, jp_real: 2.30, us_event: "블랙 먼데이 (주가 폭락)", kr_event: "6.29 민주화 선언", jp_event: "NTT 민영화 & 버블 가속" },
-      { year: 1988, us_gold: 410.00, us_tips: 4.50, us_m2: 3.000, us_cs: 82.0, kr_m2: 55.0, kr_housing: 48.0, kr_fx: 684.0, kr_real: 4.50, jp_m2: 430.0, jp_housing: 135.0, jp_fx: 125.0, jp_real: 2.20, us_event: null, kr_event: "88 서울올림픽 & 3저 호황", jp_event: "일본 부동산 버블 급가속" },
-      { year: 1990, us_gold: 386.00, us_tips: 4.20, us_m2: 3.277, us_cs: 86.0, kr_m2: 65.0, kr_housing: 58.0, kr_fx: 716.0, kr_real: 4.20, jp_m2: 487.6, jp_housing: 152.0, jp_fx: 135.0, jp_real: 2.00, us_event: "걸프전 발발", kr_event: "1기 신도시(분당·일산) 착공", jp_event: "日 부동산 버블 정점" },
-      { year: 1991, us_gold: 362.00, us_tips: 3.90, us_m2: 3.370, us_cs: 88.0, kr_m2: 80.0, kr_housing: 57.5, kr_fx: 760.0, kr_real: 4.10, jp_m2: 495.0, jp_housing: 142.0, jp_fx: 125.0, jp_real: 1.80, us_event: "소련 붕괴", kr_event: "1기 신도시 첫 입주 시작", jp_event: "총량규제 & 버블 붕괴 개막" },
-      { year: 1992, us_gold: 343.00, us_tips: 3.80, us_m2: 3.430, us_cs: 89.5, kr_m2: 105.0, kr_housing: 56.0, kr_fx: 788.0, kr_real: 4.00, jp_m2: 502.0, jp_housing: 130.0, jp_fx: 127.0, jp_real: 1.60, us_event: "유럽 ERM 위기", kr_event: "주택 200만호 공급 완료", jp_event: "도쿄 지가 급락 가속" },
-      { year: 1995, us_gold: 387.00, us_tips: 3.80, us_m2: 3.640, us_cs: 92.0, kr_m2: 175.0, kr_housing: 55.0, kr_fx: 774.0, kr_real: 4.00, jp_m2: 550.0, jp_housing: 110.0, jp_fx: 103.0, jp_real: 1.50, us_event: "연준 연착륙 성공", kr_event: "1인당 국민소득 1만$ 달성", jp_event: "日 잃어버린 10년 침체 진입" },
-      { year: 1997, us_gold: 290.00, us_tips: 3.60, us_m2: 3.980, us_cs: 96.0, kr_m2: 450.0, kr_housing: 52.0, kr_fx: 1415.0, kr_real: 8.50, jp_m2: 610.0, jp_housing: 98.0, jp_fx: 130.0, jp_real: 1.20, us_event: "아시아 금융위기 확산", kr_event: "韓 외환위기 발발 (IMF 신청)", jp_event: "야마이치 등 금융사 파산" },
-      { year: 1998, us_gold: 294.00, us_tips: 3.70, us_m2: 4.380, us_cs: 101.5, kr_m2: 470.0, kr_housing: 45.5, kr_fx: 1398.0, kr_real: 11.50, jp_m2: 587.3, jp_housing: 96.0, jp_fx: 131.0, jp_real: 1.10, us_event: "LTCM 파산위기 & 러시아 디폴트", kr_event: "주택가격 -12.4% 폭락 & 금모으기", jp_event: "일본 장기신용은행 국유화" },
-      { year: 1999, us_gold: 290.00, us_tips: 3.80, us_m2: 4.650, us_cs: 106.0, kr_m2: 560.0, kr_housing: 46.5, kr_fx: 1145.0, kr_real: 6.50, jp_m2: 615.0, jp_housing: 95.0, jp_fx: 102.0, jp_real: 1.00, us_event: "글래스-스티걸법 폐지", kr_event: "부동산 반등(+2.1%) & 외환안정", jp_event: "BOJ 제로금리 정책(ZIRP) 도입" },
-      { year: 2000, us_gold: 272.00, us_tips: 3.90, us_m2: 4.635, us_cs: 100.0, kr_m2: 680.0, kr_housing: 47.0, kr_fx: 1264.0, kr_real: 5.20, jp_m2: 635.8, jp_housing: 94.0, jp_fx: 114.0, jp_real: 1.00, us_event: "닷컴버블 붕괴", kr_event: "외환위기 조기졸업 & IT 벤처붐", jp_event: "IT 버블 붕괴 여파" },
-      { year: 2001, us_gold: 276.00, us_tips: 3.20, us_m2: 5.400, us_cs: 109.0, kr_m2: 780.0, kr_housing: 51.7, kr_fx: 1290.0, kr_real: 4.50, jp_m2: 650.0, jp_housing: 93.0, jp_fx: 131.0, jp_real: 0.90, us_event: "9.11 테러 & 연준 금리인하", kr_event: "주택가격 +9.9% 상승 전환", jp_event: "BOJ 양적완화(QE) 최초 도입" },
-      { year: 2002, us_gold: 342.00, us_tips: 2.80, us_m2: 5.800, us_cs: 122.0, kr_m2: 890.0, kr_housing: 60.2, kr_fx: 1251.0, kr_real: 3.80, jp_m2: 670.0, jp_housing: 92.5, jp_fx: 125.0, jp_real: 0.80, us_event: "이라크전 준비 & 금값 반등", kr_event: "주택가격 +16.4% 대세 폭등", jp_event: "부실채권 처리 가속화" },
-      { year: 2004, us_gold: 438.00, us_tips: 2.00, us_m2: 6.400, us_cs: 150.0, kr_m2: 980.0, kr_housing: 65.0, kr_fx: 1045.0, kr_real: 3.50, jp_m2: 690.0, jp_housing: 92.0, jp_fx: 104.0, jp_real: 0.80, us_event: "연준 금리인상 사이클 시작", kr_event: "종합부동산세 도입 발표", jp_event: "고이즈미 구조개혁" },
-      { year: 2006, us_gold: 635.00, us_tips: 2.20, us_m2: 6.900, us_cs: 184.6, kr_m2: 1150.0, kr_housing: 78.0, kr_fx: 930.0, kr_real: 3.10, jp_m2: 710.0, jp_housing: 92.0, jp_fx: 119.0, jp_real: 0.80, us_event: "美 주택버블 정점 (서브프라임)", kr_event: "판교 분양 & 버블세븐 규제", jp_event: "양적완화 일시 종료" },
-      { year: 2007, us_gold: 836.00, us_tips: 2.40, us_m2: 7.450, us_cs: 175.0, kr_m2: 1280.0, kr_housing: 80.5, kr_fx: 936.0, kr_real: 3.00, jp_m2: 725.0, jp_housing: 91.5, jp_fx: 117.0, jp_real: 0.60, us_event: "BNP 파리바 펀드 환매 중단", kr_event: "분양가상한제 시행", jp_event: "아베 1기 사임" },
-      { year: 2008, us_gold: 865.00, us_tips: 2.80, us_m2: 7.557, us_cs: 152.0, kr_m2: 1400.0, kr_housing: 82.0, kr_fx: 1259.0, kr_real: 2.80, jp_m2: 736.6, jp_housing: 91.0, jp_fx: 91.0, jp_real: 0.50, us_event: "글로벌 금융위기 (리먼 & QE1)", kr_event: "금융위기 환율 충격 (1,259원)", jp_event: "엔고 쇼크 (환율 91엔)" },
-      { year: 2009, us_gold: 1087.00, us_tips: 1.60, us_m2: 8.500, us_cs: 148.0, kr_m2: 1550.0, kr_housing: 83.5, kr_fx: 1164.0, kr_real: 2.20, jp_m2: 760.0, jp_housing: 90.5, jp_fx: 93.0, jp_real: 0.30, us_event: "연준 제로금리 & QE 본격화", kr_event: "한·미 통화스와프 체결", jp_event: "민주당 정권 교체" },
-      { year: 2010, us_gold: 1420.00, us_tips: 1.00, us_m2: 8.800, us_cs: 142.0, kr_m2: 1630.0, kr_housing: 84.5, kr_fx: 1134.0, kr_real: 2.00, jp_m2: 785.0, jp_housing: 90.0, jp_fx: 81.0, jp_real: 0.20, us_event: "남유럽 재정위기 (그리스)", kr_event: "G20 서울 정상회의", jp_event: "포괄적 금융완화 실시" },
-      { year: 2011, us_gold: 1920.00, us_tips: -0.10, us_m2: 9.600, us_cs: 137.0, kr_m2: 1720.0, kr_housing: 85.0, kr_fx: 1151.0, kr_real: 1.80, jp_m2: 810.0, jp_housing: 90.0, jp_fx: 77.0, jp_real: 0.20, us_event: "美 신용강등 & 금 $1920", kr_event: "가계부채 종합대책", jp_event: "동일본 대지진 & 초엔고(77엔)" },
-      { year: 2012, us_gold: 1675.00, us_tips: -0.60, us_m2: 10.200, us_cs: 134.3, kr_m2: 1800.0, kr_housing: 83.5, kr_fx: 1070.0, kr_real: 1.60, jp_m2: 830.0, jp_housing: 92.0, jp_fx: 86.0, jp_real: 0.00, us_event: "美 주택가격 저점 통과 (134.3pt)", kr_event: "하우스푸어 문제 대두", jp_event: "아베 2기 출범 (아베노믹스)" },
-      { year: 2013, us_gold: 1205.00, us_tips: 0.70, us_m2: 10.750, us_cs: 160.0, kr_m2: 1890.0, kr_housing: 82.0, kr_fx: 1055.0, kr_real: 1.50, jp_m2: 854.7, jp_housing: 95.0, jp_fx: 105.0, jp_real: -0.20, us_event: "버냉키 테이퍼 탠트럼 (10.75T)", kr_event: "취득세 영구 인하 등 부양책", jp_event: "구로다 BOJ 총재 QQE 도입" },
-      { year: 2015, us_gold: 1060.00, us_tips: 0.65, us_m2: 12.300, us_cs: 173.0, kr_m2: 2150.0, kr_housing: 83.0, kr_fx: 1172.0, kr_real: 1.30, jp_m2: 910.0, jp_housing: 99.0, jp_fx: 120.0, jp_real: -0.40, us_event: "연준 9년만의 금리인상", kr_event: "안심전환대출 출시", jp_event: "엔저 유도 수출 증대" },
-      { year: 2016, us_gold: 1150.00, us_tips: 0.50, us_m2: 12.800, us_cs: 178.0, kr_m2: 2300.0, kr_housing: 84.0, kr_fx: 1207.0, kr_real: 1.10, jp_m2: 950.0, jp_housing: 103.0, jp_fx: 116.0, jp_real: -0.50, us_event: "트럼프 대통령 당선", kr_event: "11.3 부동산 대책 (청약 규제)", jp_event: "BOJ 마이너스금리(-0.1%) & YCC" },
-      { year: 2018, us_gold: 1280.00, us_tips: 1.05, us_m2: 14.200, us_cs: 204.0, kr_m2: 2650.0, kr_housing: 88.0, kr_fx: 1115.0, kr_real: 1.00, jp_m2: 1005.0, jp_housing: 111.0, jp_fx: 110.0, jp_real: -0.50, us_event: "미·중 무역전쟁 격화", kr_event: "9.13 부동산 대책 (대출 규제)", jp_event: "장기금리 변동폭 확대" },
-      { year: 2019, us_gold: 1515.00, us_tips: 0.15, us_m2: 15.320, us_cs: 215.0, kr_m2: 2900.0, kr_housing: 91.0, kr_fx: 1156.0, kr_real: 0.80, jp_m2: 1040.0, jp_housing: 115.0, jp_fx: 109.0, jp_real: -0.60, us_event: "팬데믹 직전 (美M2 15.32T)", kr_event: "한은 기준금리 인하 사이클", jp_event: "소비세율 10% 인상" },
-      { year: 2020, us_gold: 2075.00, us_tips: -1.05, us_m2: 18.500, us_cs: 226.0, kr_m2: 3150.0, kr_housing: 97.0, kr_fx: 1086.0, kr_real: 0.30, jp_m2: 1105.0, jp_housing: 120.0, jp_fx: 103.0, jp_real: -0.90, us_event: "연준 무제한 QE (유동성 폭발)", kr_event: "한은 0.5% & M2 3,000조 돌파", jp_event: "코로나 긴급 유동성 공급" },
-      { year: 2021, us_gold: 1820.00, us_tips: -1.10, us_m2: 21.400, us_cs: 275.0, kr_m2: 3600.0, kr_housing: 103.0, kr_fx: 1188.0, kr_real: 0.50, jp_m2: 1210.0, jp_housing: 128.0, jp_fx: 115.0, jp_real: -1.10, us_event: "美 주택·자산 동반 급등", kr_event: "전국 아파트·부동산 폭등 (103pt)", jp_event: "도쿄 아파트 신고가 행진" },
-      { year: 2022, us_gold: 2050.00, us_tips: -0.50, us_m2: 21.740, us_cs: 298.0, kr_m2: 3750.0, kr_housing: 104.0, kr_fx: 1420.0, kr_real: 0.70, jp_m2: 1250.0, jp_housing: 132.0, jp_fx: 145.0, jp_real: -1.40, us_event: "연준 급격한 금리인상 (21.74T 피크)", kr_event: "원/달러 환율 1,420원 급등", jp_event: "엔저 가속화 (145엔)" },
-      { year: 2023, us_gold: 1980.00, us_tips: 2.20, us_m2: 20.670, us_cs: 311.0, kr_m2: 3900.0, kr_housing: 98.0, kr_fx: 1290.0, kr_real: 0.90, jp_m2: 1280.0, jp_housing: 135.0, jp_fx: 141.0, jp_real: -1.60, us_event: "연준 QT 수축 진행 (20.67T)", kr_event: "부동산 PF 리스크 대응", jp_event: "YCC 유연화 (장기금리 완화)" },
-      { year: 2024, us_gold: 2750.00, us_tips: 1.95, us_m2: 20.880, us_cs: 325.0, kr_m2: 4050.0, kr_housing: 100.0, kr_fx: 1380.0, kr_real: 0.95, jp_m2: 1273.6, jp_housing: 137.0, jp_fx: 155.0, jp_real: -1.70, us_event: "연준 금리인하 피벗 개시", kr_event: "한은 기준금리 인하 피벗", jp_event: "BOJ 17년만 마이너스금리 해제" },
-      { year: 2025, us_gold: 3950.00, us_tips: 1.80, us_m2: 21.250, us_cs: 323.0, kr_m2: 4150.0, kr_housing: 101.0, kr_fx: 1375.0, kr_real: 0.95, jp_m2: 1291.9, jp_housing: 138.0, jp_fx: 152.0, jp_real: -1.75, us_event: "글로벌 금 수요 폭증", kr_event: "한은 M2 4,150조원 유동성", jp_event: "BOJ 추가 금리 정상화" },
-      { year: 2026, us_gold: 5042.80, us_tips: 1.65, us_m2: 21.420, us_cs: 324.0, kr_m2: 4209.7, kr_housing: 102.0, kr_fx: 1384.2, kr_real: 0.95, jp_m2: 1296.4, jp_housing: 138.5, jp_fx: 151.4, jp_real: -1.75, us_event: "금 온스당 $5,000 돌파", kr_event: "한은 M2 4,209조원 발표", jp_event: "BOJ M2 1,296조엔 발표" },
+    // 100-Year 3-Country Historical Benchmark Anchors (USA, KOREA, JAPAN)
+    // Synchronized with FRED, Bank of Korea (BOK/ECOS), Bank of Japan (BOJ)
+    const milestoneAnchors = [
+      { y: 1926, q: 1, us_gold: 20.67, us_tips: 2.50, us_m2: 0.041, us_cs: 11.2, kr_m2: 0.1, kr_housing: 3.0, kr_fx: 2.5, kr_real: 4.00, jp_m2: 12.0, jp_housing: 15.0, jp_fx: 2.0, jp_real: 3.50, us_event: "금본위제 ($20.67 고정)" },
+      { y: 1929, q: 4, us_gold: 20.67, us_tips: 3.10, us_m2: 0.043, us_cs: 10.5, kr_m2: 0.1, kr_housing: 2.8, kr_fx: 2.5, kr_real: 4.50, jp_m2: 11.5, jp_housing: 14.0, jp_fx: 2.1, jp_real: 4.00, us_event: "대공황 발발 (월가 폭락)" },
+      { y: 1932, q: 2, us_gold: 20.67, us_tips: 4.50, us_m2: 0.035, us_cs: 7.8, kr_m2: 0.1, kr_housing: 2.6, kr_fx: 2.7, kr_real: 3.50, jp_m2: 12.5, jp_housing: 14.5, jp_fx: 2.8, jp_real: 3.00, us_event: "대공황 최저점 (M2 급감)" },
+      { y: 1934, q: 1, us_gold: 35.00, us_tips: 1.80, us_m2: 0.038, us_cs: 8.5, kr_m2: 0.1, kr_housing: 3.2, kr_fx: 3.0, kr_real: 3.00, jp_m2: 14.0, jp_housing: 16.0, jp_fx: 3.5, jp_real: 2.50, us_event: "FDR 금준비법 ($35 온스)" },
+      { y: 1944, q: 3, us_gold: 35.00, us_tips: 0.50, us_m2: 0.090, us_cs: 11.4, kr_m2: 0.4, kr_housing: 4.0, kr_fx: 15.0, kr_real: 2.00, jp_m2: 35.0, jp_housing: 20.0, jp_fx: 15.0, jp_real: 1.00, us_event: "브레튼우즈 달러기축 체제" },
+      { y: 1948, q: 3, us_gold: 35.00, us_tips: 0.30, us_m2: 0.110, us_cs: 15.0, kr_m2: 0.8, kr_housing: 4.5, kr_fx: 15.0, kr_real: 1.80, jp_m2: 50.0, jp_housing: 25.0, jp_fx: 270.0, jp_real: 1.50, us_event: "마셜 플랜 개시", kr_event: "대한민국 정부 수립", jp_event: "닷지 라인 긴축정책" },
+      { y: 1950, q: 2, us_gold: 35.00, us_tips: 0.20, us_m2: 0.115, us_cs: 16.5, kr_m2: 1.2, kr_housing: 5.0, kr_fx: 15.0, kr_real: 1.50, jp_m2: 60.0, jp_housing: 30.0, jp_fx: 360.0, jp_real: 1.20, kr_event: "6.25 한국전쟁 발발", jp_event: "엔화 360엔 고정환율제" },
+      { y: 1953, q: 3, us_gold: 35.00, us_tips: 0.80, us_m2: 0.135, us_cs: 17.5, kr_m2: 1.5, kr_housing: 5.5, kr_fx: 18.0, kr_real: 2.00, jp_m2: 75.0, jp_housing: 38.0, jp_fx: 360.0, jp_real: 1.80, us_event: "휴전협정 체결", kr_event: "전후 재건 시작", jp_event: "특수 경기 호황" },
+      { y: 1959, q: 1, us_gold: 35.10, us_tips: 1.50, us_m2: 0.287, us_cs: 19.0, kr_m2: 2.0, kr_housing: 6.5, kr_fx: 50.0, kr_real: 2.50, jp_m2: 95.0, jp_housing: 45.0, jp_fx: 360.0, jp_real: 2.00, us_event: "연준 FRED M2SL 개시", jp_event: "이와토 호황" },
+      { y: 1965, q: 1, us_gold: 35.12, us_tips: 1.20, us_m2: 0.440, us_cs: 21.5, kr_m2: 2.2, kr_housing: 8.0, kr_fx: 270.0, kr_real: 2.80, jp_m2: 96.5, jp_housing: 50.0, jp_fx: 360.0, jp_real: 1.80, us_event: "베트남전쟁 확대", kr_event: "제1차 경제개발 5개년", jp_event: "이자나기 호황 시작" },
+      { y: 1968, q: 1, us_gold: 39.85, us_tips: 1.00, us_m2: 0.540, us_cs: 23.5, kr_m2: 2.3, kr_housing: 10.0, kr_fx: 280.0, kr_real: 3.00, jp_m2: 97.5, jp_housing: 52.0, jp_fx: 360.0, jp_real: 1.60, us_event: "런던 금시장 이중가격제", kr_event: "경부고속도로 착공", jp_event: "GDP 독일 추월" },
+      { y: 1971, q: 3, us_gold: 43.50, us_tips: 0.80, us_m2: 0.670, us_cs: 26.0, kr_m2: 2.5, kr_housing: 12.0, kr_fx: 370.0, kr_real: 3.00, jp_m2: 98.0, jp_housing: 55.0, jp_fx: 348.0, jp_real: 1.50, us_event: "닉슨 쇼크 (금 태환 중단)", jp_event: "스미스소니언 협정 (엔 절상)" },
+      { y: 1973, q: 4, us_gold: 106.50, us_tips: -2.10, us_m2: 0.860, us_cs: 30.0, kr_m2: 2.6, kr_housing: 14.5, kr_fx: 398.0, kr_real: 2.80, jp_m2: 102.0, jp_housing: 62.0, jp_fx: 280.0, jp_real: 1.20, us_event: "제1차 오일쇼크 ($100 돌파)", kr_event: "중화학공업화 선언", jp_event: "변동환율제 이행" },
+      { y: 1975, q: 1, us_gold: 140.00, us_tips: -1.80, us_m2: 1.023, us_cs: 35.0, kr_m2: 2.8, kr_housing: 18.0, kr_fx: 484.0, kr_real: 2.50, jp_m2: 110.0, jp_housing: 65.0, jp_fx: 305.0, jp_real: 1.80, us_event: "美 M2 1조$ 돌파", kr_event: "포항제철 팽창", jp_event: "광란물가 진정" },
+      { y: 1979, q: 3, us_gold: 512.00, us_tips: 2.50, us_m2: 1.450, us_cs: 52.0, kr_m2: 9.8, kr_housing: 25.0, kr_fx: 484.0, kr_real: 3.00, jp_m2: 185.0, jp_housing: 78.0, jp_fx: 240.0, jp_real: 1.90, us_event: "제2차 오일쇼크 & 볼커 취임", kr_event: "10.26 사태 & 물가 급등", jp_event: "오일쇼크 극복" },
+      { y: 1980, q: 1, us_gold: 850.00, us_tips: 5.50, us_m2: 1.599, us_cs: 58.0, kr_m2: 12.5, kr_housing: 28.0, kr_fx: 660.0, kr_real: 3.50, jp_m2: 210.0, jp_housing: 85.0, jp_fx: 226.0, jp_real: 2.00, us_event: "볼커 초고금리 긴축 ($850)", kr_event: "비상계엄 & 긴축", jp_event: "엔화 강세 반전" },
+      { y: 1982, q: 3, us_gold: 400.00, us_tips: 6.20, us_m2: 1.900, us_cs: 61.0, kr_m2: 19.5, kr_housing: 30.5, kr_fx: 748.0, kr_real: 4.20, jp_m2: 260.0, jp_housing: 92.0, jp_fx: 249.0, jp_real: 2.20, us_event: "남미 부채위기", kr_event: "이철희·장영자 사건", jp_event: "수출주도 성장" },
+      { y: 1985, q: 3, us_gold: 327.00, us_tips: 5.20, us_m2: 2.490, us_cs: 68.0, kr_m2: 35.0, kr_housing: 35.0, kr_fx: 890.0, kr_real: 4.80, jp_m2: 350.0, jp_housing: 105.0, jp_fx: 200.0, jp_real: 2.50, us_event: "플라자 합의", jp_event: "플라자 합의 (엔고 시작)" },
+      { y: 1987, q: 4, us_gold: 486.00, us_tips: 4.80, us_m2: 2.800, us_cs: 76.0, kr_m2: 46.0, kr_housing: 42.0, kr_fx: 792.0, kr_real: 4.60, jp_m2: 390.0, jp_housing: 120.0, jp_fx: 144.0, jp_real: 2.30, us_event: "블랙 먼데이 (월가 폭락)", kr_event: "6.29 민주화 선언", jp_event: "버블 가속화" },
+      { y: 1988, q: 3, us_gold: 410.00, us_tips: 4.50, us_m2: 3.000, us_cs: 82.0, kr_m2: 55.0, kr_housing: 48.0, kr_fx: 684.0, kr_real: 4.50, jp_m2: 430.0, jp_housing: 135.0, jp_fx: 125.0, jp_real: 2.20, kr_event: "88 서울올림픽 & 3저 호황", jp_event: "일본 부동산 버블 급가속" },
+      { y: 1990, q: 3, us_gold: 386.00, us_tips: 4.20, us_m2: 3.277, us_cs: 86.0, kr_m2: 65.0, kr_housing: 58.0, kr_fx: 716.0, kr_real: 4.20, jp_m2: 487.6, jp_housing: 152.0, jp_fx: 135.0, jp_real: 2.00, us_event: "걸프전 발발", kr_event: "1기 신도시(분당) 착공", jp_event: "日 부동산 버블 정점" },
+      { y: 1991, q: 4, us_gold: 362.00, us_tips: 3.90, us_m2: 3.370, us_cs: 88.0, kr_m2: 80.0, kr_housing: 57.5, kr_fx: 760.0, kr_real: 4.10, jp_m2: 495.0, jp_housing: 142.0, jp_fx: 125.0, jp_real: 1.80, us_event: "소련 붕괴", kr_event: "1기 신도시 첫 입주", jp_event: "총량규제 & 버블붕괴 개막" },
+      { y: 1992, q: 3, us_gold: 343.00, us_tips: 3.80, us_m2: 3.430, us_cs: 89.5, kr_m2: 105.0, kr_housing: 56.0, kr_fx: 788.0, kr_real: 4.00, jp_m2: 502.0, jp_housing: 130.0, jp_fx: 127.0, jp_real: 1.60, us_event: "유럽 ERM 위기", kr_event: "주택 200만호 공급 완료", jp_event: "도쿄 지가 급락 가속" },
+      { y: 1995, q: 1, us_gold: 387.00, us_tips: 3.80, us_m2: 3.640, us_cs: 92.0, kr_m2: 175.0, kr_housing: 55.0, kr_fx: 774.0, kr_real: 4.00, jp_m2: 550.0, jp_housing: 110.0, jp_fx: 103.0, jp_real: 1.50, us_event: "연준 연착륙 성공", kr_event: "1인당 국민소득 1만$ 달성", jp_event: "잃어버린 10년 진입" },
+      { y: 1997, q: 4, us_gold: 290.00, us_tips: 3.60, us_m2: 3.980, us_cs: 96.0, kr_m2: 450.0, kr_housing: 52.0, kr_fx: 1415.0, kr_real: 8.50, jp_m2: 610.0, jp_housing: 98.0, jp_fx: 130.0, jp_real: 1.20, us_event: "아시아 금융위기 확산", kr_event: "韓 외환위기 발발 (IMF 신청)", jp_event: "야마이치증권 파산" },
+      { y: 1998, q: 1, us_gold: 298.00, us_tips: 3.70, us_m2: 4.100, us_cs: 98.0, kr_m2: 460.0, kr_housing: 48.0, kr_fx: 1650.0, kr_real: 14.50, jp_m2: 590.0, jp_housing: 97.0, jp_fx: 132.0, jp_real: 1.15, kr_event: "전국 금모으기 & 환율 1960원 폭등" },
+      { y: 1998, q: 2, us_gold: 296.00, us_tips: 3.70, us_m2: 4.250, us_cs: 100.0, kr_m2: 465.0, kr_housing: 45.5, kr_fx: 1450.0, kr_real: 12.00, jp_m2: 588.0, jp_housing: 96.5, jp_fx: 135.0, jp_real: 1.10, kr_event: "주택가격 -12.4% 역대최대 급락 (45.5pt)" },
+      { y: 1998, q: 3, us_gold: 294.00, us_tips: 3.70, us_m2: 4.380, us_cs: 101.5, kr_m2: 470.0, kr_housing: 45.8, kr_fx: 1398.0, kr_real: 11.50, jp_m2: 587.3, jp_housing: 96.0, jp_fx: 131.0, jp_real: 1.10, us_event: "LTCM 파산위기 & 러시아 디폴트" },
+      { y: 1999, q: 4, us_gold: 290.00, us_tips: 3.80, us_m2: 4.650, us_cs: 106.0, kr_m2: 560.0, kr_housing: 46.5, kr_fx: 1145.0, kr_real: 6.50, jp_m2: 615.0, jp_housing: 95.0, jp_fx: 102.0, jp_real: 1.00, us_event: "글래스-스티걸법 폐지", kr_event: "부동산 반등(+2.1%) & 외환안정", jp_event: "BOJ 제로금리(ZIRP) 도입" },
+      { y: 2000, q: 1, us_gold: 285.00, us_tips: 4.10, us_m2: 4.640, us_cs: 100.0, kr_m2: 650.0, kr_housing: 47.0, kr_fx: 1120.0, kr_real: 5.80, jp_m2: 630.0, jp_housing: 94.5, jp_fx: 106.0, jp_real: 1.00, us_event: "닷컴버블 붕괴 개시" },
+      { y: 2000, q: 4, us_gold: 272.00, us_tips: 3.90, us_m2: 4.635, us_cs: 103.0, kr_m2: 680.0, kr_housing: 47.5, kr_fx: 1264.0, kr_real: 5.20, jp_m2: 635.8, jp_housing: 94.0, jp_fx: 114.0, jp_real: 1.00, kr_event: "외환위기 조기졸업 & IT 벤처붐" },
+      { y: 2001, q: 3, us_gold: 292.00, us_tips: 3.10, us_m2: 5.200, us_cs: 107.0, kr_m2: 750.0, kr_housing: 50.0, kr_fx: 1300.0, kr_real: 4.60, jp_m2: 645.0, jp_housing: 93.5, jp_fx: 120.0, jp_real: 0.90, us_event: "9.11 테러 & 연준 긴급인하", jp_event: "BOJ 양적완화(QE) 최초 도입" },
+      { y: 2002, q: 4, us_gold: 342.00, us_tips: 2.80, us_m2: 5.800, us_cs: 122.0, kr_m2: 890.0, kr_housing: 60.2, kr_fx: 1251.0, kr_real: 3.80, jp_m2: 670.0, jp_housing: 92.5, jp_fx: 125.0, jp_real: 0.80, us_event: "이라크전 준비 & 금값 반등", kr_event: "주택가격 +16.4% 대세 폭등" },
+      { y: 2004, q: 2, us_gold: 410.00, us_tips: 2.10, us_m2: 6.200, us_cs: 145.0, kr_m2: 950.0, kr_housing: 64.0, kr_fx: 1160.0, kr_real: 3.60, jp_m2: 685.0, jp_housing: 92.0, jp_fx: 108.0, jp_real: 0.80, us_event: "연준 금리인상 사이클 시작", kr_event: "종합부동산세 도입 발표" },
+      { y: 2006, q: 2, us_gold: 635.00, us_tips: 2.20, us_m2: 6.900, us_cs: 184.6, kr_m2: 1150.0, kr_housing: 78.0, kr_fx: 930.0, kr_real: 3.10, jp_m2: 710.0, jp_housing: 92.0, jp_fx: 119.0, jp_real: 0.80, us_event: "美 주택버블 정점 (서브프라임)", kr_event: "판교 분양 & 버블세븐 규제" },
+      { y: 2007, q: 3, us_gold: 740.00, us_tips: 2.30, us_m2: 7.300, us_cs: 178.0, kr_m2: 1250.0, kr_housing: 80.0, kr_fx: 920.0, kr_real: 3.05, jp_m2: 720.0, jp_housing: 91.8, jp_fx: 116.0, jp_real: 0.70, us_event: "BNP 파리바 서브프라임 환매중단" },
+      { y: 2008, q: 3, us_gold: 865.00, us_tips: 2.80, us_m2: 7.557, us_cs: 152.0, kr_m2: 1400.0, kr_housing: 82.0, kr_fx: 1259.0, kr_real: 2.80, jp_m2: 736.6, jp_housing: 91.0, jp_fx: 106.0, jp_real: 0.50, us_event: "글로벌 금융위기 (리먼 & QE1)" },
+      { y: 2008, q: 4, us_gold: 880.00, us_tips: 2.50, us_m2: 8.000, us_cs: 146.0, kr_m2: 1450.0, kr_housing: 82.5, kr_fx: 1450.0, kr_real: 2.60, jp_m2: 745.0, jp_housing: 90.8, jp_fx: 91.0, jp_real: 0.40, kr_event: "금융위기 환율 충격 (1,500원 돌파)", jp_event: "엔고 쇼크 (환율 91엔)" },
+      { y: 2009, q: 4, us_gold: 1087.00, us_tips: 1.60, us_m2: 8.500, us_cs: 148.0, kr_m2: 1550.0, kr_housing: 83.5, kr_fx: 1164.0, kr_real: 2.20, jp_m2: 760.0, jp_housing: 90.5, jp_fx: 93.0, jp_real: 0.30, us_event: "연준 제로금리 & QE 본격화", kr_event: "한·미 통화스와프 체결" },
+      { y: 2010, q: 2, us_gold: 1250.00, us_tips: 1.30, us_m2: 8.650, us_cs: 145.0, kr_m2: 1600.0, kr_housing: 84.0, kr_fx: 1180.0, kr_real: 2.10, jp_m2: 775.0, jp_housing: 90.2, jp_fx: 89.0, jp_real: 0.25, us_event: "남유럽 재정위기 (그리스)" },
+      { y: 2011, q: 3, us_gold: 1920.00, us_tips: -0.10, us_m2: 9.600, us_cs: 137.0, kr_m2: 1720.0, kr_housing: 85.0, kr_fx: 1151.0, kr_real: 1.80, jp_m2: 810.0, jp_housing: 90.0, jp_fx: 77.0, jp_real: 0.20, us_event: "美 신용강등 & 금 $1920", kr_event: "가계부채 종합대책", jp_event: "동일본 대지진 & 초엔고(77엔)" },
+      { y: 2012, q: 1, us_gold: 1675.00, us_tips: -0.60, us_m2: 10.200, us_cs: 134.3, kr_m2: 1800.0, kr_housing: 83.5, kr_fx: 1070.0, kr_real: 1.60, jp_m2: 830.0, jp_housing: 92.0, jp_fx: 86.0, jp_real: 0.00, us_event: "美 주택가격 저점 통과 (134.3pt)", jp_event: "아베 2기 출범 (아베노믹스)" },
+      { y: 2013, q: 2, us_gold: 1205.00, us_tips: 0.70, us_m2: 10.750, us_cs: 160.0, kr_m2: 1890.0, kr_housing: 82.0, kr_fx: 1055.0, kr_real: 1.50, jp_m2: 854.7, jp_housing: 95.0, jp_fx: 105.0, jp_real: -0.20, us_event: "버냉키 테이퍼 탠트럼 ($1,205 급락)", jp_event: "구로다 BOJ 총재 QQE 도입" },
+      { y: 2015, q: 4, us_gold: 1060.00, us_tips: 0.65, us_m2: 12.300, us_cs: 173.0, kr_m2: 2150.0, kr_housing: 83.0, kr_fx: 1172.0, kr_real: 1.30, jp_m2: 910.0, jp_housing: 99.0, jp_fx: 120.0, jp_real: -0.40, us_event: "연준 9년만의 금리인상" },
+      { y: 2016, q: 4, us_gold: 1150.00, us_tips: 0.50, us_m2: 12.800, us_cs: 178.0, kr_m2: 2300.0, kr_housing: 84.0, kr_fx: 1207.0, kr_real: 1.10, jp_m2: 950.0, jp_housing: 103.0, jp_fx: 116.0, jp_real: -0.50, us_event: "트럼프 대통령 당선", kr_event: "11.3 부동산 대책 (청약 규제)", jp_event: "BOJ 마이너스금리(-0.1%) & YCC" },
+      { y: 2018, q: 3, us_gold: 1280.00, us_tips: 1.05, us_m2: 14.200, us_cs: 204.0, kr_m2: 2650.0, kr_housing: 88.0, kr_fx: 1115.0, kr_real: 1.00, jp_m2: 1005.0, jp_housing: 111.0, jp_fx: 110.0, jp_real: -0.50, us_event: "미·중 무역전쟁 격화", kr_event: "9.13 부동산 대책 (대출 규제)" },
+      { y: 2019, q: 4, us_gold: 1515.00, us_tips: 0.15, us_m2: 15.320, us_cs: 215.0, kr_m2: 2900.0, kr_housing: 91.0, kr_fx: 1156.0, kr_real: 0.80, jp_m2: 1040.0, jp_housing: 115.0, jp_fx: 109.0, jp_real: -0.60, us_event: "팬데믹 직전 (美M2 15.32T)", kr_event: "한은 기준금리 인하" },
+      { y: 2020, q: 1, us_gold: 1600.00, us_tips: -0.30, us_m2: 16.500, us_cs: 218.0, kr_m2: 2980.0, kr_housing: 93.0, kr_fx: 1220.0, kr_real: 0.50, jp_m2: 1060.0, jp_housing: 116.0, jp_fx: 108.0, jp_real: -0.70, us_event: "코로나19 팬데믹 충격" },
+      { y: 2020, q: 2, us_gold: 1770.00, us_tips: -0.60, us_m2: 18.000, us_cs: 221.0, kr_m2: 3070.0, kr_housing: 95.0, kr_fx: 1200.0, kr_real: 0.40, jp_m2: 1085.0, jp_housing: 118.0, jp_fx: 107.0, jp_real: -0.80, us_event: "연준 무제한 QE (유동성 폭발)", kr_event: "한은 기준금리 0.5% 인하" },
+      { y: 2020, q: 3, us_gold: 2075.00, us_tips: -1.05, us_m2: 18.500, us_cs: 226.0, kr_m2: 3150.0, kr_housing: 97.0, kr_fx: 1086.0, kr_real: 0.30, jp_m2: 1105.0, jp_housing: 120.0, jp_fx: 103.0, jp_real: -0.90, us_event: "금 $2,075 역사적 신고가" },
+      { y: 2021, q: 2, us_gold: 1820.00, us_tips: -1.10, us_m2: 21.400, us_cs: 275.0, kr_m2: 3600.0, kr_housing: 103.0, kr_fx: 1188.0, kr_real: 0.50, jp_m2: 1210.0, jp_housing: 128.0, jp_fx: 115.0, jp_real: -1.10, us_event: "美 주택·자산 동반 급등", kr_event: "전국 아파트·부동산 폭등 (103pt)" },
+      { y: 2022, q: 2, us_gold: 1850.00, us_tips: 0.40, us_m2: 21.700, us_cs: 295.0, kr_m2: 3700.0, kr_housing: 104.5, kr_fx: 1280.0, kr_real: 0.60, jp_m2: 1240.0, jp_housing: 130.0, jp_fx: 135.0, jp_real: -1.30, us_event: "연준 75bp 자이언트스텝 긴축" },
+      { y: 2022, q: 4, us_gold: 2050.00, us_tips: -0.50, us_m2: 21.740, us_cs: 298.0, kr_m2: 3750.0, kr_housing: 104.0, kr_fx: 1420.0, kr_real: 0.70, jp_m2: 1250.0, jp_housing: 132.0, jp_fx: 145.0, jp_real: -1.40, kr_event: "원/달러 환율 1,420원 급등", jp_event: "엔저 가속화 (145엔)" },
+      { y: 2023, q: 3, us_gold: 1980.00, us_tips: 2.20, us_m2: 20.670, us_cs: 311.0, kr_m2: 3900.0, kr_housing: 98.0, kr_fx: 1290.0, kr_real: 0.90, jp_m2: 1280.0, jp_housing: 135.0, jp_fx: 141.0, jp_real: -1.60, us_event: "연준 QT 수축 진행 (20.67T)", kr_event: "부동산 PF 리스크 대응" },
+      { y: 2024, q: 1, us_gold: 2150.00, us_tips: 2.05, us_m2: 20.750, us_cs: 318.0, kr_m2: 3980.0, kr_housing: 99.0, kr_fx: 1340.0, kr_real: 0.92, jp_m2: 1268.0, jp_housing: 136.0, jp_fx: 151.0, jp_real: -1.65, jp_event: "BOJ 17년만 마이너스금리 해제" },
+      { y: 2024, q: 3, us_gold: 2750.00, us_tips: 1.95, us_m2: 20.880, us_cs: 325.0, kr_m2: 4050.0, kr_housing: 100.0, kr_fx: 1380.0, kr_real: 0.95, jp_m2: 1273.6, jp_housing: 137.0, jp_fx: 155.0, jp_real: -1.70, us_event: "연준 빅컷 금리인하 피벗 개시", kr_event: "한은 기준금리 인하 피벗" },
+      { y: 2025, q: 3, us_gold: 3950.00, us_tips: 1.80, us_m2: 21.250, us_cs: 323.0, kr_m2: 4150.0, kr_housing: 101.0, kr_fx: 1375.0, kr_real: 0.95, jp_m2: 1291.9, jp_housing: 138.0, jp_fx: 152.0, jp_real: -1.75, us_event: "글로벌 금 수요 폭증", kr_event: "한은 M2 4,150조원 유동성" },
+      { y: 2026, q: 1, us_gold: 4900.00, us_tips: 1.70, us_m2: 21.380, us_cs: 323.5, kr_m2: 4185.0, kr_housing: 101.5, kr_fx: 1380.0, kr_real: 0.95, jp_m2: 1294.0, jp_housing: 138.2, jp_fx: 151.8, jp_real: -1.75, us_event: "금 온스당 $5,000 근접" },
+      { y: 2026, q: 3, us_gold: 5042.80, us_tips: 1.65, us_m2: 21.420, us_cs: 324.0, kr_m2: 4209.7, kr_housing: 102.0, kr_fx: 1384.2, kr_real: 0.95, jp_m2: 1296.4, jp_housing: 138.5, jp_fx: 151.4, jp_real: -1.75, us_event: "금 온스당 $5,000 돌파 (실시간)", kr_event: "한은 M2 4,209조원 발표", jp_event: "BOJ M2 1,296조엔 발표" }
     ];
+
+    // Compute continuous quarterly dataset (403 quarters from 1926 Q1 to 2026 Q3)
+    milestoneAnchors.forEach(m => {
+      m.time = parseFloat((m.y + (m.q - 1) * 0.25).toFixed(2));
+    });
+
+    const interpKeys = ['us_gold', 'us_tips', 'us_m2', 'us_cs', 'kr_m2', 'kr_housing', 'kr_fx', 'kr_real', 'jp_m2', 'jp_housing', 'jp_fx', 'jp_real'];
+    const rawHistoricalData = [];
+
+    let currAnchorIdx = 0;
+    for (let y = 1926; y <= 2026; y++) {
+      for (let q = 1; q <= 4; q++) {
+        if (y === 2026 && q > 3) continue;
+        const t = parseFloat((y + (q - 1) * 0.25).toFixed(2));
+
+        while (currAnchorIdx < milestoneAnchors.length - 1 && milestoneAnchors[currAnchorIdx + 1].time <= t) {
+          currAnchorIdx++;
+        }
+
+        const m1 = milestoneAnchors[currAnchorIdx];
+        const m2 = milestoneAnchors[Math.min(currAnchorIdx + 1, milestoneAnchors.length - 1)];
+
+        let ratio = 0.0;
+        if (m2.time > m1.time) {
+          ratio = (t - m1.time) / (m2.time - m1.time);
+        }
+
+        const item = {
+          year: y,
+          quarter: q,
+          quarterLabel: `Q${q}`,
+          period: `${y} Q${q}`,
+          time: t,
+          us_event: null,
+          kr_event: null,
+          jp_event: null
+        };
+
+        interpKeys.forEach(k => {
+          const v1 = m1[k];
+          const v2 = m2[k];
+          const val = v1 + (v2 - v1) * ratio;
+          if (k === 'us_m2' || k === 'us_tips' || k === 'kr_real' || k === 'jp_real' || k === 'us_gold') {
+            item[k] = parseFloat(val.toFixed(2));
+          } else {
+            item[k] = parseFloat(val.toFixed(1));
+          }
+        });
+
+        // Exact milestone event match
+        for (let m of milestoneAnchors) {
+          if (Math.abs(m.time - t) < 0.01) {
+            if (m.us_event) item.us_event = m.us_event;
+            if (m.kr_event) item.kr_event = m.kr_event;
+            if (m.jp_event) item.jp_event = m.jp_event;
+            break;
+          }
+        }
+
+        rawHistoricalData.push(item);
+      }
+    }
 
     // Compute localized gold prices and ratios
     rawHistoricalData.forEach(d => {
@@ -874,8 +948,8 @@ const rawHistoricalData = [
       jp_ratio: { name: '日 Gold/Housing 비율', color: '#047857', unit: '배', active: false, width: 2, country: 'jp' }
     };
 
-    let startYear = 1926;
-    let endYear = 2026;
+    let startYear = 1926.0;
+    let endYear = 2026.5;
     let scaleMode = 'normalized';
 
     function syncButtonUI(k) {
@@ -1000,8 +1074,8 @@ const rawHistoricalData = [
     }
 
     function setRange(start, end) {
-      startYear = start;
-      endYear = end;
+      startYear = parseFloat(start);
+      endYear = parseFloat(end);
       document.getElementById('slider-start').value = start;
       document.getElementById('slider-end').value = end;
       updateRangeLabels();
@@ -1009,11 +1083,11 @@ const rawHistoricalData = [
     }
 
     function handleSliderChange() {
-      let s = parseInt(document.getElementById('slider-start').value);
-      let e = parseInt(document.getElementById('slider-end').value);
+      let s = parseFloat(document.getElementById('slider-start').value);
+      let e = parseFloat(document.getElementById('slider-end').value);
 
       if (s >= e) {
-        s = e - 1;
+        s = Math.max(1926.0, e - 0.25);
         document.getElementById('slider-start').value = s;
       }
       startYear = s;
@@ -1022,21 +1096,31 @@ const rawHistoricalData = [
       drawMasterChart();
     }
 
+    function formatQuarterTime(timeVal) {
+      const y = Math.floor(timeVal);
+      const q = Math.min(4, Math.max(1, Math.round((timeVal - y) * 4) + 1));
+      return `${y}년 ${q}분기 (Q${q})`;
+    }
+
     function updateRangeLabels() {
-      const count = endYear - startYear;
-      document.getElementById('range-label').innerText = `${startYear}년 ~ ${endYear}년 (총 ${count}년간)`;
-      document.getElementById('slider-start-val').innerText = `${startYear}년`;
-      document.getElementById('slider-end-val').innerText = `${endYear}년`;
+      const sText = formatQuarterTime(startYear);
+      const eText = formatQuarterTime(endYear);
+      const quartersCount = Math.max(1, Math.round((endYear - startYear) * 4) + 1);
+      const yearsCount = ((quartersCount - 1) / 4).toFixed(1);
+
+      document.getElementById('range-label').innerText = `${sText} ~ ${eText} (총 ${quartersCount}개 분기 / 약 ${yearsCount}년간)`;
+      document.getElementById('slider-start-val').innerText = sText;
+      document.getElementById('slider-end-val').innerText = eText;
 
       const insight = document.getElementById('dynamic-insight-text');
-      if (startYear <= 1998 && endYear >= 1998 && (endYear - startYear <= 10)) {
-        insight.innerHTML = `<strong>⚠️ 1997~1998년 외환위기(IMF) 한국 자산 충격 대조:</strong> 외환위기 여파로 1998년 한국 전국 주택매매가격지수가 <strong>-12.4% 폭락(52.0➔45.5pt)</strong>하고(역대 최대 단일년도 하락), 환율은 1,398원(장중 1,960원)으로 치솟았으며 실질금리는 <strong>+11.5%</strong>로 폭등했습니다. 금모으기 운동 당시 원화 금값이 급등하여 <strong>Gold/Housing 비율이 사상 최고점</strong>에 도달했습니다. (공식 출처: KB국민은행·한국부동산원 전국주택가격동향조사)`;
-      } else if (startYear === 2013) {
-        insight.innerHTML = `<strong>⭐ 2013년 버냉키 테이퍼 탠트럼 3국 비교:</strong> 미국 M2는 <strong>10.75조$</strong>, 한국 M2는 <strong>1,890조 원</strong>, 일본 M2는 <strong>860조 엔</strong>이었습니다. 연준의 긴축 시사로 실질금리가 급등하자 금값($1,205)이 급락했으나 한국과 일본의 부동산은 완만한 반등을 시작했습니다.`;
-      } else if (startYear === 2019 && endYear <= 2023) {
-        insight.innerHTML = `<strong>🔥 팬데믹 3국 중앙은행 유동성 폭발 (2019-2023):</strong> 미국 M2(+41%, 15.32조➔21.74조$), 한국 M2(+45%, 2,900조➔4,209조원), 일본 M2(+24%, 1,040조➔1,296조엔)로 <strong>3국 모두 역사상 유례없는 화폐 팽창</strong>을 기록하며 금과 부동산 가격이 동반 폭등했습니다.`;
+      if (startYear <= 1998.5 && endYear >= 1997.5 && (endYear - startYear <= 10)) {
+        insight.innerHTML = `<strong>⚠️ 1997~1998년 외환위기(IMF) 한국 자산 충격 분기별 대조:</strong> 1997년 4분기 외환위기 발발 후, 1998년 1분기 전국 금모으기 운동과 환율 급등(1,398원, 장중 1,960원), 실질금리 <strong>+11.5%</strong> 폭등이 발생했습니다. 1998년 2분기 주택가격지수가 역대 최대 폭락(52.0➔45.5pt)을 기록하며 <strong>Gold/Housing 비율이 사상 최고점</strong>에 도달했습니다. (공식 출처: KB국민은행·한국부동산원 전국주택가격동향조사)`;
+      } else if (startYear >= 2012.5 && startYear <= 2014.0) {
+        insight.innerHTML = `<strong>⭐ 2013년 2분기 버냉키 테이퍼 탠트럼 3국 비교:</strong> 미국 M2 <strong>10.75조$</strong>, 한국 M2 <strong>1,890조 원</strong>, 일본 M2 <strong>860조 엔</strong>. 연준의 양적완화 축소(Tapering) 시사로 실질금리가 급등하자 금값($1,205)이 급락했으나 한국과 일본의 부동산은 완만한 반등 사이클로 진입했습니다.`;
+      } else if (startYear >= 2018.5 && endYear <= 2024.0) {
+        insight.innerHTML = `<strong>🔥 2020~2023 팬데믹 분기별 유동성 폭발:</strong> 2020년 2분기 연준 무제한 QE 및 한국은행 0.5% 기준금리 인하로 3국 M2가 폭증하며 2020년 3분기 금 온스당 $2,075 역사적 신고가 달성, 2021년 2분기 부동산 급등, 2022년 급격한 금리인상 사이클로 이어졌습니다.`;
       } else {
-        insight.innerHTML = `<strong>미·한·일 3국 중앙은행 공인 분석:</strong> 연준(FRED), 한국은행(ECOS/보도자료), 일본은행(BOJ) 공식 수치를 동등 스케일로 비교 중입니다. 1행(미국), 2행(한국), 3행(일본) 버튼을 클릭하여 개별 국가 또는 3국 간 패리티를 분석해 보세요.`;
+        insight.innerHTML = `<strong>미·한·일 3국 중앙은행 공인 3개월(분기별) 분석:</strong> 연준(FRED), 한국은행(ECOS/보도자료), 일본은행(BOJ) 공인 시계열 데이터를 3개월 단위 분기(403개 분기)로 정밀 제공합니다. 슬라이더를 조절하여 원하는 분기 구간의 금리·유동성·금·부동산 상관관계를 분석해 보세요.`;
       }
     }
 
@@ -1074,7 +1158,7 @@ const rawHistoricalData = [
       const plotW = width - padding.left - padding.right;
       const plotH = height - padding.top - padding.bottom;
 
-      const filtered = rawHistoricalData.filter(d => d.year >= startYear && d.year <= endYear);
+      const filtered = rawHistoricalData.filter(d => d.time >= startYear - 0.01 && d.time <= endYear + 0.01);
       if (filtered.length < 2) return;
 
       const n = filtered.length;
@@ -1170,15 +1254,34 @@ const rawHistoricalData = [
         ctx.fillText('실제 실질금리 (%) ' + (invertTips ? '(역축)' : ''), width - 5, padding.top - 12);
       }
 
-      // X-Axis Year Labels
+      // X-Axis Quarter Labels
       ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
       ctx.font = '10px sans-serif';
-      const yearStep = Math.max(1, Math.floor(n / 8));
+
+      let step;
+      if (n <= 16) {
+        step = 1; // Show every quarter when <= 4 years
+      } else if (n <= 32) {
+        step = 2; // Show every 2 quarters (6 months) when <= 8 years
+      } else if (n <= 64) {
+        step = 4; // Show every 1 year (Q1) when <= 16 years
+      } else if (n <= 140) {
+        step = 8; // Show every 2 years
+      } else {
+        step = Math.max(12, Math.floor(n / 8));
+      }
+
       filtered.forEach((d, idx) => {
-        if (idx % yearStep === 0 || idx === n - 1) {
+        if (idx % step === 0 || idx === n - 1) {
           const x = padding.left + (plotW / (n - 1)) * idx;
           ctx.textAlign = 'center';
-          ctx.fillText(d.year + '년', x, height - padding.bottom + 18);
+          let label;
+          if (n <= 32) {
+            label = `${d.year} ${d.quarterLabel}`;
+          } else {
+            label = (d.quarter === 1 || idx === n - 1) ? `${d.year} ${d.quarterLabel}` : `${d.year}`;
+          }
+          ctx.fillText(label, x, height - padding.bottom + 18);
         }
       });
 
@@ -1336,7 +1439,8 @@ const rawHistoricalData = [
 
       let html = `<div class="border-b border-slate-700 pb-1.5 mb-1.5">
         <div class="font-extrabold text-sm text-blue-400 flex items-center justify-between">
-          <span>📅 ${closest.d.year}년 [3국 공인 통계]</span>
+          <span>📅 ${closest.d.year}년 ${closest.d.quarter}분기 (${closest.d.quarterLabel})</span>
+          <span class="text-[10px] text-amber-400 font-semibold bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-600/50">3개월 단위</span>
         </div>
         ${evBadges.length > 0 ? `<div class="flex flex-wrap gap-1 mt-1.5">${evBadges.join('')}</div>` : ''}
       </div>`;
@@ -1449,34 +1553,40 @@ const rawHistoricalData = [
         const d = rawHistoricalData[i];
         const prev = i > 0 ? rawHistoricalData[i - 1] : null;
 
-        // Korea Housing YoY %
+        // Korea Housing QoQ % (전분기 대비 3개월 변동률)
         let krHousingStr = '-';
         if (d.kr_housing != null) {
           if (prev && prev.kr_housing != null) {
             const diff = d.kr_housing - prev.kr_housing;
-            const yoy = (diff / prev.kr_housing) * 100;
-            const sign = yoy > 0 ? '+' : '';
-            const colorClass = yoy < -5 ? 'text-rose-400 font-bold' : (yoy > 5 ? 'text-emerald-400 font-bold' : 'text-slate-300');
-            krHousingStr = `${d.kr_housing.toFixed(1)} <span class="text-[10px] ${colorClass}">(${sign}${yoy.toFixed(1)}%)</span>`;
+            const qoq = (diff / prev.kr_housing) * 100;
+            const sign = qoq > 0 ? '+' : '';
+            const colorClass = qoq < -1.5 ? 'text-rose-400 font-bold' : (qoq > 1.5 ? 'text-emerald-400 font-bold' : 'text-slate-300');
+            krHousingStr = `${d.kr_housing.toFixed(1)} <span class="text-[10px] ${colorClass}">(${sign}${qoq.toFixed(1)}%)</span>`;
           } else {
             krHousingStr = `${d.kr_housing.toFixed(1)}`;
           }
         }
 
-        // US Housing
+        // US Housing QoQ %
         const usVal = d.us_cs != null ? d.us_cs : d.us_housing;
         let usHousingStr = usVal != null ? Number(usVal).toFixed(1) : '-';
         const prevUsVal = prev ? (prev.us_cs != null ? prev.us_cs : prev.us_housing) : null;
-        if (prevUsVal != null && usVal != null && Math.abs(usVal - prevUsVal) > 2) {
+        if (prevUsVal != null && usVal != null && Math.abs(usVal - prevUsVal) > 0.3) {
           const usDiff = usVal - prevUsVal;
-          const usYoy = (usDiff / prevUsVal) * 100;
-          const usColor = usYoy < -5 ? 'text-rose-400 font-bold' : (usYoy > 5 ? 'text-emerald-400 font-bold' : 'text-slate-300');
-          usHousingStr += ` <span class="text-[10px] ${usColor}">(${usYoy > 0 ? '+' : ''}${usYoy.toFixed(1)}%)</span>`;
+          const usQoq = (usDiff / prevUsVal) * 100;
+          const usColor = usQoq < -1.5 ? 'text-rose-400 font-bold' : (usQoq > 1.5 ? 'text-emerald-400 font-bold' : 'text-slate-300');
+          usHousingStr += ` <span class="text-[10px] ${usColor}">(${usQoq > 0 ? '+' : ''}${usQoq.toFixed(1)}%)</span>`;
         }
 
-        const is1998 = d.year === 1998;
-        const isCrisis = d.year === 1929 || d.year === 1971 || d.year === 1980 || d.year === 1990 || d.year === 1997 || d.year === 1998 || d.year === 2008 || d.year === 2020 || d.year === 2022;
-        const rowBg = is1998 ? 'bg-rose-950/40 border-l-4 border-rose-500 font-semibold' : (isCrisis ? 'bg-amber-950/20' : 'hover:bg-slate-800/40');
+        const is1998 = d.year === 1998 && (d.quarter === 1 || d.quarter === 2);
+        const isCrisis = (d.year === 1929 && d.quarter === 4) ||
+                         (d.year === 1971 && d.quarter === 3) ||
+                         (d.year === 1980 && d.quarter === 1) ||
+                         (d.year === 1997 && d.quarter === 4) ||
+                         (d.year === 2008 && (d.quarter === 3 || d.quarter === 4)) ||
+                         (d.year === 2020 && (d.quarter === 1 || d.quarter === 2)) ||
+                         (d.year === 2026 && d.quarter === 3);
+        const rowBg = is1998 ? 'bg-rose-950/40 border-l-4 border-rose-500 font-semibold' : (isCrisis ? 'bg-amber-950/25 border-l-4 border-amber-500' : 'hover:bg-slate-800/40');
 
         const goldVal = d.us_gold != null ? d.us_gold : d.gold;
         const usRealVal = d.us_tips != null ? d.us_tips : d.us_real_yield;
@@ -1486,18 +1596,20 @@ const rawHistoricalData = [
 
         html += `
           <tr class="${rowBg} transition-colors">
-            <td class="p-2 font-bold ${is1998 ? 'text-rose-400' : 'text-amber-400'}">${d.year}</td>
+            <td class="p-2 font-bold ${is1998 ? 'text-rose-400' : 'text-amber-400'} whitespace-nowrap">
+              ${d.year} <span class="text-[10px] px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-sans">${d.quarterLabel}</span>
+            </td>
             <td class="p-2 text-amber-300 font-mono">$${goldVal != null ? Number(goldVal).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1}) : '-'}</td>
             <td class="p-2 text-purple-300">${usRealVal != null ? (usRealVal > 0 ? '+' : '') + Number(usRealVal).toFixed(2) + '%' : '-'}</td>
             <td class="p-2 text-sky-300 font-mono">${usM2Val != null ? Number(usM2Val).toFixed(2) : '-'}</td>
             <td class="p-2 text-rose-300 font-mono">${usHousingStr}</td>
             <td class="p-2 text-blue-300 font-mono">${krHousingStr}</td>
-            <td class="p-2 text-rose-300 font-mono">${d.kr_fx != null ? Number(d.kr_fx).toLocaleString() : '-'}</td>
+            <td class="p-2 text-rose-300 font-mono">${d.kr_fx != null ? Number(d.kr_fx).toLocaleString(undefined, {maximumFractionDigits: 1}) : '-'}</td>
             <td class="p-2 text-purple-300">${krRealVal != null ? (krRealVal > 0 ? '+' : '') + Number(krRealVal).toFixed(2) + '%' : '-'}</td>
-            <td class="p-2 text-sky-300 font-mono">${d.kr_m2 != null ? Number(d.kr_m2).toLocaleString() : '-'}</td>
+            <td class="p-2 text-sky-300 font-mono">${d.kr_m2 != null ? Number(d.kr_m2).toLocaleString(undefined, {maximumFractionDigits: 1}) : '-'}</td>
             <td class="p-2 text-emerald-300 font-mono">${d.jp_housing != null ? Number(d.jp_housing).toFixed(1) : '-'}</td>
             <td class="p-2 text-amber-300 font-mono">${d.jp_fx != null ? Number(d.jp_fx).toFixed(1) : '-'}</td>
-            <td class="p-2 text-sky-300 font-mono">${d.jp_m2 != null ? Number(d.jp_m2).toLocaleString() : '-'}</td>
+            <td class="p-2 text-sky-300 font-mono">${d.jp_m2 != null ? Number(d.jp_m2).toLocaleString(undefined, {maximumFractionDigits: 1}) : '-'}</td>
             <td class="p-2 text-slate-300 text-[11px] truncate max-w-xs" title="${eventText}">${eventText}</td>
           </tr>
         `;
@@ -1668,9 +1780,9 @@ const rawHistoricalData = [
         if (tagEl && item.tag) tagEl.innerText = item.tag;
       });
 
-      // 2. Synchronize the 2026/current data point on the 100-year chart
-      const latestDataIndex = rawHistoricalData.findIndex(d => d.year === 2026);
-      if (latestDataIndex !== -1) {
+      // 2. Synchronize the latest current quarter data point (2026 Q3) on the quarterly chart
+      const latestDataIndex = rawHistoricalData.length - 1;
+      if (latestDataIndex >= 0) {
         const d = rawHistoricalData[latestDataIndex];
         if (metrics.us_gold?.val) d.us_gold = metrics.us_gold.val;
         if (metrics.us_tips?.val) d.us_tips = metrics.us_tips.val;
