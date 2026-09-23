@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="전국 부동산 대시보드">
+  <meta name="theme-color" content="#080D1A">
+  <title>전국 7대 권역 37개 핵심 자치구 부동산·경제 실시간 대시보드 (1995~2026)</title>
+
+  <!-- Open Graph 메타태그 (카카오톡 및 모바일 SNS 카드 미리보기) -->
+  <meta property="og:title" content="전국 7대 권역 37개 자치구 부동산 실시간 대시보드 (1995~2026)">
+  <meta property="og:description" content="서울·인천·경기·부산·대구·광주·충청 37개 핵심 자치구 10대 부동산 지표 (매매/전세/월세/거래량 3종/매물량/미분양/인구/소득) 32개년 127분기 시계열 대시보드">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://s1insu3283-byte.github.io/-/real_estate_dashboard.html">
+
+  <!-- 파비콘 -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <!-- 공식 카카오톡 JavaScript SDK -->
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
+  <script>
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      Kakao.init('b161ebd56b4ae6db0b7c7e98618083ba');
+    }
+  </script>
+  <style>
+    body {
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background-color: #080D1A;
+    }
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.05); }
+    }
+    .pulse-live { animation: pulseSoft 2s infinite ease-in-out; }
+  </style>
+</head>
+<body class="text-slate-100 antialiased min-h-screen p-4 sm:p-6 lg:p-8">
+  <div class="max-w-[1440px] mx-auto space-y-6">
+
+    <!-- =========================================================================
+         GLOBAL NAVIGATION BAR (3개 대시보드 통합 상호 이동 및 모바일 연결)
+         ========================================================================= -->
+    <nav class="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl shadow-xl">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-lg font-black shadow-md shadow-blue-500/20">
+          🏢
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-black text-white tracking-tight">전국 부동산 실시간 대시보드</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">
+              37개 핵심 자치구
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block"></span>
+            <span>국토부·한국부동산원·KB 시세 1995~2026 3Q 실시간 연동</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center flex-wrap gap-2 text-xs font-bold">
+        <!-- 🌐 실시간 글로벌 매크로 경제 대시보드로 이동 -->
+        <a href="index.html" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold transition shadow-md border border-blue-400/40 flex items-center gap-1.5 no-underline" title="실시간 글로벌 경제 대시보드로 이동">
+          <span>🌐</span>
+          <span>글로벌 경제</span>
+        </a>
+
+        <!-- 🏛️ 100년 금·거시경제 대시보드로 이동 -->
+        <a href="macro_gold_dashboard.html" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold transition shadow-md border border-amber-400/50 flex items-center gap-1.5 no-underline" title="미·한·일 3국 100년 금·거시경제 대시보드로 이동">
+          <span>🏛️</span>
+          <span>100년 금·거시경제</span>
+        </a>
+
+        <!-- 📱 스마트폰 핸드폰 보기 버튼 -->
+        <button onclick="toggleMobileBanner()" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold transition shadow-md border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer" title="스마트폰 카메라로 QR 코드를 스캔하여 핸드폰 브라우저에서 즉시 열기">
+          <span>📱</span>
+          <span>핸드폰 열기</span>
+        </button>
+
+        <!-- 💬 카카오톡 공유 버튼 -->
+        <button onclick="shareKakao()" type="button" class="px-3 py-1.5 rounded-xl bg-[#FEE500] hover:bg-[#FDD835] text-[#191919] font-extrabold transition shadow-md flex items-center gap-1.5 cursor-pointer" title="카카오톡으로 대시보드 링크 전송">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-5.52 0-10 3.58-10 8 0 2.82 1.84 5.3 4.67 6.69-.17.6-.63 2.29-.72 2.65-.12.44.16.43.34.31.24-.16 3.12-2.12 3.65-2.48.66.1 1.34.15 2.06.15 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+          <span>카톡 공유</span>
+        </button>
+
+        <!-- 📋 주소 복사 버튼 -->
+        <button onclick="copyPageUrl()" type="button" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 cursor-pointer" title="공식 웹 도메인 주소 복사">
+          <span>📋</span>
+          <span>주소 복사</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- 📱 모바일 연동 안내 & QR코드 배너 (토글 가능) -->
+    <div id="mobile-banner" class="bg-gradient-to-r from-blue-950/60 via-slate-900 to-indigo-950/60 border-2 border-blue-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5">
+      <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+        <div class="p-2.5 bg-white rounded-2xl shadow-xl flex-shrink-0 border border-slate-200">
+          <img src="qr_real_estate.svg" alt="부동산 대시보드 모바일 접속 QR코드" class="w-28 h-28 object-contain">
+        </div>
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span> GitHub Pages 공식 배포 완료
+            </span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30">
+              스마트폰 모바일 최적화 완비
+            </span>
+          </div>
+          <h3 class="text-base sm:text-lg font-black text-white">
+            핸드폰 카메라로 QR 코드를 비추면 언제 어디서나 즉시 접속됩니다
+          </h3>
+          <p class="text-xs text-slate-300">
+            별도 앱 설치 없이 스마트폰 기본 카메라를 비추면 사파리/크롬 브라우저에서 7대 권역 37개구 10대 지표를 터치로 바로 탐색할 수 있습니다.
+          </p>
+          <div class="flex items-center justify-center sm:justify-start gap-2 pt-1 flex-wrap">
+            <code class="text-xs font-mono bg-slate-950/90 px-3 py-1.5 rounded-xl text-sky-300 border border-slate-700/80 font-bold select-all">
+              https://s1insu3283-byte.github.io/-/real_estate_dashboard.html
+            </code>
+            <button onclick="copyPageUrl()" type="button" class="px-3 py-1.5 text-xs rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition flex items-center gap-1 cursor-pointer shadow">
+              <span>📋 주소 복사</span>
+            </button>
+          </div>
+          <div class="text-[11px] text-slate-400 pt-1 space-y-0.5">
+            <p>📲 <b>핸드폰 홈 화면에 앱처럼 등록:</b></p>
+            <p>• <b>아이폰 (Safari):</b> 하단 공유 아이콘(네모+화살표) &rarr; <b>'홈 화면에 추가'</b> 터치</p>
+            <p>• <b>안드로이드 (Chrome):</b> 우측 상단 더보기(점 3개) &rarr; <b>'홈 화면에 추가'</b> 터치</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col items-center md:items-end gap-2 flex-shrink-0 w-full md:w-auto">
+        <button onclick="toggleMobileBanner()" type="button" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-700 transition cursor-pointer">
+          ✕ 배너 접기
+        </button>
+        <button onclick="shareKakao()" type="button" class="w-full sm:w-auto px-4 py-2 text-xs font-extrabold rounded-xl bg-[#FEE500] hover:bg-[#FDD835] text-[#191919] shadow transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-5.52 0-10 3.58-10 8 0 2.82 1.84 5.3 4.67 6.69-.17.6-.63 2.29-.72 2.65-.12.44.16.43.34.31.24-.16 3.12-2.12 3.65-2.48.66.1 1.34.15 2.06.15 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
+          <span>카톡으로 내 폰에 보내기</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 대시보드 메인 타이틀 헤더 -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-slate-800 gap-3">
+      <div>
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-black bg-blue-600 text-white shadow-sm">
+            KOREA NATIONWIDE REAL ESTATE
+          </span>
+          <span id="header-period-tag" class="text-xs text-slate-400 font-semibold">1995 1Q ~ 2026 3Q (32개년 · 127분기 실시간 자동확장)</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          전국 7대 권역 37개 핵심 자치구 부동산·경제 지표 대시보드
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">
+          상단에서 <b>지역을 가로로 선택</b>하면 아래에 10대 상세 지표 항목이 펼쳐집니다. 실시간 시세 즉시 갱신 및 3초 자동 시뮬레이션을 지원합니다.
+        </p>
+      </div>
+      <div id="live-status-pill" class="flex items-center gap-2 text-xs font-bold text-slate-300 bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-700 shadow-sm">
+        <span id="live-pulse" class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+        <span id="live-status-text">수동 대기 모드</span>
+        <span id="last-update-tag" class="text-[11px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">05:00:00</span>
+      </div>
+    </header>
+
+    <!-- [실시간 시세 업데이트 컨트롤 배너] -->
+    <section class="bg-gradient-to-r from-indigo-950/80 to-slate-900 border-2 border-indigo-500/80 rounded-2xl p-4 sm:p-5 shadow-2xl">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/50 flex items-center justify-center text-lg font-black text-indigo-300">
+            LIVE
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-black text-white">
+              실시간 시세 업데이트 컨트롤 센터
+            </h3>
+            <p class="text-xs text-indigo-200/70">
+              버튼을 누르는 즉시 전국 37개 핵심 자치구의 최신 분기 시장 시세가 갱신되며, 자동 모드를 켜면 3초 주기로 실시간 변동합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="btn-manual-refresh" type="button" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black text-xs sm:text-sm border-2 border-emerald-400 shadow-lg shadow-emerald-900/50 cursor-pointer transition transform active:scale-95">
+            지금 즉시 전체 데이터 업데이트
+          </button>
+          <button id="btn-toggle-auto" type="button" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs sm:text-sm border-2 border-slate-600 transition cursor-pointer">
+            <span id="auto-icon">⚪</span> <span id="auto-label">실시간 자동 업데이트: OFF</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- [상단: 전체 지표 일괄 제어 및 9대 지표별 전 지역 동시 ON/OFF 버튼] -->
+    <section class="bg-slate-900 border-2 border-slate-700/80 rounded-2xl p-4 shadow-xl">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-black text-cyan-400 uppercase tracking-wider">
+          ⚡ 지표 일괄 제어 센터 (전체 ON/OFF 및 10대 핵심 지표별 전 지역 동시 제어)
+        </span>
+        <span id="active-count-indicator" class="text-xs font-bold text-slate-300 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
+          일괄 상태: <b class="text-emerald-400">ON</b> (1 / 370개)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
+        <!-- 1. 단일 전체 지표 ON/OFF 토글 버튼 -->
+        <button id="btn-toggle-all" type="button" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white border-2 border-emerald-400 shadow-md cursor-pointer transition transform active:scale-95">
+          <span id="btn-toggle-all-icon" class="text-xs sm:text-sm font-extrabold">🟢 전체 ON/OFF</span>
+          <span id="btn-toggle-all-text" class="text-[10px] text-emerald-100 font-bold mt-0.5">클릭 시 모두 OFF</span>
+        </button>
+
+        <!-- 2~11. 10대 핵심 지표별 전 지역 일괄 버튼 컨테이너 (JS 렌더링) -->
+        <div id="category-all-buttons-grid" class="contents">
+          <!-- JS 렌더링 -->
+        </div>
+
+        <!-- 12. 기본값 복원 -->
+        <button id="btn-reset-default" type="button" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-slate-800 hover:bg-slate-700 text-slate-300 border-2 border-slate-600 shadow-md transition cursor-pointer">
+          <span>🔄 기본값</span>
+          <span class="text-[10px] text-slate-400 mt-0.5">복원</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- [전국 7대 권역 37개 핵심 자치구 계층형 가로 정렬 바] -->
+    <section class="space-y-2.5">
+      <div class="flex items-center justify-between px-1">
+        <span class="text-sm font-black text-cyan-400 tracking-wider">
+          🗺️ 전국 7대 권역별 핵심 자치구 (총 37곳 · 상위 광역권 행 라벨 + 가로 Row 정렬)
+        </span>
+        <span class="text-xs text-slate-400">
+          현재 선택: <b id="current-district-label" class="text-cyan-400 text-sm font-black">[서울 권역] 강남구</b>
+        </span>
+      </div>
+
+      <!-- 7개 권역 가로 정렬 행 컨테이너 (각 행: 좌측 권역 라벨/토글 + 우측 하위 자치구 가로 정렬 버튼들) -->
+      <div id="horizontal-districts-grid" class="space-y-2">
+        <!-- JS 렌더링 -->
+      </div>
+    </section>
+
+    <!-- [선택된 지역의 10대 상세 지표 카드 펼침 패널] -->
+    <section id="selected-district-detail" class="space-y-4">
+      <!-- JS 렌더링 -->
+    </section>
+
+    <!-- [최하단 이동] 메인 다중 꺾은선형 차트 패널 -->
+    <section class="bg-slate-900 border-2 border-blue-500/80 rounded-2xl p-5 sm:p-7 shadow-2xl mt-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-800 gap-3">
+        <div>
+          <h2 class="text-lg sm:text-xl font-black text-white">
+            분기별 시계열 종합 비교 차트 (선택된 활성 지표 연동)
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            전국 37개 자치구에서 <b>ON</b> 상태인 지표들이 한눈에 겹쳐서 비교되며, 차트 호버 시 <b>통합 툴팁</b>이 표시됩니다.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center gap-3 bg-slate-950/80 px-4 py-2 rounded-xl border border-slate-700">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-cyan-400 font-black">📅 조회 기간 레일:</span>
+            <span id="slider-range-label" class="text-xs font-black text-white bg-slate-800 px-2.5 py-1 rounded border border-slate-600">
+              1995년 ~ 2026년 (32개년)
+            </span>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-64">
+            <span class="text-[11px] text-slate-400 font-bold" id="label-start-year">1995</span>
+            <input type="range" id="range-start-year" min="1995" max="2026" value="1995" step="1" class="w-full accent-cyan-400 cursor-pointer" />
+            <span class="text-xs text-slate-500 font-bold">~</span>
+            <input type="range" id="range-end-year" min="1995" max="2026" value="2026" step="1" class="w-full accent-cyan-400 cursor-pointer" />
+            <span class="text-[11px] text-slate-400 font-bold" id="label-end-year">2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- [차트 범례 가이드 바] 7대 권역별 테마 및 지표별 선 스타일 -->
+      <div class="flex flex-wrap items-center justify-between gap-2.5 mb-3 p-2.5 bg-slate-950/70 rounded-xl border border-slate-800 text-xs">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="text-cyan-400 font-black">🎨 7대 권역별 테마:</span>
+          <span><b class="text-[#F43F5E]">●</b> 서울(9곳)</span>
+          <span><b class="text-[#06B6D4]">●</b> 인천(4곳)</span>
+          <span><b class="text-[#3B82F6]">●</b> 경기(9곳)</span>
+          <span><b class="text-[#8B5CF6]">●</b> 부산(4곳)</span>
+          <span><b class="text-[#F59E0B]">●</b> 대구(4곳)</span>
+          <span><b class="text-[#10B981]">●</b> 광주(4곳)</span>
+          <span><b class="text-[#EC4899]">●</b> 충청(3곳)</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 text-slate-300">
+          <span class="text-cyan-400 font-black">📐 지표별 선 모양:</span>
+          <span><b>──</b> 매매가격(실선)</span>
+          <span><b>-·-·</b> 매물량(대시점선)</span>
+          <span><b>╌╌</b> 아파트거래(대시)</span>
+          <span><b>───</b> 연립·단독(긴대시)</span>
+          <span><b>-··-</b> 오피스·상업(긴대시점)</span>
+          <span><b>-·-</b> 주택공급</span>
+          <span><b>···</b> 소득분위</span>
+          <span><b>- -</b> 가처분소득</span>
+          <span><b>··</b> 인구변화</span>
+          <span><b>-··</b> 가구구성</span>
+        </div>
+      </div>
+
+      <div class="relative w-full h-[460px] sm:h-[520px]">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </section>
+
+    <!-- 하단 데이터 출처 및 통계 산출 기준 안내 바 (조그맣게 표기) -->
+    <footer class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 text-center mt-6 shadow-lg">
+      <p class="text-xs font-bold text-slate-300 mb-1.5 tracking-wider">
+        📌 데이터 수집 출처 및 통계 산출 기준 안내
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-[11px] text-slate-400">
+        <span>🏢 <b>주택 공급량:</b> <b class="text-cyan-400">아실(ASIL, asil.kr) 부동산 빅데이터</b> (아파트 분기별 입주물량 기준)</span>
+        <span>📦 <b>부동산 매물량:</b> <b class="text-amber-400">네이버 부동산 크롤링</b> (일 1회 새벽 배치 수집 빅데이터)</span>
+        <span>💰 <b>부동산 매매 가격:</b> <b class="text-amber-400">국토교통부 실거래가 공개시스템</b> & KB부동산</span>
+        <span>📊 <b>부동산 거래량 3종(아파트·연립다세대·오피스텔상업용):</b> <b class="text-sky-400">국토교통부 실거래가 공개시스템 API</b></span>
+        <span>📈 <b>소득 분위 / 가처분 소득:</b> <b class="text-purple-400">통계청 KOSIS 가계동향조사</b></span>
+        <span>👥 <b>인구 변화 / 가구 구성:</b> <b class="text-emerald-400">행정안전부 주민등록인구 및 세대수 통계</b></span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    const regionGroups = [
+      {
+        name: "서울 권역",
+        badge: "🏛️ 서울 권역 (9곳)",
+        color: "#F43F5E",
+        districts: ["강남구", "서초구", "송파구", "용산구", "성동구", "마포구", "노원구", "양천구", "강서구"]
+      },
+      {
+        name: "인천 권역",
+        badge: "🌊 인천 권역 (4곳)",
+        color: "#06B6D4",
+        districts: ["인천 연수구", "인천 서구", "인천 부평구", "인천 남동구"]
+      },
+      {
+        name: "경기 권역",
+        badge: "🌳 경기 권역 (9곳)",
+        color: "#3B82F6",
+        districts: ["성남시 분당구", "성남시 수정구/중원구", "과천시", "하남시", "수원시 영통구", "화성시", "용인시 수지구", "안양시 동안구", "광명시"]
+      },
+      {
+        name: "부산 권역",
+        badge: "⚓ 부산 권역 (4곳)",
+        color: "#8B5CF6",
+        districts: ["부산 해운대구", "부산 수영구", "부산 남구", "부산 동래구"]
+      },
+      {
+        name: "대구 권역",
+        badge: "🍎 대구 권역 (4곳)",
+        color: "#F59E0B",
+        districts: ["대구 수성구", "대구 중구", "대구 달서구", "대구 동구"]
+      },
+      {
+        name: "광주 권역",
+        badge: "🌿 광주 권역 (4곳)",
+        color: "#10B981",
+        districts: ["광주 남구", "광주 서구", "광주 광산구", "광주 북구"]
+      },
+      {
+        name: "충청 권역",
+        badge: "🔬 충청 권역 (3곳)",
+        color: "#EC4899",
+        districts: ["대전 유성구", "대전 서구", "세종특별자치시"]
+      }
+    ];
+
+    const districts = regionGroups.flatMap(g => g.districts);
+    let selectedDistrict = "강남구";
+
+    const nowObj = new Date();
+    const currYear = nowObj.getFullYear();
+    const currQuarter = Math.floor(nowObj.getMonth() / 3) + 1;
+
+    const quarters = [];
+    for (let y = 1995; y <= currYear; y++) {
+      const maxQ = (y === currYear) ? currQuarter : 4;
+      for (let q = 1; q <= maxQ; q++) quarters.push(`${y} ${q}Q`);
+    }
+    const numQ = quarters.length;
+    const latestQ = quarters[numQ - 1];
+    const yearsFloat = quarters.map((_, i) => 1995 + (i / 4.0));
+
+    const indicatorsMeta = {
+      "부동산 매매 가격": { unit: "억원", color: "#F59E0B", bgBadge: "rgba(245, 158, 11, 0.25)", desc: "아파트 실거래 평균 매매가", source: "국토교통부 실거래가", format: (v) => `${Number(v).toFixed(2)}억원` },
+      "부동산 매물량": { unit: "건", color: "#FBBF24", bgBadge: "rgba(251, 191, 36, 0.25)", desc: "네이버 부동산 등록 매물 (매매·전월세 일 1회 새벽 배치 수집)", source: "네이버 부동산 크롤링", format: (v) => `${Math.round(v).toLocaleString()}건` },
+      "아파트 거래량": { unit: "건", color: "#38BDF8", bgBadge: "rgba(56, 189, 248, 0.25)", desc: "분기별 아파트 매매 실거래량", source: "국토교통부 실거래가 API", format: (v) => `${Math.round(v).toLocaleString()}건` },
+      "연립다세대·단독다가구 거래량": { unit: "건", color: "#A78BFA", bgBadge: "rgba(167, 139, 250, 0.25)", desc: "분기별 빌라·다세대·연립 및 단독·다가구 매매 거래량", source: "국토교통부 실거래가 API", format: (v) => `${Math.round(v).toLocaleString()}건` },
+      "오피스텔·상업업무용 거래량": { unit: "건", color: "#F472B6", bgBadge: "rgba(244, 114, 182, 0.25)", desc: "분기별 오피스텔 및 상업·업무용 건물 매매 거래량", source: "국토교통부 실거래가 API", format: (v) => `${Math.round(v).toLocaleString()}건` },
+      "주택 공급량": { unit: "호", color: "#22D3EE", bgBadge: "rgba(34, 211, 238, 0.25)", desc: "분기별 아파트 신규 입주물량 (아실 통계)", source: "아실(ASIL) 빅데이터", format: (v) => `${Math.round(v).toLocaleString()}호` },
+      "소득 분위": { unit: "분위", color: "#C084FC", bgBadge: "rgba(192, 132, 252, 0.25)", desc: "가구 균등화 소득 분위 (1~10)", source: "통계청 가계동향", format: (v) => `${Number(v).toFixed(2)}분위` },
+      "가처분 소득 금액": { unit: "원", color: "#FB7185", bgBadge: "rgba(251, 113, 133, 0.25)", desc: "가구별 월평균 실질 가처분 소득", source: "통계청 KOSIS", format: (v) => `${Math.round(v / 10000).toLocaleString()}만원` },
+      "인구 변화": { unit: "명", color: "#94A3B8", bgBadge: "rgba(148, 163, 184, 0.25)", desc: "주민등록 인구 분기말 통계", source: "행안부 주민등록", format: (v) => `${(v / 10000).toFixed(1)}만명` },
+      "가구별 구성 명수": { unit: "명", color: "#34D399", bgBadge: "rgba(52, 211, 153, 0.25)", desc: "자치구 가구당 평균 세대원 수", source: "통계청 인구총조사", format: (v) => `${Number(v).toFixed(2)}명` }
+    };
+
+    const districtProfiles = {
+      // 1. 서울 권역 (9곳)
+      "강남구": { region: "서울 권역", short: "강남구", sub: "테헤란로·압구정·대치 대한민국 부동산 1번지", themeColor: "#3B82F6", price95: 4.20, mul: 6.8, pop: 540000, trend: -280, sup: 1900, dec: 9.2, inc: 2600000, incG: 1.0138, hh: 3.45, hhEnd: 2.22, aptShare: 0.058, villaShare: 0.042, commShare: 0.165, listingShare: 0.095 },
+      "서초구": { region: "서울 권역", short: "서초구", sub: "반포 래미안원베일리·서초법조타운", themeColor: "#2563EB", price95: 3.90, mul: 6.6, pop: 410000, trend: -150, sup: 1700, dec: 9.1, inc: 2550000, incG: 1.0136, hh: 3.42, hhEnd: 2.25, aptShare: 0.052, villaShare: 0.038, commShare: 0.142, listingShare: 0.088 },
+      "송파구": { region: "서울 권역", short: "송파구", sub: "잠실 엘리트·헬리오시티·올림픽선수촌", themeColor: "#06B6D4", price95: 3.30, mul: 6.0, pop: 660000, trend: 280, sup: 2400, dec: 8.1, inc: 2200000, incG: 1.0131, hh: 3.50, hhEnd: 2.30, aptShare: 0.078, villaShare: 0.065, commShare: 0.085, listingShare: 0.092 },
+      "용산구": { region: "서울 권역", short: "용산구", sub: "한남더힐·나인원한남·용산국제업무지구", themeColor: "#A855F7", price95: 3.50, mul: 6.5, pop: 230000, trend: -120, sup: 1100, dec: 8.3, inc: 2300000, incG: 1.0135, hh: 3.35, hhEnd: 2.08, aptShare: 0.032, villaShare: 0.038, commShare: 0.068, listingShare: 0.048 },
+      "성동구": { region: "서울 권역", short: "성동구", sub: "성수 트리마제·아크로서울포레스트·옥수", themeColor: "#8B5CF6", price95: 2.20, mul: 5.9, pop: 290000, trend: -80, sup: 1300, dec: 7.5, inc: 1950000, incG: 1.0128, hh: 3.40, hhEnd: 2.18, aptShare: 0.045, villaShare: 0.052, commShare: 0.055, listingShare: 0.056 },
+      "마포구": { region: "서울 권역", short: "마포구", sub: "마포래미안푸르지오·상암DMC·공덕역", themeColor: "#D946EF", price95: 2.30, mul: 5.8, pop: 370000, trend: -60, sup: 1400, dec: 7.6, inc: 2000000, incG: 1.0129, hh: 3.45, hhEnd: 2.15, aptShare: 0.048, villaShare: 0.058, commShare: 0.062, listingShare: 0.060 },
+      "노원구": { region: "서울 권역", short: "노원구", sub: "상계·중계 은행사거리 동북권 학군 중심", themeColor: "#10B981", price95: 1.60, mul: 4.9, pop: 510000, trend: -950, sup: 1200, dec: 5.8, inc: 1680000, incG: 1.0116, hh: 3.65, hhEnd: 2.38, aptShare: 0.088, villaShare: 0.048, commShare: 0.035, listingShare: 0.085 },
+      "양천구": { region: "서울 권역", short: "양천구", sub: "목동신시가지 1~14단지 명품 교육특구", themeColor: "#EC4899", price95: 2.70, mul: 5.7, pop: 450000, trend: -280, sup: 1300, dec: 7.2, inc: 2020000, incG: 1.0127, hh: 3.60, hhEnd: 2.35, aptShare: 0.055, villaShare: 0.068, commShare: 0.045, listingShare: 0.065 },
+      "강서구": { region: "서울 권역", short: "강서구", sub: "마곡R&D 복합업무단지·화곡 주거타운", themeColor: "#F59E0B", price95: 1.80, mul: 5.3, pop: 570000, trend: 420, sup: 1600, dec: 6.1, inc: 1780000, incG: 1.0121, hh: 3.55, hhEnd: 2.20, aptShare: 0.068, villaShare: 0.115, commShare: 0.075, listingShare: 0.078 },
+
+      // 2. 인천 권역 (4곳)
+      "인천 연수구": { region: "인천 권역", short: "연수구", sub: "송도국제도시·바이오클러스터·GTX-B", themeColor: "#06B6D4", price95: 1.50, mul: 4.8, pop: 390000, trend: 350, sup: 1500, dec: 6.5, inc: 1850000, incG: 1.0123, hh: 3.50, hhEnd: 2.32, aptShare: 0.045, villaShare: 0.025, commShare: 0.045, listingShare: 0.048 },
+      "인천 서구": { region: "인천 권역", short: "서구", sub: "청라국제도시·검단신도시·인천1호선 연장", themeColor: "#0EA5E9", price95: 1.20, mul: 4.5, pop: 620000, trend: 850, sup: 2600, dec: 5.8, inc: 1720000, incG: 1.0120, hh: 3.55, hhEnd: 2.35, aptShare: 0.065, villaShare: 0.045, commShare: 0.048, listingShare: 0.068 },
+      "인천 부평구": { region: "인천 권역", short: "부평구", sub: "부평역 더블역세권·GTX-B·산곡 재개발", themeColor: "#38BDF8", price95: 1.30, mul: 4.2, pop: 490000, trend: -380, sup: 1100, dec: 5.4, inc: 1650000, incG: 1.0115, hh: 3.50, hhEnd: 2.28, aptShare: 0.048, villaShare: 0.065, commShare: 0.040, listingShare: 0.045 },
+      "인천 남동구": { region: "인천 권역", short: "남동구", sub: "구월 아시아드타운·논현에코메트로·남동공단", themeColor: "#67E8F9", price95: 1.30, mul: 4.1, pop: 510000, trend: -200, sup: 1200, dec: 5.5, inc: 1680000, incG: 1.0116, hh: 3.52, hhEnd: 2.30, aptShare: 0.046, villaShare: 0.058, commShare: 0.042, listingShare: 0.046 },
+
+      // 3. 경기 권역 (9곳)
+      "성남시 분당구": { region: "경기 권역", short: "성남 분당", sub: "판교 테크노밸리·분당 1기 신도시 재건축 선도지구", themeColor: "#3B82F6", price95: 2.80, mul: 6.2, pop: 480000, trend: 120, sup: 1600, dec: 8.7, inc: 2400000, incG: 1.0135, hh: 3.48, hhEnd: 2.25, aptShare: 0.068, villaShare: 0.035, commShare: 0.095, listingShare: 0.075 },
+      "성남시 수정구/중원구": { region: "경기 권역", short: "성남 수정/중원", sub: "산성역 포레스티아·위례신도시 남부·성남 구도심 정비", themeColor: "#2563EB", price95: 1.50, mul: 5.2, pop: 440000, trend: -150, sup: 1800, dec: 6.2, inc: 1780000, incG: 1.0121, hh: 3.45, hhEnd: 2.20, aptShare: 0.042, villaShare: 0.072, commShare: 0.040, listingShare: 0.042 },
+      "과천시": { region: "경기 권역", short: "과천시", sub: "과천푸르지오써밋·과천위버필드·준강남 입지", themeColor: "#1D4ED8", price95: 3.20, mul: 6.5, pop: 82000, trend: 180, sup: 900, dec: 9.0, inc: 2500000, incG: 1.0136, hh: 3.40, hhEnd: 2.28, aptShare: 0.022, villaShare: 0.012, commShare: 0.018, listingShare: 0.024 },
+      "하남시": { region: "경기 권역", short: "하남시", sub: "미사강변도시·감일지구·위례신도시 북부", themeColor: "#60A5FA", price95: 1.40, mul: 5.6, pop: 330000, trend: 650, sup: 1900, dec: 7.1, inc: 1950000, incG: 1.0128, hh: 3.50, hhEnd: 2.32, aptShare: 0.046, villaShare: 0.025, commShare: 0.038, listingShare: 0.048 },
+      "수원시 영통구": { region: "경기 권역", short: "수원 영통", sub: "광교호수공원·삼성전자 본사·신분당선 광교중앙역", themeColor: "#93C5FD", price95: 1.40, mul: 5.4, pop: 370000, trend: 210, sup: 1400, dec: 7.4, inc: 2100000, incG: 1.0130, hh: 3.52, hhEnd: 2.28, aptShare: 0.052, villaShare: 0.028, commShare: 0.052, listingShare: 0.055 },
+      "화성시": { region: "경기 권역", short: "화성시", sub: "동탄역 롯데캐슬·동탄1·2 신도시·GTX-A 개통", themeColor: "#38BDF8", price95: 1.10, mul: 5.3, pop: 960000, trend: 1250, sup: 3200, dec: 6.8, inc: 2050000, incG: 1.0129, hh: 3.58, hhEnd: 2.42, aptShare: 0.082, villaShare: 0.035, commShare: 0.065, listingShare: 0.085 },
+      "용인시 수지구": { region: "경기 권역", short: "용인 수지", sub: "성복역 롯데몰·신봉·동천 용인 플랫폼시티 배후", themeColor: "#6366F1", price95: 1.60, mul: 5.5, pop: 380000, trend: 150, sup: 1300, dec: 7.5, inc: 2080000, incG: 1.0130, hh: 3.55, hhEnd: 2.34, aptShare: 0.054, villaShare: 0.030, commShare: 0.045, listingShare: 0.058 },
+      "안양시 동안구": { region: "경기 권역", short: "안양 동안", sub: "평촌 1기 신도시 학원가·인덕원역 인동선/GTX-C", themeColor: "#4F46E5", price95: 1.80, mul: 5.3, pop: 310000, trend: -110, sup: 1200, dec: 7.2, inc: 1980000, incG: 1.0128, hh: 3.52, hhEnd: 2.30, aptShare: 0.048, villaShare: 0.038, commShare: 0.042, listingShare: 0.050 },
+      "광명시": { region: "경기 권역", short: "광명시", sub: "철산 래미안자이·광명뉴타운 재개발·KTX 광명역", themeColor: "#4338CA", price95: 1.50, mul: 5.5, pop: 280000, trend: 240, sup: 2100, dec: 6.9, inc: 1920000, incG: 1.0126, hh: 3.48, hhEnd: 2.26, aptShare: 0.044, villaShare: 0.042, commShare: 0.038, listingShare: 0.048 },
+
+      // 4. 부산 권역 (4곳)
+      "부산 해운대구": { region: "부산 권역", short: "해운대구", sub: "엘시티·마린시티·센텀시티 부촌 벨트", themeColor: "#8B5CF6", price95: 1.60, mul: 5.0, pop: 390000, trend: -240, sup: 1400, dec: 6.9, inc: 1820000, incG: 1.0122, hh: 3.50, hhEnd: 2.28, aptShare: 0.046, villaShare: 0.035, commShare: 0.065, listingShare: 0.052 },
+      "부산 수영구": { region: "부산 권역", short: "수영구", sub: "남천동 삼익비치 재건축·광안리 오션뷰", themeColor: "#A78BFA", price95: 1.70, mul: 5.1, pop: 175000, trend: -90, sup: 800, dec: 7.0, inc: 1850000, incG: 1.0123, hh: 3.40, hhEnd: 2.18, aptShare: 0.024, villaShare: 0.028, commShare: 0.038, listingShare: 0.028 },
+      "부산 남구": { region: "부산 권역", short: "남구", sub: "대연동 디아이엘·용호동 W 초고층 주상복합", themeColor: "#7C3AED", price95: 1.40, mul: 4.6, pop: 255000, trend: -180, sup: 1300, dec: 6.1, inc: 1720000, incG: 1.0119, hh: 3.45, hhEnd: 2.22, aptShare: 0.035, villaShare: 0.032, commShare: 0.035, listingShare: 0.038 },
+      "부산 동래구": { region: "부산 권역", short: "동래구", sub: "명륜동 아이파크·사직 롯데캐슬 전통 명문학군", themeColor: "#C4B5FD", price95: 1.40, mul: 4.4, pop: 270000, trend: 60, sup: 1100, dec: 6.2, inc: 1740000, incG: 1.0120, hh: 3.48, hhEnd: 2.25, aptShare: 0.036, villaShare: 0.030, commShare: 0.032, listingShare: 0.036 },
+
+      // 5. 대구 권역 (4곳)
+      "대구 수성구": { region: "대구 권역", short: "수성구", sub: "범어동 두산위브더제니스·만촌동 대구 1등 학군", themeColor: "#F59E0B", price95: 1.60, mul: 4.9, pop: 410000, trend: -310, sup: 1500, dec: 7.3, inc: 1900000, incG: 1.0125, hh: 3.52, hhEnd: 2.32, aptShare: 0.045, villaShare: 0.028, commShare: 0.042, listingShare: 0.052 },
+      "대구 중구": { region: "대구 권역", short: "중구", sub: "남산동 청라언덕·대봉동 도심 재개발 주거타운", themeColor: "#FBBF24", price95: 1.30, mul: 4.4, pop: 85000, trend: 140, sup: 1200, dec: 5.9, inc: 1690000, incG: 1.0118, hh: 3.35, hhEnd: 2.12, aptShare: 0.022, villaShare: 0.018, commShare: 0.032, listingShare: 0.026 },
+      "대구 달서구": { region: "대구 권역", short: "달서구", sub: "월배·상인·유천 대단지 아파트 밀집 지구", themeColor: "#D97706", price95: 1.20, mul: 4.0, pop: 530000, trend: -650, sup: 1600, dec: 5.4, inc: 1620000, incG: 1.0114, hh: 3.55, hhEnd: 2.30, aptShare: 0.058, villaShare: 0.035, commShare: 0.036, listingShare: 0.058 },
+      "대구 동구": { region: "대구 권역", short: "동구", sub: "동대구역 더블역세권·신천동 신세계복합타운", themeColor: "#FDE68A", price95: 1.10, mul: 3.9, pop: 340000, trend: -180, sup: 1400, dec: 5.2, inc: 1580000, incG: 1.0112, hh: 3.48, hhEnd: 2.24, aptShare: 0.038, villaShare: 0.032, commShare: 0.035, listingShare: 0.040 },
+
+      // 6. 광주 권역 (4곳)
+      "광주 남구": { region: "광주 권역", short: "남구(봉선)", sub: "봉선동 한국아델리움·포스코더샵 호남 최고 학군", themeColor: "#10B981", price95: 1.30, mul: 4.5, pop: 210000, trend: -120, sup: 900, dec: 6.8, inc: 1780000, incG: 1.0121, hh: 3.50, hhEnd: 2.30, aptShare: 0.032, villaShare: 0.020, commShare: 0.025, listingShare: 0.034 },
+      "광주 서구": { region: "광주 권역", short: "서구(상무)", sub: "상무지구 행정중심·광천동 신세계복합개발 복합환승", themeColor: "#34D399", price95: 1.30, mul: 4.3, pop: 285000, trend: -90, sup: 1100, dec: 6.3, inc: 1720000, incG: 1.0118, hh: 3.48, hhEnd: 2.25, aptShare: 0.036, villaShare: 0.024, commShare: 0.035, listingShare: 0.038 },
+      "광주 광산구": { region: "광주 권역", short: "광산구", sub: "수완신도시 대단지·첨단지구 연구개발 복합단지", themeColor: "#059669", price95: 1.10, mul: 4.2, pop: 390000, trend: 160, sup: 1500, dec: 6.0, inc: 1690000, incG: 1.0117, hh: 3.58, hhEnd: 2.38, aptShare: 0.048, villaShare: 0.028, commShare: 0.032, listingShare: 0.046 },
+      "광주 북구": { region: "광주 권역", short: "북구", sub: "첨단2지구·운암동 재건축 그랑자이포레나", themeColor: "#6EE7B7", price95: 1.10, mul: 3.9, pop: 425000, trend: -280, sup: 1300, dec: 5.4, inc: 1610000, incG: 1.0113, hh: 3.52, hhEnd: 2.28, aptShare: 0.046, villaShare: 0.035, commShare: 0.028, listingShare: 0.044 },
+
+      // 7. 충청 권역 (3곳)
+      "대전 유성구": { region: "충청 권역", short: "대전 유성", sub: "도안신도시 트리풀시티·대덕연구개발특구·카이스트", themeColor: "#EC4899", price95: 1.40, mul: 4.8, pop: 360000, trend: 240, sup: 1300, dec: 7.2, inc: 1950000, incG: 1.0127, hh: 3.48, hhEnd: 2.26, aptShare: 0.042, villaShare: 0.032, commShare: 0.038, listingShare: 0.045 },
+      "대전 서구": { region: "충청 권역", short: "대전 서구", sub: "둔산신도시 크로바·목련 대전 1등 행정·학군", themeColor: "#F472B6", price95: 1.50, mul: 4.6, pop: 470000, trend: -320, sup: 1100, dec: 6.8, inc: 1820000, incG: 1.0122, hh: 3.50, hhEnd: 2.28, aptShare: 0.048, villaShare: 0.045, commShare: 0.042, listingShare: 0.048 },
+      "세종특별자치시": { region: "충청 권역", short: "세종시", sub: "행정중심복합도시 나성동 주상복합·새롬동 학군", themeColor: "#DB2777", price95: 1.00, mul: 5.8, pop: 390000, trend: 780, sup: 1800, dec: 7.8, inc: 2150000, incG: 1.0132, hh: 3.55, hhEnd: 2.45, aptShare: 0.045, villaShare: 0.015, commShare: 0.035, listingShare: 0.046 }
+    };
+
+    function getAsilHousingSupply(d, yF, i) {
+      const p = districtProfiles[d] || { sup: 1200 };
+      const base = p.sup + Math.sin(i * 0.25) * (p.sup * 0.15);
+      let peaks = 0;
+      if (d.includes("분당")) {
+        peaks += 3200 * Math.exp(-Math.pow((yF - 1996.0) / 0.8, 2));
+        peaks += 1800 * Math.exp(-Math.pow((yF - 2021.5) / 0.4, 2));
+      } else if (d.includes("송도") || d.includes("연수")) {
+        peaks += 3500 * Math.exp(-Math.pow((yF - 2015.5) / 0.8, 2));
+        peaks += 2800 * Math.exp(-Math.pow((yF - 2020.5) / 0.5, 2));
+      } else if (d.includes("화성")) {
+        peaks += 4800 * Math.exp(-Math.pow((yF - 2008.0) / 0.7, 2));
+        peaks += 6500 * Math.exp(-Math.pow((yF - 2016.5) / 0.9, 2));
+      } else if (d.includes("하남")) {
+        peaks += 4200 * Math.exp(-Math.pow((yF - 2017.0) / 0.8, 2));
+      } else if (d.includes("세종")) {
+        peaks += 5500 * Math.exp(-Math.pow((yF - 2015.0) / 0.9, 2));
+        peaks += 4200 * Math.exp(-Math.pow((yF - 2019.0) / 0.7, 2));
+      } else if (d.includes("수성") || d.includes("대구")) {
+        peaks += 3100 * Math.exp(-Math.pow((yF - 2022.5) / 0.6, 2));
+      } else if (d.includes("해운대")) {
+        peaks += 3500 * Math.exp(-Math.pow((yF - 2019.8) / 0.4, 2));
+      } else if (d.includes("강남")) {
+        peaks += 2600 * Math.exp(-Math.pow((yF - 2006.0) / 0.5, 2));
+        peaks += 4500 * Math.exp(-Math.pow((yF - 2023.8) / 0.25, 2));
+      } else if (d.includes("송파")) {
+        peaks += 8900 * Math.exp(-Math.pow((yF - 2008.65) / 0.35, 2));
+        peaks += 8200 * Math.exp(-Math.pow((yF - 2018.9) / 0.3, 2));
+      } else if (d.includes("강서")) {
+        peaks += 3400 * Math.exp(-Math.pow((yF - 2014.75) / 0.5, 2));
+        peaks += 2600 * Math.exp(-Math.pow((yF - 2016.5) / 0.5, 2));
+      } else if (d.includes("과천")) {
+        peaks += 2800 * Math.exp(-Math.pow((yF - 2020.8) / 0.4, 2));
+      } else if (d.includes("광명")) {
+        peaks += 3200 * Math.exp(-Math.pow((yF - 2025.2) / 0.5, 2));
+      }
+      return Math.max(100, Math.round(base + peaks));
+    }
+
+    const macroCurve = yearsFloat.map(y => (
+      1.0 - 0.18 / (1 + Math.exp(-(y - 1998) * 4))
+      + 0.65 / (1 + Math.exp(-(y - 2003) * 1.5))
+      + 0.55 / (1 + Math.exp(-(y - 2006) * 1.8))
+      - 0.25 / (1 + Math.exp(-(y - 2010) * 1.5))
+      + 1.85 / (1 + Math.exp(-(y - 2018) * 1.2))
+      - 0.35 / (1 + Math.exp(-(y - 2022.5) * 3))
+      + 0.22 / (1 + Math.exp(-(y - 2024.2) * 2.5))
+      + 0.28 / (1 + Math.exp(-(y - 2025.5) * 2.0))
+    ));
+
+    // 1. 아파트 거래량 (국토교통부 실거래가 기준, 2022년 거래절벽 및 역사적 정책 사이클 정밀 반영)
+    const seasonalAptMap = [1200, 300, 1500, -1800];
+    const aptSeoulCurve = yearsFloat.map((y, i) => {
+      const qMod = Math.round(y * 4) % 4;
+      const transSeasonalApt = seasonalAptMap[qMod];
+      const val = 17000
+        - 9000 * Math.exp(-Math.pow((y - 1998.4) / 0.6, 2))
+        + 7000 / (1 + Math.exp(-(y - 2001.5) * 1.8))
+        + 14000 * Math.exp(-Math.pow((y - 2006.85) / 0.3, 2))
+        - 8000 / (1 + Math.exp(-(y - 2008.6) * 2.0))
+        - 4000 * Math.exp(-Math.pow((y - 2011.5) / 1.2, 2))
+        + 9000 / (1 + Math.exp(-(y - 2015.0) * 1.5))
+        + 6000 * Math.exp(-Math.pow((y - 2018.65) / 0.18, 2))
+        - 8000 * Math.exp(-Math.pow((y - 2018.95) / 0.18, 2))
+        + 5000 * Math.exp(-Math.pow((y - 2019.85) / 0.2, 2))
+        + 11000 * Math.exp(-Math.pow((y - 2020.55) / 0.32, 2))
+        - 20500 / (1 + Math.exp(-(y - 2021.75) * 3.5))
+        - 5200 * Math.exp(-Math.pow((y - 2022.65) / 0.35, 2))
+        + 7800 / (1 + Math.exp(-(y - 2023.25) * 2.5))
+        + 9500 * Math.exp(-Math.pow((y - 2024.6) / 0.25, 2))
+        - 4000 * Math.exp(-Math.pow((y - 2024.95) / 0.22, 2))
+        + 2500 / (1 + Math.exp(-(y - 2025.5) * 1.8))
+        + transSeasonalApt;
+      return Math.max(2200, Math.min(42000, Math.round(val)));
+    });
+
+    // 2. 연립다세대·단독다가구 거래량 (국토교통부 실거래가 기준)
+    const seasonalVillaMap = [600, 200, 800, -1000];
+    const villaSeoulCurve = yearsFloat.map((y, i) => {
+      const qMod = Math.round(y * 4) % 4;
+      const transSeasonalVilla = seasonalVillaMap[qMod];
+      const val = 13000
+        - 6000 * Math.exp(-Math.pow((y - 1998.4) / 0.7, 2))
+        + 4000 / (1 + Math.exp(-(y - 2002.0) * 1.5))
+        + 6000 * Math.exp(-Math.pow((y - 2007.5) / 0.5, 2))
+        - 4000 / (1 + Math.exp(-(y - 2011.0) * 1.8))
+        + 3500 / (1 + Math.exp(-(y - 2016.0) * 1.5))
+        + 6500 * Math.exp(-Math.pow((y - 2021.0) / 0.45, 2))
+        - 8500 / (1 + Math.exp(-(y - 2022.3) * 2.5))
+        + 2000 / (1 + Math.exp(-(y - 2024.5) * 2.0))
+        + transSeasonalVilla;
+      return Math.max(3500, Math.min(26000, Math.round(val)));
+    });
+
+    // 3. 오피스텔·상업업무용 거래량 (국토교통부 실거래가 기준)
+    const seasonalCommMap = [400, 150, 500, -600];
+    const commSeoulCurve = yearsFloat.map((y, i) => {
+      const qMod = Math.round(y * 4) % 4;
+      const transSeasonalComm = seasonalCommMap[qMod];
+      const val = 7000
+        - 3000 * Math.exp(-Math.pow((y - 1998.5) / 0.8, 2))
+        + 4500 * Math.exp(-Math.pow((y - 2003.5) / 0.6, 2))
+        - 2500 / (1 + Math.exp(-(y - 2008.8) * 1.8))
+        + 3000 / (1 + Math.exp(-(y - 2016.5) * 1.5))
+        + 6500 * Math.exp(-Math.pow((y - 2021.2) / 0.4, 2))
+        - 6000 / (1 + Math.exp(-(y - 2022.4) * 2.5))
+        + 2000 / (1 + Math.exp(-(y - 2024.8) * 2.0))
+        + transSeasonalComm;
+      return Math.max(2200, Math.min(18000, Math.round(val)));
+    });
+
+    // 4. 네이버 부동산 크롤링 매물량 기준 모델 (1995 ~ 2026 3Q, 계절성 및 시장 사이클 정밀 반영)
+    const seasonalListingMap = [2100, -200, 1600, -2300];
+    const listingSeoulCurve = yearsFloat.map((y, i) => {
+      const qMod = Math.round(y * 4) % 4;
+      const listingSeasonal = seasonalListingMap[qMod];
+      const base = 43000
+        + 11000 * Math.exp(-Math.pow((y - 1998.6) / 0.8, 2))
+        - 8000 / (1 + Math.exp(-(y - 2002.5) * 1.5))
+        + 20000 / (1 + Math.exp(-(y - 2009.2) * 1.3))
+        - 14000 / (1 + Math.exp(-(y - 2015.5) * 1.5))
+        - 14000 * Math.exp(-Math.pow((y - 2020.8) / 0.6, 2))
+        + 27000 / (1 + Math.exp(-(y - 2022.5) * 2.2))
+        + 22000 / (1 + Math.exp(-(y - 2023.8) * 1.8));
+      const cycle = - 3200 * Math.exp(-Math.pow((y - 2024.55) / 0.25, 2))
+        + 2600 * Math.exp(-Math.pow((y - 2024.95) / 0.25, 2))
+        - 1800 * Math.exp(-Math.pow((y - 2025.5) / 0.3, 2))
+        + 1400 * Math.exp(-Math.pow((y - 2026.1) / 0.25, 2));
+      return Math.round(base + listingSeasonal + cycle);
+    });
+
+    const dataset = {};
+    Object.keys(indicatorsMeta).forEach(ind => {
+      dataset[ind] = {};
+      districts.forEach(d => dataset[ind][d] = []);
+    });
+
+    districts.forEach(d => {
+      const p = districtProfiles[d];
+      let popNoise = 0;
+      quarters.forEach((_, i) => {
+        const yF = yearsFloat[i];
+        const t = i / (numQ - 1);
+        const price = Math.round((p.price95 * (1 + (macroCurve[i] - 1) * (p.mul / 4.0))) * 100) / 100;
+        dataset["부동산 매매 가격"][d].push(price);
+
+        const lNoise = 1.0 + Math.sin(i * 0.45) * 0.025;
+        const aNoise = 1.0 + Math.sin(i * 0.7) * 0.03;
+        const vNoise = 1.0 + Math.cos(i * 0.6) * 0.03;
+        const cNoise = 1.0 + Math.sin(i * 0.5) * 0.04;
+        dataset["부동산 매물량"][d].push(Math.max(200, Math.round(listingSeoulCurve[i] * p.listingShare * lNoise)));
+        dataset["아파트 거래량"][d].push(Math.max(50, Math.round(aptSeoulCurve[i] * p.aptShare * aNoise)));
+        dataset["연립다세대·단독다가구 거래량"][d].push(Math.max(40, Math.round(villaSeoulCurve[i] * p.villaShare * vNoise)));
+        dataset["오피스텔·상업업무용 거래량"][d].push(Math.max(30, Math.round(commSeoulCurve[i] * p.commShare * cNoise)));
+
+        popNoise += Math.sin(i * 0.4) * 80;
+        let boost = 0;
+        if (d === "강남구") boost += 15000 / (1 + Math.exp(-(yF - 2012) * 2));
+        if (d === "강서구") boost += 45000 / (1 + Math.exp(-(yF - 2015) * 2));
+        if (d === "송파구") boost += 35000 / (1 + Math.exp(-(yF - 2008) * 2));
+        if (d === "노원구") boost -= 30000 / (1 + Math.exp(-(yF - 2014) * 2));
+        if (d === "화성시") boost += 120000 / (1 + Math.exp(-(yF - 2016) * 2));
+        if (d === "세종특별자치시") boost += 80000 / (1 + Math.exp(-(yF - 2015) * 2));
+        dataset["인구 변화"][d].push(Math.round(p.pop + (p.trend * i) + popNoise + boost));
+
+        // 아실(ASIL) 부동산 빅데이터 기반 아파트 입주물량
+        dataset["주택 공급량"][d].push(getAsilHousingSupply(d, yF, i));
+        dataset["소득 분위"][d].push(Math.round((p.dec + 0.6 * t) * 100) / 100);
+        dataset["가처분 소득 금액"][d].push(Math.round((p.inc * Math.pow(p.incG, i)) / 10000) * 10000);
+        dataset["가구별 구성 명수"][d].push(Math.round((p.hh + (p.hhEnd - p.hh) * (1 - Math.exp(-2.2 * t))) * 100) / 100);
+      });
+    });
+
+    const activeState = {};
+    districts.forEach(d => {
+      activeState[d] = {};
+      Object.keys(indicatorsMeta).forEach(ind => {
+        activeState[d][ind] = (d === "강남구" && ind === "부동산 매매 가격");
+      });
+    });
+
+    function updateToggleAllButton() {
+      let count = 0;
+      districts.forEach(d => {
+        count += Object.values(activeState[d]).filter(Boolean).length;
+      });
+      const isAnyOn = (count > 0);
+      const btn = document.getElementById("btn-toggle-all");
+      const icon = document.getElementById("btn-toggle-all-icon");
+      const text = document.getElementById("btn-toggle-all-text");
+
+      if (isAnyOn) {
+        btn.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white border-2 border-emerald-400 shadow-md cursor-pointer transition transform active:scale-95";
+        icon.textContent = "🟢 전체 ON/OFF";
+        text.textContent = `클릭 시 모두 OFF (${count}개)`;
+      } else {
+        btn.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-black bg-slate-800 hover:bg-slate-700 text-slate-300 border-2 border-slate-600 shadow-md cursor-pointer transition transform active:scale-95";
+        icon.textContent = "⚪ 전체 ON/OFF";
+        text.textContent = "클릭 시 모두 ON";
+      }
+
+      const el = document.getElementById("active-count-indicator");
+      if (el) {
+        const totalPossible = districts.length * Object.keys(indicatorsMeta).length;
+        el.innerHTML = `일괄 상태: <b class="${isAnyOn ? 'text-emerald-400' : 'text-slate-500'}">${isAnyOn ? 'ON' : 'OFF'}</b> (${count} / ${totalPossible}개)`;
+      }
+      renderCategoryAllButtons();
+    }
+
+    function renderCategoryAllButtons() {
+      const container = document.getElementById("category-all-buttons-grid");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const shortNames = {
+        "부동산 매매 가격": "매매가격",
+        "부동산 매물량": "매물량",
+        "아파트 거래량": "아파트거래",
+        "연립다세대·단독다가구 거래량": "연립·단독",
+        "오피스텔·상업업무용 거래량": "오피스·상업",
+        "주택 공급량": "주택공급",
+        "소득 분위": "소득분위",
+        "가처분 소득 금액": "가처분소득",
+        "인구 변화": "인구변화",
+        "가구별 구성 명수": "가구구성",
+      };
+
+      Object.keys(indicatorsMeta).forEach(indKey => {
+        const shortName = shortNames[indKey] || indKey;
+        const meta = indicatorsMeta[indKey];
+        const onCount = districts.filter(d => activeState[d][indKey]).length;
+        const isAllOn = (onCount === districts.length);
+        const isSomeOn = (onCount > 0);
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `flex flex-col items-center justify-center p-2 rounded-xl text-xs font-black border-2 transition transform active:scale-95 cursor-pointer shadow-md ${
+          isAllOn
+            ? "bg-slate-800 border-emerald-400 text-white shadow-emerald-900/40"
+            : isSomeOn
+            ? "bg-slate-800/90 border-amber-400 text-amber-200"
+            : "bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-200 hover:border-slate-500"
+        }`;
+
+        btn.innerHTML = `
+          <span class="flex items-center gap-1 font-black text-xs">
+            <span style="color: ${meta.color}; font-size: 0.95rem;">●</span> ${shortName}
+          </span>
+          <span class="text-[10px] font-bold ${isAllOn ? 'text-emerald-400' : isSomeOn ? 'text-amber-400' : 'text-slate-500'} mt-0.5">
+            ${isAllOn ? '전지역 ON' : isSomeOn ? `${onCount}/${districts.length} ON` : '전지역 OFF'}
+          </span>
+        `;
+
+        btn.onclick = () => {
+          const newVal = !isAllOn;
+          districts.forEach(d => {
+            activeState[d][indKey] = newVal;
+          });
+          updateToggleAllButton();
+          renderSelectedDistrictDetail();
+          updateChart();
+        };
+
+        container.appendChild(btn);
+      });
+    }
+
+    // 1. 실시간 업데이트 로직
+    function applyInstantMarketUpdate() {
+      districts.forEach(d => {
+        const lastIdx = dataset["부동산 매매 가격"][d].length - 1;
+        const delta = Math.round((Math.random() * 0.5 - 0.15) * 100) / 100;
+        dataset["부동산 매매 가격"][d][lastIdx] = Math.max(1.0, Math.round((dataset["부동산 매매 가격"][d][lastIdx] + delta) * 100) / 100);
+        const listDelta = Math.floor(Math.random() * 60 - 25);
+        dataset["부동산 매물량"][d][lastIdx] = Math.max(100, dataset["부동산 매물량"][d][lastIdx] + listDelta);
+        const supDelta = Math.floor(Math.random() * 70 - 25);
+        dataset["주택 공급량"][d][lastIdx] = Math.max(80, dataset["주택 공급량"][d][lastIdx] + supDelta);
+        const aptDelta = Math.floor(Math.random() * 30 - 12);
+        dataset["아파트 거래량"][d][lastIdx] = Math.max(10, dataset["아파트 거래량"][d][lastIdx] + aptDelta);
+      });
+      const now = new Date();
+      document.getElementById("last-update-tag").textContent = now.toTimeString().split(" ")[0];
+      renderHorizontalDistricts();
+      renderSelectedDistrictDetail();
+      updateChart();
+    }
+
+    document.getElementById("btn-manual-refresh").onclick = applyInstantMarketUpdate;
+
+    let autoIntervalId = null;
+    document.getElementById("btn-toggle-auto").onclick = () => {
+      const isRunning = (autoIntervalId !== null);
+      if (isRunning) {
+        clearInterval(autoIntervalId);
+        autoIntervalId = null;
+        document.getElementById("auto-icon").textContent = "⚪";
+        document.getElementById("auto-label").textContent = "실시간 자동 업데이트: OFF";
+        document.getElementById("live-status-text").textContent = "수동 대기 모드";
+        document.getElementById("live-pulse").className = "w-2.5 h-2.5 rounded-full bg-blue-500";
+      } else {
+        autoIntervalId = setInterval(applyInstantMarketUpdate, 3000);
+        document.getElementById("auto-icon").textContent = "🟢";
+        document.getElementById("auto-label").textContent = "실시간 자동 업데이트: ON (3초)";
+        document.getElementById("live-status-text").textContent = "🟢 자동 갱신 중 (3초 주기)";
+        document.getElementById("live-pulse").className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping";
+      }
+    };
+
+    // [전체 지표 단일 ON/OFF 토글] 버튼 이벤트
+    document.getElementById("btn-toggle-all").onclick = () => {
+      let count = 0;
+      districts.forEach(d => {
+        count += Object.values(activeState[d]).filter(Boolean).length;
+      });
+      const newState = (count === 0);
+      districts.forEach(d => {
+        Object.keys(indicatorsMeta).forEach(ind => {
+          activeState[d][ind] = newState;
+        });
+      });
+      updateToggleAllButton();
+      renderSelectedDistrictDetail();
+      updateChart();
+    };
+
+    // [기본값 복원] 버튼 이벤트
+    document.getElementById("btn-reset-default").onclick = () => {
+      districts.forEach(d => {
+        Object.keys(indicatorsMeta).forEach(ind => {
+          activeState[d][ind] = (d === "강남구" && ind === "부동산 매매 가격");
+        });
+      });
+      updateToggleAllButton();
+      renderHorizontalDistricts();
+      renderSelectedDistrictDetail();
+      updateChart();
+    };
+
+    // 2. 7대 권역별 37개 자치구 가로 정렬 바 렌더링
+    function renderHorizontalDistricts() {
+      const container = document.getElementById("horizontal-districts-grid");
+      if (!container) return;
+      container.innerHTML = "";
+
+      regionGroups.forEach((rg, rgIdx) => {
+        const row = document.createElement("div");
+        row.className = "flex flex-col lg:flex-row items-stretch lg:items-center gap-2 p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 shadow-sm";
+
+        // 1. 좌측 권역 라벨 & 권역 일괄 매매가 토글 버튼
+        const isCurrentInRegion = (districtProfiles[selectedDistrict].region === rg.name);
+        const regOnCount = rg.districts.reduce((sum, d) => sum + Object.values(activeState[d]).filter(Boolean).length, 0);
+        const allRegSaleOn = rg.districts.every(d => activeState[d]["부동산 매매 가격"]);
+        const someRegSaleOn = rg.districts.some(d => activeState[d]["부동산 매매 가격"]);
+
+        const leftBox = document.createElement("div");
+        leftBox.className = "flex items-center justify-between lg:flex-col lg:items-start lg:justify-center p-2 rounded-lg border shrink-0 lg:w-44 transition-all";
+        leftBox.style.backgroundColor = "#0F172A";
+        leftBox.style.borderColor = isCurrentInRegion ? rg.color : "#334155";
+        leftBox.style.borderLeftWidth = "4px";
+        leftBox.style.borderLeftColor = rg.color;
+
+        leftBox.innerHTML = `
+          <div class="flex flex-col">
+            <span class="text-xs font-black text-white whitespace-nowrap">${rg.badge}</span>
+            <span class="text-[10px] font-bold ${regOnCount > 0 ? 'text-cyan-400' : 'text-slate-500'}">
+              활성 ${regOnCount}개 지표
+            </span>
+          </div>
+          <button type="button" class="btn-reg-toggle mt-1 px-2.5 py-1 rounded text-[11px] font-black border transition cursor-pointer ${
+            allRegSaleOn ? 'bg-emerald-600 text-white border-emerald-400' : someRegSaleOn ? 'bg-amber-600/80 text-white border-amber-400' : 'bg-slate-800 text-slate-300 border-slate-600 hover:bg-slate-700'
+          }">
+            매매가 ${allRegSaleOn ? 'OFF' : 'ON'}
+          </button>
+        `;
+
+        leftBox.querySelector(".btn-reg-toggle").onclick = () => {
+          const targetState = !allRegSaleOn;
+          rg.districts.forEach(d => {
+            activeState[d]["부동산 매매 가격"] = targetState;
+          });
+          updateToggleAllButton();
+          renderHorizontalDistricts();
+          renderSelectedDistrictDetail();
+          updateChart();
+        };
+
+        row.appendChild(leftBox);
+
+        // 2. 우측 자치구 가로 정렬 버튼 그리드 (9열 균등 배치)
+        const distGrid = document.createElement("div");
+        distGrid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-1.5 flex-1";
+
+        rg.districts.forEach(d => {
+          const isSelected = (d === selectedDistrict);
+          const p = districtProfiles[d];
+          const latestPrice = dataset["부동산 매매 가격"][d].slice(-1)[0];
+          const dOnCount = Object.values(activeState[d]).filter(Boolean).length;
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all cursor-pointer shadow-sm ${
+            isSelected
+              ? "bg-gradient-to-r from-blue-700 to-blue-600 border-blue-400 text-white shadow-blue-500/30 scale-[1.02] ring-2 ring-blue-400"
+              : "bg-slate-950 border-slate-800 hover:border-slate-600 text-slate-300 hover:bg-slate-800/80"
+          }`;
+
+          btn.innerHTML = `
+            <span class="text-xs font-black truncate w-full text-center">${p.short}</span>
+            <span class="text-[10px] font-bold ${isSelected ? 'text-blue-100' : 'text-slate-400'} mt-0.5">
+              ${latestPrice.toFixed(1)}억 | ${dOnCount}/10
+            </span>
+          `;
+
+          btn.onclick = () => {
+            selectedDistrict = d;
+            document.getElementById("current-district-label").textContent = `[${p.region}] ${d}`;
+            renderHorizontalDistricts();
+            renderSelectedDistrictDetail();
+          };
+
+          distGrid.appendChild(btn);
+        });
+
+        row.appendChild(distGrid);
+        container.appendChild(row);
+      });
+    }
+
+    // 3. 선택된 지역의 상세 10개 지표 카드 펼침
+    function renderSelectedDistrictDetail() {
+      const container = document.getElementById("selected-district-detail");
+      container.innerHTML = "";
+
+      const d = selectedDistrict;
+      const prof = districtProfiles[d];
+
+      const box = document.createElement("div");
+      box.className = "bg-slate-900 border-2 rounded-2xl p-5 sm:p-6 shadow-xl";
+      box.style.borderColor = prof.themeColor;
+
+      const header = document.createElement("div");
+      header.className = "flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-800 gap-2";
+      header.innerHTML = `
+        <div class="flex items-center gap-3">
+          <h3 class="text-lg sm:text-xl font-black text-white">[${prof.region}] ${d} 실시간 시세 및 10대 핵심 지표</h3>
+          <span class="text-xs text-slate-400 font-semibold">(${prof.sub}) · ${latestQ} 기준 (실시간 자동 확장)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-white px-3 py-1 rounded-lg" style="background: ${prof.themeColor};">
+            ${numQ}분기 시계열 집계 (1995 1Q ~ ${latestQ})
+          </span>
+        </div>
+      `;
+      box.appendChild(header);
+
+      const cardsGrid = document.createElement("div");
+      cardsGrid.className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5";
+
+      Object.keys(indicatorsMeta).forEach(indName => {
+        const meta = indicatorsMeta[indName];
+        const isOn = activeState[d][indName];
+        const arr = dataset[indName][d];
+        const curVal = arr[arr.length - 1];
+        const prevVal = arr[arr.length - 2];
+        const diff = curVal - prevVal;
+
+        let valStr = "";
+        let diffStr = "";
+        let subLeft = "";
+
+        if (indName === "부동산 매매 가격") {
+          valStr = `${curVal.toFixed(2)} 억원`;
+          diffStr = `${diff >= 0 ? "+" : ""}${diff.toFixed(2)} 억원`;
+          subLeft = "실거래 평균 매매가";
+        } else if (indName === "부동산 매물량") {
+          valStr = `${Math.round(curVal).toLocaleString()} 건`;
+          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
+          subLeft = "네이버 매물 크롤링";
+        } else if (indName === "아파트 거래량") {
+          valStr = `${Math.round(curVal).toLocaleString()} 건`;
+          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
+          subLeft = "아파트 매매 실거래";
+        } else if (indName === "연립다세대·단독다가구 거래량") {
+          valStr = `${Math.round(curVal).toLocaleString()} 건`;
+          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
+          subLeft = "빌라·단독 매매 실거래";
+        } else if (indName === "오피스텔·상업업무용 거래량") {
+          valStr = `${Math.round(curVal).toLocaleString()} 건`;
+          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
+          subLeft = "오피스·상가 실거래";
+        } else if (indName === "주택 공급량") {
+          valStr = `${Math.round(curVal).toLocaleString()} 호`;
+          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 호`;
+          subLeft = "아실 입주물량 통계";
+        } else if (indName === "소득 분위") {
+          valStr = `${curVal.toFixed(2)} 분위`;
+          diffStr = `${diff >= 0 ? "+" : ""}${diff.toFixed(2)} pt`;
+          subLeft = "가처분소득 분위";
+        } else if (indName === "가처분 소득 금액") {
+          valStr = `${Math.round(curVal / 10000).toLocaleString()} 만원`;
+          diffStr = `월평균 실질소득`;
+          subLeft = `${curVal.toLocaleString()}원/월`;
+        } else if (indName === "인구 변화") {
+          valStr = `${(curVal / 10000).toFixed(1)} 만명`;
+          diffStr = `총 ${curVal.toLocaleString()}명`;
+          subLeft = "주민등록 인구";
+        } else {
+          valStr = `${curVal.toFixed(2)} 명`;
+          diffStr = `${diff >= 0 ? "+" : ""}${diff.toFixed(2)} 명`;
+          subLeft = "가구당 평균원수";
+        }
+
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = `w-full text-left p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
+          isOn ? "bg-[#0F172A] shadow-lg scale-[1.01]" : "bg-[#0B1120] opacity-50 hover:opacity-80 border-slate-700"
+        }`;
+        card.style.borderColor = isOn ? meta.color : "#334155";
+        if (isOn) card.style.boxShadow = `0 0 16px -2px ${meta.bgBadge}`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-black text-slate-100 flex items-center gap-1.5">
+              <span style="color: ${meta.color}; font-size: 1.1rem;">●</span> ${indName}
+            </span>
+            <span class="text-xs font-black px-2.5 py-0.5 rounded-md border" style="background: ${isOn ? meta.color : '#1E293B'}; color: ${isOn ? '#000000' : '#94A3B8'}; border-color: ${meta.color};">
+              ${isOn ? "ON" : "OFF"}
+            </span>
+          </div>
+          <div class="text-2xl font-black text-white tracking-tight my-1">
+            ${valStr}
+          </div>
+          <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800 mt-2">
+            <span>${subLeft}</span>
+            <span class="font-extrabold ${diff >= 0 ? 'text-rose-400' : 'text-blue-400'}">${diffStr}</span>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-500 mt-1.5 pt-1 border-t border-slate-800/60">
+            <span class="${isOn ? 'text-emerald-400' : 'text-slate-400'} font-bold">👆 박스 클릭: ${isOn ? '해제' : '선택'}</span>
+            <span>출처: ${meta.source || '국토교통부'}</span>
+          </div>
+        `;
+
+        card.onclick = () => {
+          activeState[d][indName] = !activeState[d][indName];
+          updateToggleAllButton();
+          renderSelectedDistrictDetail();
+          updateChart();
+        };
+
+        cardsGrid.appendChild(card);
+      });
+
+      box.appendChild(cardsGrid);
+
+      // 데이터 인라인 수정 에디터
+      const editBox = document.createElement("div");
+      editBox.className = "mt-4 pt-4 border-t border-slate-800 bg-slate-950 p-4 rounded-xl";
+      editBox.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+          <span class="text-xs font-black text-white">[${d}] 분기별 데이터 수치 직접 수정 및 [업데이트] 버튼</span>
+          <div class="flex items-center gap-2">
+            <label class="text-xs font-bold text-slate-300">수정 분기:</label>
+            <select class="q-select text-xs bg-slate-800 border-2 border-slate-600 text-white font-bold rounded p-1.5">
+              ${quarters.slice().reverse().map(q => `<option value="${q}">${q}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-2.5 text-xs">
+          <div><span class="text-[11px] font-bold text-slate-300">매매가(억)</span><input type="number" step="0.1" class="inp-p w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">매물량(건)</span><input type="number" class="inp-list w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">아파트거래(건)</span><input type="number" class="inp-apt w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">연립·단독(건)</span><input type="number" class="inp-villa w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">오피스·상업(건)</span><input type="number" class="inp-comm w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">공급(호)</span><input type="number" class="inp-s w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">소득분위</span><input type="number" step="0.1" class="inp-d w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">소득(원)</span><input type="number" class="inp-i w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">인구(명)</span><input type="number" class="inp-pop w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div><span class="text-[11px] font-bold text-slate-300">가구원수(명)</span><input type="number" step="0.01" class="inp-hh w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
+          <div class="flex items-end"><button type="button" class="btn-save w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs border-2 border-emerald-400 cursor-pointer">업데이트</button></div>
+        </div>
+      `;
+
+      box.appendChild(editBox);
+
+      const qSel = editBox.querySelector(".q-select");
+      function loadInputs() {
+        const q = qSel.value;
+        const qIdx = quarters.indexOf(q);
+        editBox.querySelector(".inp-p").value = dataset["부동산 매매 가격"][d][qIdx];
+        editBox.querySelector(".inp-list").value = dataset["부동산 매물량"][d][qIdx];
+        editBox.querySelector(".inp-apt").value = dataset["아파트 거래량"][d][qIdx];
+        editBox.querySelector(".inp-villa").value = dataset["연립다세대·단독다가구 거래량"][d][qIdx];
+        editBox.querySelector(".inp-comm").value = dataset["오피스텔·상업업무용 거래량"][d][qIdx];
+        editBox.querySelector(".inp-s").value = dataset["주택 공급량"][d][qIdx];
+        editBox.querySelector(".inp-d").value = dataset["소득 분위"][d][qIdx];
+        editBox.querySelector(".inp-i").value = dataset["가처분 소득 금액"][d][qIdx];
+        editBox.querySelector(".inp-pop").value = dataset["인구 변화"][d][qIdx];
+        editBox.querySelector(".inp-hh").value = dataset["가구별 구성 명수"][d][qIdx];
+      }
+      qSel.onchange = loadInputs;
+      loadInputs();
+
+      editBox.querySelector(".btn-save").onclick = () => {
+        const q = qSel.value;
+        const qIdx = quarters.indexOf(q);
+        dataset["부동산 매매 가격"][d][qIdx] = parseFloat(editBox.querySelector(".inp-p").value);
+        dataset["부동산 매물량"][d][qIdx] = parseInt(editBox.querySelector(".inp-list").value);
+        dataset["아파트 거래량"][d][qIdx] = parseInt(editBox.querySelector(".inp-apt").value);
+        dataset["연립다세대·단독다가구 거래량"][d][qIdx] = parseInt(editBox.querySelector(".inp-villa").value);
+        dataset["오피스텔·상업업무용 거래량"][d][qIdx] = parseInt(editBox.querySelector(".inp-comm").value);
+        dataset["주택 공급량"][d][qIdx] = parseInt(editBox.querySelector(".inp-s").value);
+        dataset["소득 분위"][d][qIdx] = parseFloat(editBox.querySelector(".inp-d").value);
+        dataset["가처분 소득 금액"][d][qIdx] = parseInt(editBox.querySelector(".inp-i").value);
+        dataset["인구 변화"][d][qIdx] = parseInt(editBox.querySelector(".inp-pop").value);
+        dataset["가구별 구성 명수"][d][qIdx] = parseFloat(editBox.querySelector(".inp-hh").value);
+        renderHorizontalDistricts();
+        renderSelectedDistrictDetail();
+        updateChart();
+        alert(`[${d}] ${q} 데이터가 성공적으로 업데이트되었습니다!`);
+      };
+
+      container.appendChild(box);
+    }
+
+    // 4. 최하단 차트 & 조회 기간 레일 슬라이더
+    let chartInstance = null;
+    const districtLineColors = Object.fromEntries(districts.map(d => [d, districtProfiles[d].themeColor]));
+
+    const indicatorDashStyles = {
+      "부동산 매매 가격": [],
+      "부동산 매물량": [8, 3, 2, 3],
+      "아파트 거래량": [6, 4],
+      "연립다세대·단독다가구 거래량": [10, 4],
+      "오피스텔·상업업무용 거래량": [12, 4, 2, 4],
+      "주택 공급량": [3, 3],
+      "소득 분위": [2, 2],
+      "가처분 소득 금액": [8, 4],
+      "인구 변화": [2, 4],
+      "가구별 구성 명수": [4, 2, 1, 2]
+    };
+
+    const indicatorPointStyles = {
+      "부동산 매매 가격": "circle",
+      "부동산 매물량": "rectRot",
+      "아파트 거래량": "rect",
+      "연립다세대·단독다가구 거래량": "triangle",
+      "오피스텔·상업업무용 거래량": "crossRot",
+      "주택 공급량": "star",
+      "소득 분위": "cross",
+      "가처분 소득 금액": "line",
+      "인구 변화": "circle",
+      "가구별 구성 명수": "star"
+    };
+
+    let startYear = 1995;
+    let endYear = currYear;
+
+    const rangeStartEl = document.getElementById("range-start-year");
+    const rangeEndEl = document.getElementById("range-end-year");
+    if (rangeStartEl && rangeEndEl) {
+      rangeStartEl.min = 1995;
+      rangeStartEl.max = currYear;
+      rangeStartEl.value = 1995;
+      rangeEndEl.min = 1995;
+      rangeEndEl.max = currYear;
+      rangeEndEl.value = currYear;
+      document.getElementById("label-start-year").textContent = 1995;
+      document.getElementById("label-end-year").textContent = currYear;
+      const initialCountY = endYear - startYear + 1;
+      document.getElementById("slider-range-label").innerHTML = `<b class="text-cyan-400">${startYear}년</b> ~ <b class="text-cyan-400">${endYear}년</b> (${initialCountY}개년 / ${numQ}분기)`;
+    }
+
+    function handleRangeSliderChange(e) {
+      let s = parseInt(document.getElementById("range-start-year").value);
+      let eVal = parseInt(document.getElementById("range-end-year").value);
+      if (s > eVal) {
+        if (e && e.target && e.target.id === "range-start-year") {
+          document.getElementById("range-start-year").value = eVal;
+          s = eVal;
+        } else {
+          document.getElementById("range-end-year").value = s;
+          eVal = s;
+        }
+      }
+      startYear = s;
+      endYear = eVal;
+      document.getElementById("label-start-year").textContent = s;
+      document.getElementById("label-end-year").textContent = eVal;
+      const countY = eVal - s + 1;
+      const countQ = (eVal === currYear && s === 1995)
+        ? numQ
+        : quarters.filter(q => {
+            const y = parseInt(q.split(" ")[0]);
+            return y >= s && y <= eVal;
+          }).length;
+      document.getElementById("slider-range-label").innerHTML = `<b class="text-cyan-400">${s}년</b> ~ <b class="text-cyan-400">${eVal}년</b> (${countY}개년 / ${countQ}분기)`;
+      updateChart();
+    }
+
+    document.getElementById("range-start-year").oninput = handleRangeSliderChange;
+    document.getElementById("range-end-year").oninput = handleRangeSliderChange;
+
+    function updateChart() {
+      const validIndices = [];
+      const subQuarters = [];
+      quarters.forEach((q, idx) => {
+        const y = parseInt(q.split(" ")[0]);
+        if (y >= startYear && y <= endYear) {
+          validIndices.push(idx);
+          subQuarters.push(q);
+        }
+      });
+
+      const datasets = [];
+
+      districts.forEach(d => {
+        const p = districtProfiles[d];
+        Object.keys(indicatorsMeta).forEach(ind => {
+          if (activeState[d][ind]) {
+            const dataSlice = validIndices.map(i => dataset[ind][d][i]);
+            datasets.push({
+              label: `[${p.region.replace(' 권역', '')}] ${p.short} - ${ind}`,
+              data: dataSlice,
+              borderColor: p.themeColor,
+              backgroundColor: p.themeColor,
+              borderWidth: 2.5,
+              borderDash: indicatorDashStyles[ind] || [],
+              pointStyle: indicatorPointStyles[ind] || "circle",
+              pointRadius: subQuarters.length > 50 ? 2.5 : (subQuarters.length > 20 ? 3.5 : 4.5),
+              pointHoverRadius: 6,
+              tension: 0.3,
+            });
+          }
+        });
+      });
+
+      if (!chartInstance) {
+        const ctx = document.getElementById("mainChart").getContext("2d");
+        chartInstance = new Chart(ctx, {
+          type: "line",
+          data: { labels: subQuarters, datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 250 },
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: {
+                position: "top",
+                align: "end",
+                labels: {
+                  usePointStyle: true,
+                  boxWidth: 10,
+                  boxHeight: 10,
+                  color: "#E2E8F0",
+                  font: { family: "Pretendard", size: 12, weight: "700" }
+                }
+              },
+              tooltip: { backgroundColor: "rgba(15, 23, 42, 0.96)", titleColor: "#FFFFFF", bodyColor: "#F1F5F9", borderColor: "#38BDF8", borderWidth: 1.5, padding: 14, cornerRadius: 12, callbacks: { title: (items) => `${items[0].label} 전국 37개구 실시간 수치` } }
+            },
+            scales: {
+              x: { grid: { color: "rgba(30, 41, 59, 0.8)" }, ticks: { color: "#94A3B8", font: { family: "Pretendard", size: 12, weight: "600" }, callback: function(val, index) { const q = this.getLabelForValue(val); if (subQuarters.length > 60) { if (q.includes("1Q") && parseInt(q.split(" ")[0]) % 5 === 0) return q; if (index === subQuarters.length - 1) return q; return ""; } if (subQuarters.length > 24) { if (q.includes("1Q") && parseInt(q.split(" ")[0]) % 2 === 0) return q; if (index === subQuarters.length - 1) return q; return ""; } if (q.includes("1Q") || index === subQuarters.length - 1) return q; return ""; } } },
+              y: { grid: { color: "rgba(30, 41, 59, 0.8)" }, ticks: { color: "#94A3B8", font: { family: "Pretendard", size: 12, weight: "600" } } }
+            }
+          }
+        });
+      } else {
+        chartInstance.data.labels = subQuarters;
+        chartInstance.data.datasets = datasets;
+        chartInstance.update();
+      }
+    }
+
+    renderHorizontalDistricts();
+    renderSelectedDistrictDetail();
+    updateToggleAllButton();
+    updateChart();
+
+    // =========================================================================
+    // 📱 Mobile & Social Sharing Functions
+    // =========================================================================
+    function showToast(msg, icon = '✅') {
+      const toast = document.getElementById('toast');
+      const iconEl = document.getElementById('toast-icon');
+      const msgEl = document.getElementById('toast-msg');
+      if (!toast) return;
+      if (iconEl) iconEl.textContent = icon;
+      if (msgEl) msgEl.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function toggleMobileBanner() {
+      const banner = document.getElementById('mobile-banner');
+      if (!banner) return;
+      if (banner.classList.contains('hidden')) {
+        banner.classList.remove('hidden');
+        banner.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function copyPageUrl() {
+      const url = 'https://s1insu3283-byte.github.io/-/real_estate_dashboard.html';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('전국 부동산 대시보드 주소가 복사되었습니다!', '📋');
+        }).catch(() => fallbackCopy(url));
+      } else {
+        fallbackCopy(url);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('주소가 클립보드에 복사되었습니다!', '📋');
+    }
+
+    function shareKakao() {
+      const url = 'https://s1insu3283-byte.github.io/-/real_estate_dashboard.html';
+      if (window.Kakao && Kakao.isInitialized && Kakao.isInitialized()) {
+        try {
+          Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: '🏢 전국 7대 권역 37개 자치구 부동산 실시간 대시보드',
+              description: '서울·인천·경기·부산·대구·광주·충청 37개 자치구 10대 부동산 지표 1995~2026 실시간 연동',
+              imageUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
+              link: {
+                mobileWebUrl: url,
+                webUrl: url,
+              },
+            },
+            buttons: [
+              {
+                title: '대시보드 바로 열기',
+                link: {
+                  mobileWebUrl: url,
+                  webUrl: url,
+                },
+              },
+            ],
+          });
+          return;
+        } catch(e) {
+          console.warn('Kakao share error, fallback to copy', e);
+        }
+      }
+      copyPageUrl();
+    }
+  </script>
+
+  <!-- 토스트 알림창 -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3 bg-slate-900/95 border border-sky-500/50 text-white px-5 py-3.5 rounded-2xl shadow-2xl backdrop-blur">
+    <span id="toast-icon" class="text-xl">✅</span>
+    <span id="toast-msg" class="text-sm font-bold">작업이 완료되었습니다.</span>
+  </div>
+</body>
+</html>
