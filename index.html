@@ -2,7 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="매크로 대시보드">
+  <meta name="theme-color" content="#090d16">
   <title>글로벌 매크로 경제 대시보드 | 실시간 금리·환율·통화유동성(M1·M2·Lf·L)·물가 50년 시계열</title>
   
   <!-- Open Graph 메타태그 (카카오톡 및 SNS 공유 시 썸네일/미리보기 카드 표시) -->
@@ -75,6 +79,12 @@
           <polyline points="22,6 12,13 2,6"></polyline>
         </svg>
         <span>이메일 전송</span>
+      </button>
+
+      <!-- 📱 핸드폰 바로 열기 (QR코드 & 주소) -->
+      <button class="btn" id="btnMobileConnect" style="background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; font-weight: 800; border: none; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9px; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4); cursor: pointer;" title="스마트폰 카메라로 QR코드를 스캔하여 핸드폰 브라우저에서 즉시 열기">
+        <span style="font-size:1.1rem;">📱</span>
+        <span>핸드폰 바로 열기</span>
       </button>
 
       <!-- GitHub Pages 배포 가이드 모달 버튼 -->
@@ -234,9 +244,70 @@ git push -u origin main</pre>
     </div>
   </div>
 
+  <!-- ==========================================================================
+       MODAL 4: MOBILE SMARTPHONE DIRECT CONNECT (QR CODE & URL)
+       ========================================================================== -->
+  <div class="modal-overlay" id="mobileModal">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2>📱 스마트폰 브라우저 바로 열기</h2>
+          <div class="modal-subtitle">스마트폰 기본 카메라로 QR 코드를 비추면 즉시 열립니다</div>
+        </div>
+        <button class="btn-close" id="btnCloseMobile">&times;</button>
+      </div>
+
+      <div class="guide-content" style="text-align: center;">
+        <!-- QR Mode Selector -->
+        <div style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
+          <button class="btn" id="tabQrGh" style="padding:8px 16px; font-size:0.85rem; font-weight:700; background:var(--primary); color:#fff; border:none; border-radius:8px; cursor:pointer;">
+            🌐 인터넷 주소 (GitHub Pages)
+          </button>
+          <button class="btn" id="tabQrWifi" style="padding:8px 16px; font-size:0.85rem; font-weight:700; background:var(--bg-main); color:var(--text-muted); border:1px solid var(--border-color); border-radius:8px; cursor:pointer;">
+            ⚡ 와이파이 고속 연결 (192.168.0.11)
+          </button>
+        </div>
+
+        <!-- QR Display Container -->
+        <div id="qrContainer" style="background:#ffffff; padding:18px; border-radius:16px; display:inline-block; box-shadow:0 8px 24px rgba(0,0,0,0.3); margin-bottom:14px;">
+          <img id="qrImage" src="qr_github_pages.svg" alt="스마트폰 연결 QR코드" style="width:230px; height:230px; display:block;">
+        </div>
+
+        <div id="qrHelpText" style="font-size:0.92rem; font-weight:700; color:var(--text-main); margin-bottom:14px;">
+          📷 스마트폰 기본 카메라 앱을 켜고 위 QR코드를 비추면 즉시 열립니다!
+        </div>
+
+        <!-- Direct URL Copy Section -->
+        <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:10px; padding:12px 14px; text-align:left; margin-bottom:14px;">
+          <div style="font-size:0.75rem; color:var(--text-dim); margin-bottom:4px; font-weight:700;">접속 주소:</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <input type="text" id="mobileDirectUrl" value="https://s1insu3283-byte.github.io/-/" readonly style="background:transparent; border:none; color:var(--primary); font-family:monospace; font-size:0.92rem; font-weight:700; width:100%; outline:none;">
+            <button class="btn" id="btnCopyMobileUrl" style="padding:6px 12px; font-size:0.8rem; font-weight:700; background:var(--primary); color:#fff; border:none; border-radius:6px; white-space:nowrap; cursor:pointer;">
+              📋 주소 복사
+            </button>
+          </div>
+        </div>
+
+        <!-- Kakao Send Button -->
+        <div style="margin-bottom:14px;">
+          <button class="btn btn-kakao" id="btnSendMobileKakao" style="width:100%; justify-content:center; padding:10px; font-size:0.88rem; font-weight:800;">
+            💬 카카오톡으로 내 스마트폰에 링크 보내기
+          </button>
+        </div>
+
+        <div style="text-align:left; padding:12px 14px; border-radius:10px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25); font-size:0.82rem; color:var(--text-muted); line-height:1.6;">
+          📲 <b>핸드폰 홈 화면에 앱처럼 등록하는 법:</b><br>
+          • <b>아이폰 (Safari):</b> 하단 공유 버튼(네모+화살표) &rarr; <b>'홈 화면에 추가'</b> 터치<br>
+          • <b>갤럭시 (Chrome):</b> 우측 상단 더보기(⋮) &rarr; <b>'홈 화면에 추가'</b> 터치<br>
+          &rarr; 스마트폰 바탕화면에 앱 아이콘이 생겨 언제든 1초 만에 전체화면 앱으로 실행됩니다!
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 스크립트 로드 (브라우저 캐시 방지 버전 적용) -->
-  <script src="data-store.js?v=liquidity_v3"></script>
-  <script src="chart-engine.js?v=liquidity_v3"></script>
-  <script src="dashboard.js?v=liquidity_v3"></script>
+  <script src="data-store.js?v=naver_live_v4"></script>
+  <script src="chart-engine.js?v=naver_live_v4"></script>
+  <script src="dashboard.js?v=naver_live_v4"></script>
 </body>
 </html>

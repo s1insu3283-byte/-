@@ -837,21 +837,55 @@ body.light-theme .metric-row {
 
 @media (max-width: 640px) {
   .top-nav {
-    padding: 12px;
+    padding: 10px 14px;
+    gap: 8px;
   }
   .brand-title {
     font-size: 1.05rem;
   }
+  .action-buttons {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    gap: 6px;
+    scrollbar-width: none;
+  }
+  .action-buttons::-webkit-scrollbar {
+    display: none;
+  }
+  .action-buttons .btn {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
   .dashboard-container {
-    padding: 10px;
+    padding: 8px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
   .dashboard-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   #card-16 .radar-list {
     grid-template-columns: 1fr;
   }
+  .modal-card {
+    max-width: 95vw !important;
+    max-height: 90vh;
+    padding: 16px;
+  }
   .chart-viewport {
-    height: 340px;
+    height: 320px;
+  }
+  .modal-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .stats-summary {
+    grid-template-columns: repeat(2, 1fr);
+    font-size: 0.75rem;
   }
 }

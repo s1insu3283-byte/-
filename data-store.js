@@ -482,6 +482,22 @@ const DataStore = (() => {
     getCpi(c = '미국') { return getSeries('cpi', cpiAnchors, c, 0.02); },
     getUnemp(c = '미국') { return getSeries('unemp', unempAnchors, c, 0.02); },
 
+    updateLatestBondYield(country, maturity, val) {
+      const anchorsMap = {
+        'US': usYieldAnchors,
+        'JP': jpYieldAnchors,
+        'KR': krYieldAnchors,
+        'CN': cnYieldAnchors,
+        'DE': deYieldAnchors
+      };
+      if (anchorsMap[country] && anchorsMap[country][maturity]) {
+        const list = anchorsMap[country][maturity];
+        if (list && list.length > 0) {
+          list[list.length - 1].val = val;
+        }
+      }
+    },
+
     // 네이버 검색 '국채수익률' 및 증권 환율과 100% 일치하는 최신 스냅샷
     getLatestSummary() {
       return {

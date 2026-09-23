@@ -118,10 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tileInfo.items.forEach(item => {
           const btn = document.createElement('button');
           btn.className = 'maturity-btn';
+          btn.dataset.key = item.key;
           btn.innerHTML = `
             <div style="display:flex; flex-direction:column; align-items:flex-start;">
               <span style="font-weight:700; font-size:0.85rem;">⏱️ ${item.label}</span>
-              <span style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">${item.val}</span>
+              <span class="maturity-val" style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">${item.val}</span>
             </div>
             <span style="font-size:0.72rem; color:var(--primary); font-weight:700;">5개국 차트 &rarr;</span>
           `;
@@ -615,6 +616,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }
         });
+      } else if (i === 6 && tileInfo.items) {
+        tileInfo.items.forEach(item => {
+          const btn = card.querySelector(`.maturity-btn[data-key="${item.key}"]`);
+          if (btn) {
+            const valSpan = btn.querySelector('.maturity-val');
+            if (valSpan && valSpan.textContent !== item.val) {
+              valSpan.textContent = item.val;
+            }
+          }
+        });
       }
 
       // 2. Rotate news headlines smoothly every 3 seconds
@@ -648,29 +659,53 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok) {
         const nData = await res.json();
         if (nData && nData.naver_search_bonds) {
-          const us = nData.naver_search_bonds.US;
-          if (us) {
-            if (us['미국 국채 3개월']) { summaryData.tile1.items[0].val = us['미국 국채 3개월'].val; summaryData.tile1.items[0].change = us['미국 국채 3개월'].change; }
-            if (us['미국 국채 1년']) { summaryData.tile1.items[1].val = us['미국 국채 1년'].val; summaryData.tile1.items[1].change = us['미국 국채 1년'].change; }
-            if (us['미국 국채 5년']) { summaryData.tile1.items[2].val = us['미국 국채 5년'].val; summaryData.tile1.items[2].change = us['미국 국채 5년'].change; }
-            if (us['미국 국채 10년']) { summaryData.tile1.items[3].val = us['미국 국채 10년'].val; summaryData.tile1.items[3].change = us['미국 국채 10년'].change; }
-            if (us['미국 국채 30년']) { summaryData.tile1.items[4].val = us['미국 국채 30년'].val; summaryData.tile1.items[4].change = us['미국 국채 30년'].change; }
+          const bonds = nData.naver_search_bonds;
+
+          // 5개국 국채금리 실시간 정밀 연동 헬퍼 함수
+          const updateBondTile = (tileId, cKey, rawNames) => {
+            const cData = bonds[cKey];
+            if (!cData || !summaryData[tileId]) return;
+            const mats = cData.maturities || {};
+            const items = summaryData[tileId].items;
+
+            const matKeys = ['3M', '1Y', '5Y', '10Y', '30Y'];
+            matKeys.forEach((mk, idx) => {
+              const rawName = rawNames[idx];
+              const entry = mats[mk] || cData[rawName] || (cData.items && cData.items[rawName]);
+              if (entry && items[idx]) {
+                items[idx].val = entry.val;
+                if (entry.change !== undefined) items[idx].change = entry.change;
+                if (window.DataStore && DataStore.updateLatestBondYield) {
+                  DataStore.updateLatestBondYield(cKey, mk, entry.val);
+                }
+              }
+            });
+          };
+
+          // 1. 미국 (US - Tile 1)
+          updateBondTile('tile1', 'US', ['미국 국채 3개월', '미국 국채 1년', '미국 국채 5년', '미국 국채 10년', '미국 국채 30년']);
+          // 2. 일본 (JP - Tile 2)
+          updateBondTile('tile2', 'JP', ['일본 국채 3개월', '일본 국채 1년', '일본 국채 5년', '일본 국채 10년', '일본 국채 30년']);
+          // 3. 한국 (KR - Tile 3)
+          updateBondTile('tile3', 'KR', ['한국 국채 3개월', '한국 국채 1년', '한국 국채 5년', '한국 국채 10년', '한국 국채 30년']);
+          // 4. 중국 (CN - Tile 4)
+          updateBondTile('tile4', 'CN', ['중국 국채 3개월', '중국 국채 1년', '중국 국채 5년', '중국 국채 10년', '중국 국채 30년']);
+          // 5. 유럽/독일 (DE - Tile 5)
+          updateBondTile('tile5', 'DE', ['독일 국채 3개월', '독일 국채 1년', '독일 국채 5년', '독일 국채 10년', '독일 국채 30년']);
+
+          // 6. 만기별 5개국 비교 (Tile 6)
+          if (summaryData.tile6 && summaryData.tile6.items) {
+            const matKeys = ['3M', '1Y', '5Y', '10Y', '30Y'];
+            matKeys.forEach((mk, idx) => {
+              const u = summaryData.tile1?.items[idx]?.val?.toFixed(2) || '-';
+              const k = summaryData.tile3?.items[idx]?.val?.toFixed(2) || '-';
+              const j = summaryData.tile2?.items[idx]?.val?.toFixed(2) || '-';
+              const c = summaryData.tile4?.items[idx]?.val?.toFixed(2) || '-';
+              const d = summaryData.tile5?.items[idx]?.val?.toFixed(2) || '-';
+              summaryData.tile6.items[idx].val = `美 ${u}% | 韓 ${k}% | 일 ${j}% | 중 ${c}% | 독 ${d}%`;
+            });
           }
-          const kr = nData.naver_search_bonds.KR;
-          if (kr) {
-            if (kr['한국 국채 1년']) { summaryData.tile3.items[1].val = kr['한국 국채 1년'].val; summaryData.tile3.items[1].change = kr['한국 국채 1년'].change; }
-            if (kr['한국 국채 5년']) { summaryData.tile3.items[2].val = kr['한국 국채 5년'].val; summaryData.tile3.items[2].change = kr['한국 국채 5년'].change; }
-            if (kr['한국 국채 10년']) { summaryData.tile3.items[3].val = kr['한국 국채 10년'].val; summaryData.tile3.items[3].change = kr['한국 국채 10년'].change; }
-            if (kr['한국 국채 30년']) { summaryData.tile3.items[4].val = kr['한국 국채 30년'].val; summaryData.tile3.items[4].change = kr['한국 국채 30년'].change; }
-          }
-          const jp = nData.naver_search_bonds.JP;
-          if (jp) {
-            if (jp['일본 국채 3개월']) summaryData.tile2.items[0].val = jp['일본 국채 3개월'].val;
-            if (jp['일본 국채 1년']) summaryData.tile2.items[1].val = jp['일본 국채 1년'].val;
-            if (jp['일본 국채 5년']) summaryData.tile2.items[2].val = jp['일본 국채 5년'].val;
-            if (jp['일본 국채 10년']) summaryData.tile2.items[3].val = jp['일본 국채 10년'].val;
-            if (jp['일본 국채 30년']) summaryData.tile2.items[4].val = jp['일본 국채 30년'].val;
-          }
+        }
           if (nData.naver_policy_rates) {
             const pr = nData.naver_policy_rates;
             const mapping = {
@@ -816,30 +851,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadNaverAndLiveRates();
 
-  function simulateLiveTick() {
-    if (!isAutoRefresh) return;
-    const fxKeys = ['USD', 'JPY', 'CNY', 'EUR'];
-    const randomFx = fxKeys[Math.floor(Math.random() * fxKeys.length)];
-    const fxItem = summaryData.tile7.items.find(it => it.key === randomFx);
-
-    if (fxItem) {
-      const delta = (Math.random() - 0.49) * 0.12;
-      fxItem.val = Math.round((fxItem.val + delta) * 100) / 100;
-      fxItem.change = Math.round((fxItem.change + delta) * 100) / 100;
-
-      const el = document.getElementById(`val-7-${randomFx}`);
-      if (el) {
-        el.textContent = `${fxItem.val.toLocaleString()}원`;
-        const row = el.closest('.metric-row');
-        if (row) {
-          row.classList.remove('flash-up', 'flash-down');
-          void row.offsetWidth;
-          row.classList.add(delta >= 0 ? 'flash-up' : 'flash-down');
-        }
-      }
-    }
-  }
-  setInterval(simulateLiveTick, 3000);
+  // 실제 네이버 실시간 데이터만을 3초마다 정밀 반영 (인위적 시뮬레이션 제거)
 
   btnKakaoShare.addEventListener('click', () => handleKakaoShare());
 
@@ -943,6 +955,89 @@ ${currentUrl}`;
       chartEngine.render();
     }
   });
+
+  // ==========================================================================
+  // MOBILE SMARTPHONE DIRECT CONNECT (QR CODE & URL)
+  // ==========================================================================
+  const mobileModal = document.getElementById('mobileModal');
+  const btnMobileConnect = document.getElementById('btnMobileConnect');
+  const btnCloseMobile = document.getElementById('btnCloseMobile');
+  const tabQrGh = document.getElementById('tabQrGh');
+  const tabQrWifi = document.getElementById('tabQrWifi');
+  const qrImage = document.getElementById('qrImage');
+  const mobileDirectUrl = document.getElementById('mobileDirectUrl');
+  const btnCopyMobileUrl = document.getElementById('btnCopyMobileUrl');
+  const btnSendMobileKakao = document.getElementById('btnSendMobileKakao');
+
+  if (btnMobileConnect && mobileModal) {
+    btnMobileConnect.addEventListener('click', () => {
+      mobileModal.classList.add('active');
+    });
+    if (btnCloseMobile) {
+      btnCloseMobile.addEventListener('click', () => mobileModal.classList.remove('active'));
+    }
+    mobileModal.addEventListener('click', (e) => {
+      if (e.target === mobileModal) mobileModal.classList.remove('active');
+    });
+
+    if (tabQrGh && tabQrWifi && qrImage && mobileDirectUrl) {
+      tabQrGh.addEventListener('click', () => {
+        tabQrGh.style.background = 'var(--primary)';
+        tabQrGh.style.color = '#fff';
+        tabQrGh.style.border = 'none';
+        tabQrWifi.style.background = 'var(--bg-main)';
+        tabQrWifi.style.color = 'var(--text-muted)';
+        tabQrWifi.style.border = '1px solid var(--border-color)';
+        qrImage.src = 'qr_github_pages.svg';
+        mobileDirectUrl.value = 'https://s1insu3283-byte.github.io/-/';
+      });
+      tabQrWifi.addEventListener('click', () => {
+        tabQrWifi.style.background = 'var(--primary)';
+        tabQrWifi.style.color = '#fff';
+        tabQrWifi.style.border = 'none';
+        tabQrGh.style.background = 'var(--bg-main)';
+        tabQrGh.style.color = 'var(--text-muted)';
+        tabQrGh.style.border = '1px solid var(--border-color)';
+        qrImage.src = 'qr_local_wifi.svg';
+        mobileDirectUrl.value = 'http://192.168.0.11:8080';
+      });
+    }
+
+    if (btnCopyMobileUrl && mobileDirectUrl) {
+      btnCopyMobileUrl.addEventListener('click', () => {
+        navigator.clipboard.writeText(mobileDirectUrl.value).then(() => {
+          btnCopyMobileUrl.textContent = '✅ 복사 완료!';
+          setTimeout(() => { btnCopyMobileUrl.textContent = '📋 주소 복사'; }, 2000);
+        });
+      });
+    }
+
+    if (btnSendMobileKakao) {
+      btnSendMobileKakao.addEventListener('click', () => {
+        const url = mobileDirectUrl ? mobileDirectUrl.value : 'https://s1insu3283-byte.github.io/-/';
+        const title = '📱 [실시간 매크로 대시보드] 핸드폰 바로보기';
+        const desc = '미국·한국·일본·중국·유럽 5개국 네이버 국채수익률 및 실시간 환율 50년 대시보드입니다.';
+        if (window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized()) {
+          try {
+            window.Kakao.Share.sendDefault({
+              objectType: 'feed',
+              content: {
+                title: title,
+                description: desc,
+                imageUrl: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&auto=format&fit=crop',
+                link: { mobileWebUrl: url, webUrl: url },
+              },
+              buttons: [{ title: '핸드폰에서 바로 열기', link: { mobileWebUrl: url, webUrl: url } }],
+            });
+            return;
+          } catch (e) {}
+        }
+        navigator.clipboard.writeText(`${title}\n${desc}\n${url}`).then(() => {
+          alert('✅ 스마트폰 접속 링크가 복사되었습니다! 카카오톡에 붙여넣기 하세요.');
+        });
+      });
+    }
+  }
 
   initChart();
   renderDashboard();

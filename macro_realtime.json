@@ -1,143 +1,1150 @@
 {
-  "status": "success",
-  "updated_at": "2026-09-23 17:14:28",
-  "timestamp": 1790151274987,
-  "source_pipeline": {
-    "realtime_market": "Yahoo Finance (^TNX, KRW=X, JPY=X, GC=F) & 채권/외환 실시간 피드",
-    "macro_releases": "경제 캘린더 발표치 & 한국은행·연준·일본은행 최신 고시",
-    "frequency": "5 seconds"
+  "updated_at": "2026-09-23 17:22:48",
+  "source": "네이버 국채수익률 (미국·한국·일본·중국·유럽 5개국 공식) & 실시간 환율·기준금리",
+  "rates": {
+    "USD_KRW": 1365.9,
+    "JPY100_KRW": 865.55,
+    "EUR_KRW": 1558.93,
+    "CNY_KRW": 203.64,
+    "EUR_USD": 1.1413,
+    "USD_JPY": 157.81,
+    "USD_CNY": 6.7074
   },
-  "metrics": {
-    "us_gold": {
-      "val": 4356.8,
-      "change": -19.6,
-      "formatted": "$4,356.80",
-      "unit": "$",
-      "source": "Yahoo Finance (GC=F)",
-      "tag": "실시간 선물/현물"
+  "naver_search_bonds": {
+    "US": {
+      "items": {
+        "미국 국채 10년": {
+          "val": 4.959,
+          "change": -0.0077,
+          "direction": "하락"
+        },
+        "미국 국채 2년": {
+          "val": 4.771,
+          "change": -0.0063,
+          "direction": "하락"
+        },
+        "미국 국채 3년": {
+          "val": 4.815,
+          "change": -0.0081,
+          "direction": "하락"
+        },
+        "미국 국채 5년": {
+          "val": 4.835,
+          "change": -0.0072,
+          "direction": "하락"
+        },
+        "미국 국채 30년": {
+          "val": 5.293,
+          "change": -0.0099,
+          "direction": "하락"
+        },
+        "미국 국채 20년": {
+          "val": 5.333,
+          "change": -0.0095,
+          "direction": "하락"
+        },
+        "미국 국채 7년": {
+          "val": 4.89,
+          "change": -0.008,
+          "direction": "하락"
+        },
+        "미국 국채 1년": {
+          "val": 4.402,
+          "change": -0.0085,
+          "direction": "하락"
+        },
+        "미국 국채 6개월": {
+          "val": 4.314,
+          "change": 0.0137,
+          "direction": "상승"
+        },
+        "미국 국채 3개월": {
+          "val": 4.12,
+          "change": 0.0133,
+          "direction": "상승"
+        },
+        "미국 국채 2개월": {
+          "val": 3.993,
+          "change": 0.0098,
+          "direction": "상승"
+        },
+        "미국 국채 1개월": {
+          "val": 3.894,
+          "change": 0.012,
+          "direction": "상승"
+        }
+      },
+      "maturities": {
+        "10Y": {
+          "val": 4.959,
+          "change": -0.0077,
+          "direction": "하락"
+        },
+        "5Y": {
+          "val": 4.835,
+          "change": -0.0072,
+          "direction": "하락"
+        },
+        "30Y": {
+          "val": 5.293,
+          "change": -0.0099,
+          "direction": "하락"
+        },
+        "1Y": {
+          "val": 4.402,
+          "change": -0.0085,
+          "direction": "하락"
+        },
+        "3M": {
+          "val": 4.12,
+          "change": 0.0133,
+          "direction": "상승"
+        }
+      },
+      "미국 국채 10년": {
+        "val": 4.959,
+        "change": -0.0077,
+        "direction": "하락"
+      },
+      "미국 국채 2년": {
+        "val": 4.771,
+        "change": -0.0063,
+        "direction": "하락"
+      },
+      "미국 국채 3년": {
+        "val": 4.815,
+        "change": -0.0081,
+        "direction": "하락"
+      },
+      "미국 국채 5년": {
+        "val": 4.835,
+        "change": -0.0072,
+        "direction": "하락"
+      },
+      "미국 국채 30년": {
+        "val": 5.293,
+        "change": -0.0099,
+        "direction": "하락"
+      },
+      "미국 국채 20년": {
+        "val": 5.333,
+        "change": -0.0095,
+        "direction": "하락"
+      },
+      "미국 국채 7년": {
+        "val": 4.89,
+        "change": -0.008,
+        "direction": "하락"
+      },
+      "미국 국채 1년": {
+        "val": 4.402,
+        "change": -0.0085,
+        "direction": "하락"
+      },
+      "미국 국채 6개월": {
+        "val": 4.314,
+        "change": 0.0137,
+        "direction": "상승"
+      },
+      "미국 국채 3개월": {
+        "val": 4.12,
+        "change": 0.0133,
+        "direction": "상승"
+      },
+      "미국 국채 2개월": {
+        "val": 3.993,
+        "change": 0.0098,
+        "direction": "상승"
+      },
+      "미국 국채 1개월": {
+        "val": 3.894,
+        "change": 0.012,
+        "direction": "상승"
+      }
     },
-    "us_tips": {
-      "val": 2.67,
-      "formatted": "+2.67%",
-      "nominal_10y": 4.97,
-      "unit": "%",
-      "source": "Yahoo Finance (^TNX) 연동",
-      "tag": "10Y: 4.97%"
+    "KR": {
+      "items": {
+        "한국 국채 10년": {
+          "val": 4.409,
+          "change": -0.055,
+          "direction": "하락"
+        },
+        "한국 국채 2년": {
+          "val": 3.973,
+          "change": -0.008,
+          "direction": "하락"
+        },
+        "한국 국채 3년": {
+          "val": 3.998,
+          "change": -0.01,
+          "direction": "하락"
+        },
+        "한국 국채 5년": {
+          "val": 4.204,
+          "change": -0.03,
+          "direction": "하락"
+        },
+        "한국 국채 30년": {
+          "val": 4.567,
+          "change": -0.066,
+          "direction": "하락"
+        },
+        "한국 국채 50년": {
+          "val": 4.594,
+          "change": 0.023,
+          "direction": "상승"
+        },
+        "한국 국채 20년": {
+          "val": 4.455,
+          "change": -0.083,
+          "direction": "하락"
+        },
+        "한국 국채 4년": {
+          "val": 4.171,
+          "change": -0.015,
+          "direction": "하락"
+        },
+        "한국 국채 1년": {
+          "val": 3.741,
+          "change": 0.001,
+          "direction": "상승"
+        },
+        "한국 CD91일물": {
+          "val": 3.21,
+          "change": 0.0,
+          "direction": "보합"
+        }
+      },
+      "maturities": {
+        "10Y": {
+          "val": 4.409,
+          "change": -0.055,
+          "direction": "하락"
+        },
+        "5Y": {
+          "val": 4.204,
+          "change": -0.03,
+          "direction": "하락"
+        },
+        "30Y": {
+          "val": 4.567,
+          "change": -0.066,
+          "direction": "하락"
+        },
+        "1Y": {
+          "val": 3.741,
+          "change": 0.001,
+          "direction": "상승"
+        },
+        "3M": {
+          "val": 3.21,
+          "change": 0.0,
+          "direction": "보합"
+        }
+      },
+      "한국 국채 10년": {
+        "val": 4.409,
+        "change": -0.055,
+        "direction": "하락"
+      },
+      "한국 국채 2년": {
+        "val": 3.973,
+        "change": -0.008,
+        "direction": "하락"
+      },
+      "한국 국채 3년": {
+        "val": 3.998,
+        "change": -0.01,
+        "direction": "하락"
+      },
+      "한국 국채 5년": {
+        "val": 4.204,
+        "change": -0.03,
+        "direction": "하락"
+      },
+      "한국 국채 30년": {
+        "val": 4.567,
+        "change": -0.066,
+        "direction": "하락"
+      },
+      "한국 국채 50년": {
+        "val": 4.594,
+        "change": 0.023,
+        "direction": "상승"
+      },
+      "한국 국채 20년": {
+        "val": 4.455,
+        "change": -0.083,
+        "direction": "하락"
+      },
+      "한국 국채 4년": {
+        "val": 4.171,
+        "change": -0.015,
+        "direction": "하락"
+      },
+      "한국 국채 1년": {
+        "val": 3.741,
+        "change": 0.001,
+        "direction": "상승"
+      },
+      "한국 국채 3개월": {
+        "val": 3.21,
+        "change": 0.0,
+        "direction": "보합"
+      }
     },
-    "us_m2": {
-      "val": 21.42,
-      "formatted": "21.42 조$",
-      "unit": "조$",
-      "source": "연준 FRED M2SL",
-      "tag": "최신 공식속보"
+    "JP": {
+      "items": {
+        "일본 국채 10년": {
+          "val": 2.985,
+          "change": 0.009,
+          "direction": "상승"
+        },
+        "일본 국채 2년": {
+          "val": 1.849,
+          "change": 0.007,
+          "direction": "상승"
+        },
+        "일본 국채 3년": {
+          "val": 2.024,
+          "change": 0.01,
+          "direction": "상승"
+        },
+        "일본 국채 5년": {
+          "val": 2.286,
+          "change": 0.009,
+          "direction": "상승"
+        },
+        "일본 국채 30년": {
+          "val": 4.085,
+          "change": 0.017,
+          "direction": "상승"
+        },
+        "일본 국채 40년": {
+          "val": 4.123,
+          "change": 0.004,
+          "direction": "상승"
+        },
+        "일본 국채 20년": {
+          "val": 3.836,
+          "change": 0.014,
+          "direction": "상승"
+        },
+        "일본 국채 15년": {
+          "val": 4.364,
+          "change": 0.005,
+          "direction": "상승"
+        },
+        "일본 국채 9년": {
+          "val": 2.982,
+          "change": 0.014,
+          "direction": "상승"
+        },
+        "일본 국채 8년": {
+          "val": 2.895,
+          "change": 0.015,
+          "direction": "상승"
+        },
+        "일본 국채 7년": {
+          "val": 2.698,
+          "change": 0.014,
+          "direction": "상승"
+        },
+        "일본 국채 6년": {
+          "val": 2.59,
+          "change": 0.01,
+          "direction": "상승"
+        },
+        "일본 국채 4년": {
+          "val": 2.2,
+          "change": 0.008,
+          "direction": "상승"
+        },
+        "일본 국채 1년": {
+          "val": 1.572,
+          "change": 0.007,
+          "direction": "상승"
+        },
+        "일본 국채 9개월": {
+          "val": 1.49,
+          "change": 0.001,
+          "direction": "상승"
+        },
+        "일본 국채 6개월": {
+          "val": 1.37,
+          "change": -0.011,
+          "direction": "하락"
+        },
+        "일본 국채 3개월": {
+          "val": 1.231,
+          "change": -0.014,
+          "direction": "하락"
+        },
+        "일본 국채 1개월": {
+          "val": 1.206,
+          "change": -0.021,
+          "direction": "하락"
+        }
+      },
+      "maturities": {
+        "10Y": {
+          "val": 2.985,
+          "change": 0.009,
+          "direction": "상승"
+        },
+        "5Y": {
+          "val": 2.286,
+          "change": 0.009,
+          "direction": "상승"
+        },
+        "30Y": {
+          "val": 4.085,
+          "change": 0.017,
+          "direction": "상승"
+        },
+        "1Y": {
+          "val": 1.572,
+          "change": 0.007,
+          "direction": "상승"
+        },
+        "3M": {
+          "val": 1.231,
+          "change": -0.014,
+          "direction": "하락"
+        }
+      },
+      "일본 국채 10년": {
+        "val": 2.985,
+        "change": 0.009,
+        "direction": "상승"
+      },
+      "일본 국채 2년": {
+        "val": 1.849,
+        "change": 0.007,
+        "direction": "상승"
+      },
+      "일본 국채 3년": {
+        "val": 2.024,
+        "change": 0.01,
+        "direction": "상승"
+      },
+      "일본 국채 5년": {
+        "val": 2.286,
+        "change": 0.009,
+        "direction": "상승"
+      },
+      "일본 국채 30년": {
+        "val": 4.085,
+        "change": 0.017,
+        "direction": "상승"
+      },
+      "일본 국채 40년": {
+        "val": 4.123,
+        "change": 0.004,
+        "direction": "상승"
+      },
+      "일본 국채 20년": {
+        "val": 3.836,
+        "change": 0.014,
+        "direction": "상승"
+      },
+      "일본 국채 15년": {
+        "val": 4.364,
+        "change": 0.005,
+        "direction": "상승"
+      },
+      "일본 국채 9년": {
+        "val": 2.982,
+        "change": 0.014,
+        "direction": "상승"
+      },
+      "일본 국채 8년": {
+        "val": 2.895,
+        "change": 0.015,
+        "direction": "상승"
+      },
+      "일본 국채 7년": {
+        "val": 2.698,
+        "change": 0.014,
+        "direction": "상승"
+      },
+      "일본 국채 6년": {
+        "val": 2.59,
+        "change": 0.01,
+        "direction": "상승"
+      },
+      "일본 국채 4년": {
+        "val": 2.2,
+        "change": 0.008,
+        "direction": "상승"
+      },
+      "일본 국채 1년": {
+        "val": 1.572,
+        "change": 0.007,
+        "direction": "상승"
+      },
+      "일본 국채 9개월": {
+        "val": 1.49,
+        "change": 0.001,
+        "direction": "상승"
+      },
+      "일본 국채 6개월": {
+        "val": 1.37,
+        "change": -0.011,
+        "direction": "하락"
+      },
+      "일본 국채 3개월": {
+        "val": 1.231,
+        "change": -0.014,
+        "direction": "하락"
+      },
+      "일본 국채 1개월": {
+        "val": 1.206,
+        "change": -0.021,
+        "direction": "하락"
+      }
     },
-    "us_cs": {
-      "val": 324.0,
-      "formatted": "324.0 pt",
-      "unit": "pt",
-      "source": "S&P Case-Shiller",
-      "tag": "2000=100"
+    "CN": {
+      "items": {
+        "중국 국채 10년": {
+          "val": 1.675,
+          "change": -0.042,
+          "direction": "하락"
+        },
+        "중국 국채 3년": {
+          "val": 1.291,
+          "change": 0.003,
+          "direction": "상승"
+        },
+        "중국 국채 5년": {
+          "val": 1.403,
+          "change": -0.048,
+          "direction": "하락"
+        },
+        "중국 국채 30년": {
+          "val": 2.131,
+          "change": -0.007,
+          "direction": "하락"
+        },
+        "중국 국채 20년": {
+          "val": 2.107,
+          "change": -0.025,
+          "direction": "하락"
+        },
+        "중국 국채 15년": {
+          "val": 1.818,
+          "change": 0.003,
+          "direction": "상승"
+        },
+        "중국 국채 7년": {
+          "val": 1.498,
+          "change": -0.038,
+          "direction": "하락"
+        },
+        "중국 국채 1년": {
+          "val": 1.222,
+          "change": -0.045,
+          "direction": "하락"
+        },
+        "중국 국채 3개월": {
+          "val": 1.1487,
+          "change": 0.0,
+          "direction": "보합"
+        }
+      },
+      "maturities": {
+        "10Y": {
+          "val": 1.675,
+          "change": -0.042,
+          "direction": "하락"
+        },
+        "5Y": {
+          "val": 1.403,
+          "change": -0.048,
+          "direction": "하락"
+        },
+        "30Y": {
+          "val": 2.131,
+          "change": -0.007,
+          "direction": "하락"
+        },
+        "1Y": {
+          "val": 1.222,
+          "change": -0.045,
+          "direction": "하락"
+        },
+        "3M": {
+          "val": 1.1487,
+          "change": 0.0,
+          "direction": "보합"
+        }
+      },
+      "중국 국채 10년": {
+        "val": 1.675,
+        "change": -0.042,
+        "direction": "하락"
+      },
+      "중국 국채 3년": {
+        "val": 1.291,
+        "change": 0.003,
+        "direction": "상승"
+      },
+      "중국 국채 5년": {
+        "val": 1.403,
+        "change": -0.048,
+        "direction": "하락"
+      },
+      "중국 국채 30년": {
+        "val": 2.131,
+        "change": -0.007,
+        "direction": "하락"
+      },
+      "중국 국채 20년": {
+        "val": 2.107,
+        "change": -0.025,
+        "direction": "하락"
+      },
+      "중국 국채 15년": {
+        "val": 1.818,
+        "change": 0.003,
+        "direction": "상승"
+      },
+      "중국 국채 7년": {
+        "val": 1.498,
+        "change": -0.038,
+        "direction": "하락"
+      },
+      "중국 국채 1년": {
+        "val": 1.222,
+        "change": -0.045,
+        "direction": "하락"
+      },
+      "중국 국채 3개월": {
+        "val": 1.1487,
+        "change": 0.0,
+        "direction": "보합"
+      }
     },
-    "us_dxy": {
-      "val": 100.81,
-      "formatted": "100.81 pt",
-      "unit": "pt",
-      "source": "Yahoo Finance (DXY)",
-      "tag": "기축통화 지수"
-    },
-    "us_ratio": {
-      "val": 13.45,
-      "formatted": "13.45",
-      "unit": "배",
-      "source": "Gold ÷ Case-Shiller",
-      "tag": "역사적 배율"
-    },
-    "kr_gold": {
-      "val": 5948905,
-      "formatted": "₩5,948,905",
-      "unit": "원",
-      "source": "국제금 × 실시간환율",
-      "tag": "g당 ₩191,262"
-    },
-    "kr_real": {
-      "val": 2.41,
-      "formatted": "+2.41%",
-      "nominal_10y": 4.409,
-      "unit": "%",
-      "source": "한국 국고채 10년 피드",
-      "tag": "국고10Y: 4.41%"
-    },
-    "kr_m2": {
-      "val": 4209.7,
-      "formatted": "4,209.7 조원",
-      "unit": "조원",
-      "source": "한국은행 통화동향",
-      "tag": "환산 3.08조$"
-    },
-    "kr_housing": {
-      "val": 102.0,
-      "formatted": "102.0 pt",
-      "unit": "pt",
-      "source": "한국부동산원 ECOS",
-      "tag": "2022=100"
-    },
-    "kr_fx": {
-      "val": 1365.43,
-      "formatted": "₩1,365.4",
-      "unit": "원",
-      "source": "Yahoo Finance (KRW=X)",
-      "tag": "외환시장 실시간"
-    },
-    "kr_ratio": {
-      "val": 5.83,
-      "formatted": "5.83",
-      "unit": "배",
-      "source": "원화금 ÷ 주택지수",
-      "tag": "상대 강도"
-    },
-    "jp_gold": {
-      "val": 687547,
-      "formatted": "¥687,547",
-      "unit": "엔",
-      "source": "국제금 × 실시간환율",
-      "tag": "g당 ¥22,105"
-    },
-    "jp_real": {
-      "val": 0.19,
-      "formatted": "+0.19%",
-      "nominal_10y": 2.985,
-      "unit": "%",
-      "source": "일본 국채 10년 피드",
-      "tag": "일본10Y: 2.98%"
-    },
-    "jp_m2": {
-      "val": 1296.4,
-      "formatted": "1,296.4 조엔",
-      "unit": "조엔",
-      "source": "BOJ 머니스톡",
-      "tag": "BOJ 공식"
-    },
-    "jp_housing": {
-      "val": 138.5,
-      "formatted": "138.5 pt",
-      "unit": "pt",
-      "source": "국토교통성 지수",
-      "tag": "2010=100"
-    },
-    "jp_fx": {
-      "val": 157.81,
-      "formatted": "¥157.81",
-      "unit": "엔",
-      "source": "Yahoo Finance (JPY=X)",
-      "tag": "도쿄외환 실시간"
-    },
-    "jp_ratio": {
-      "val": 4.96,
-      "formatted": "4.96",
-      "unit": "배",
-      "source": "엔화금 ÷ 부동산지수",
-      "tag": "상대 강도"
+    "DE": {
+      "items": {
+        "독일 국채 10년": {
+          "val": 3.457,
+          "change": 0.0039,
+          "direction": "상승"
+        },
+        "독일 국채 2년": {
+          "val": 3.221,
+          "change": 0.0139,
+          "direction": "상승"
+        },
+        "독일 국채 3년": {
+          "val": 3.222,
+          "change": 0.0149,
+          "direction": "상승"
+        },
+        "독일 국채 5년": {
+          "val": 3.288,
+          "change": 0.0137,
+          "direction": "상승"
+        },
+        "독일 국채 30년": {
+          "val": 3.802,
+          "change": -0.0006,
+          "direction": "하락"
+        },
+        "독일 국채 25년": {
+          "val": 3.783,
+          "change": -0.0031,
+          "direction": "하락"
+        },
+        "독일 국채 20년": {
+          "val": 3.782,
+          "change": 0.0018,
+          "direction": "상승"
+        },
+        "독일 국채 15년": {
+          "val": 3.679,
+          "change": 0.0015,
+          "direction": "상승"
+        },
+        "독일 국채 9년": {
+          "val": 3.417,
+          "change": 0.0043,
+          "direction": "상승"
+        },
+        "독일 국채 8년": {
+          "val": 3.358,
+          "change": 0.0066,
+          "direction": "상승"
+        },
+        "독일 국채 7년": {
+          "val": 3.356,
+          "change": 0.0072,
+          "direction": "상승"
+        },
+        "독일 국채 6년": {
+          "val": 3.303,
+          "change": 0.0103,
+          "direction": "상승"
+        },
+        "독일 국채 4년": {
+          "val": 3.24,
+          "change": 0.0126,
+          "direction": "상승"
+        },
+        "독일 국채 1년": {
+          "val": 2.874,
+          "change": -0.0241,
+          "direction": "하락"
+        },
+        "독일 국채 9개월": {
+          "val": 2.731,
+          "change": -0.0011,
+          "direction": "하락"
+        },
+        "독일 국채 6개월": {
+          "val": 2.707,
+          "change": -0.0072,
+          "direction": "하락"
+        },
+        "독일 국채 3개월": {
+          "val": 2.434,
+          "change": -0.006,
+          "direction": "하락"
+        },
+        "독일 국채 1개월": {
+          "val": 2.396,
+          "change": 0.0,
+          "direction": "보합"
+        }
+      },
+      "maturities": {
+        "10Y": {
+          "val": 3.457,
+          "change": 0.0039,
+          "direction": "상승"
+        },
+        "5Y": {
+          "val": 3.288,
+          "change": 0.0137,
+          "direction": "상승"
+        },
+        "30Y": {
+          "val": 3.802,
+          "change": -0.0006,
+          "direction": "하락"
+        },
+        "1Y": {
+          "val": 2.874,
+          "change": -0.0241,
+          "direction": "하락"
+        },
+        "3M": {
+          "val": 2.434,
+          "change": -0.006,
+          "direction": "하락"
+        }
+      },
+      "독일 국채 10년": {
+        "val": 3.457,
+        "change": 0.0039,
+        "direction": "상승"
+      },
+      "독일 국채 2년": {
+        "val": 3.221,
+        "change": 0.0139,
+        "direction": "상승"
+      },
+      "독일 국채 3년": {
+        "val": 3.222,
+        "change": 0.0149,
+        "direction": "상승"
+      },
+      "독일 국채 5년": {
+        "val": 3.288,
+        "change": 0.0137,
+        "direction": "상승"
+      },
+      "독일 국채 30년": {
+        "val": 3.802,
+        "change": -0.0006,
+        "direction": "하락"
+      },
+      "독일 국채 25년": {
+        "val": 3.783,
+        "change": -0.0031,
+        "direction": "하락"
+      },
+      "독일 국채 20년": {
+        "val": 3.782,
+        "change": 0.0018,
+        "direction": "상승"
+      },
+      "독일 국채 15년": {
+        "val": 3.679,
+        "change": 0.0015,
+        "direction": "상승"
+      },
+      "독일 국채 9년": {
+        "val": 3.417,
+        "change": 0.0043,
+        "direction": "상승"
+      },
+      "독일 국채 8년": {
+        "val": 3.358,
+        "change": 0.0066,
+        "direction": "상승"
+      },
+      "독일 국채 7년": {
+        "val": 3.356,
+        "change": 0.0072,
+        "direction": "상승"
+      },
+      "독일 국채 6년": {
+        "val": 3.303,
+        "change": 0.0103,
+        "direction": "상승"
+      },
+      "독일 국채 4년": {
+        "val": 3.24,
+        "change": 0.0126,
+        "direction": "상승"
+      },
+      "독일 국채 1년": {
+        "val": 2.874,
+        "change": -0.0241,
+        "direction": "하락"
+      },
+      "독일 국채 9개월": {
+        "val": 2.731,
+        "change": -0.0011,
+        "direction": "하락"
+      },
+      "독일 국채 6개월": {
+        "val": 2.707,
+        "change": -0.0072,
+        "direction": "하락"
+      },
+      "독일 국채 3개월": {
+        "val": 2.434,
+        "change": -0.006,
+        "direction": "하락"
+      },
+      "독일 국채 1개월": {
+        "val": 2.396,
+        "change": 0.0,
+        "direction": "보합"
+      }
     }
   },
-  "cycle": 240
+  "naver_policy_rates": {
+    "미국연방준비은행": {
+      "rate": 4.0,
+      "change": 0.25,
+      "date": "09월 17일",
+      "direction": "상승"
+    },
+    "한국은행": {
+      "rate": 3.0,
+      "change": 0.25,
+      "date": "08월 27일",
+      "direction": "상승"
+    },
+    "유럽중앙은행": {
+      "rate": 2.65,
+      "change": 0.25,
+      "date": "09월 10일",
+      "direction": "상승"
+    },
+    "영국은행": {
+      "rate": 3.75,
+      "change": 0.0,
+      "date": "09월 17일",
+      "direction": "동결"
+    },
+    "일본은행": {
+      "rate": 1.25,
+      "change": 0.25,
+      "date": "09월 18일",
+      "direction": "상승"
+    },
+    "중국인민은행": {
+      "rate": 3.0,
+      "change": 0.0,
+      "date": "09월 20일",
+      "direction": "동결"
+    },
+    "캐나다은행": {
+      "rate": 2.25,
+      "change": 0.0,
+      "date": "09월 02일",
+      "direction": "동결"
+    },
+    "호주연방준비은행": {
+      "rate": 4.35,
+      "change": 0.0,
+      "date": "08월 11일",
+      "direction": "동결"
+    },
+    "러시아연방중앙은행": {
+      "rate": 14.0,
+      "change": 0.0,
+      "date": "09월 11일",
+      "direction": "동결"
+    },
+    "사우디아라비아 통화청": {
+      "rate": 4.5,
+      "change": 0.25,
+      "date": "09월 17일",
+      "direction": "상승"
+    },
+    "브라질중앙은행": {
+      "rate": 13.75,
+      "change": -0.25,
+      "date": "09월 17일",
+      "direction": "하락"
+    },
+    "인도연방준비은행": {
+      "rate": 5.25,
+      "change": 0.0,
+      "date": "08월 05일",
+      "direction": "동결"
+    },
+    "튀르키예중앙은행": {
+      "rate": 37.0,
+      "change": 0.0,
+      "date": "09월 10일",
+      "direction": "동결"
+    },
+    "남아프리카준비은행": {
+      "rate": 7.0,
+      "change": 0.0,
+      "date": "07월 23일",
+      "direction": "동결"
+    },
+    "아르헨티나중앙은행": {
+      "rate": 29.0,
+      "change": -3.0,
+      "date": "01월 30일",
+      "direction": "하락"
+    },
+    "멕시코은행": {
+      "rate": 6.5,
+      "change": 0.0,
+      "date": "08월 07일",
+      "direction": "동결"
+    },
+    "인도네시아은행": {
+      "rate": 5.75,
+      "change": 0.0,
+      "date": "09월 23일",
+      "direction": "동결"
+    }
+  },
+  "macro_indicators": {
+    "liquidity": {
+      "M1": {
+        "val": "1,395.9조원",
+        "change": 3.2,
+        "note": "한 1,395.9조 / 美 19.89조$"
+      },
+      "M2": {
+        "val": "4,209.7조원",
+        "change": 9.4,
+        "note": "한 4,209.7조 / 美 23.22조$"
+      },
+      "Lf": {
+        "val": "5,540.8조원",
+        "change": 7.5,
+        "note": "한 5,540.8조 / 美 34.50조$"
+      },
+      "L": {
+        "val": "6,920.5조원",
+        "change": 6.8,
+        "note": "한 6,920.5조 / 美 73.20조$"
+      }
+    },
+    "core_cpi": {
+      "한국": {
+        "val": 3.4,
+        "change": 0.8,
+        "note": "통계청 8월 공식"
+      },
+      "미국": {
+        "val": 2.5,
+        "change": -0.1,
+        "note": "BLS 공식"
+      },
+      "유럽": {
+        "val": 2.5,
+        "change": 0.1,
+        "note": "Eurostat 공식"
+      },
+      "일본": {
+        "val": 1.9,
+        "change": 0.1,
+        "note": "총무성 공식"
+      },
+      "중국": {
+        "val": 1.0,
+        "change": 0.2,
+        "note": "NBS 공식"
+      }
+    },
+    "cpi": {
+      "미국": {
+        "val": 3.4,
+        "change": 0.0,
+        "note": "BLS 공식"
+      },
+      "유럽": {
+        "val": 3.3,
+        "change": 0.4,
+        "note": "Eurostat 속보"
+      },
+      "한국": {
+        "val": 3.1,
+        "change": 0.3,
+        "note": "통계청 8월 공식"
+      },
+      "일본": {
+        "val": 2.8,
+        "change": 0.1,
+        "note": "총무성 공식"
+      },
+      "중국": {
+        "val": 0.8,
+        "change": 0.3,
+        "note": "NBS 공식"
+      }
+    },
+    "unemployment": {
+      "유럽": {
+        "val": 6.4,
+        "change": -0.1,
+        "note": "Eurostat"
+      },
+      "중국": {
+        "val": 5.2,
+        "change": 0.0,
+        "note": "NBS 공식"
+      },
+      "미국": {
+        "val": 4.1,
+        "change": 0.0,
+        "note": "BLS 8월"
+      },
+      "일본": {
+        "val": 2.4,
+        "change": -0.1,
+        "note": "총무성 공식"
+      },
+      "한국": {
+        "val": 2.0,
+        "change": -0.6,
+        "note": "통계청 8월"
+      }
+    }
+  },
+  "investing_news": {
+    "tile12": [
+      {
+        "title": "한국 증시 현재 위치를 통화량 대비 시가총액 비율로 살펴보다",
+        "date": "2022.09.13",
+        "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9zbXl0aWp1bUphVzFRY0hJeEN2TXotTXY3OFBlWXpqeklkVlA0VVdPcENWVk81TXBoZTFNcnVtTWtLbEF0T3JTSnBVUC1XaVh1UmZ3enFtbXVlMldJdUVPNQ?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "기업 돈 27조원 정기예금으로…시중 통화량 다시 늘었다",
+        "date": "2026.09.15",
+        "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE80aWg4aDRZTWJ0RXRXa0wwemhiQ2ZWZlhOLXRCOXFjdXR4eUpSbzhvbE1HalR1YThpWFgyOWdodTBCRzBRdXNHdVpwWnFKRWpqQk8zT1I5eTFnVDVhbVhJRlY5bTAxbTE3eC10cXdZa1k?oc=5",
+        "source": "Investing.com"
+      }
+    ],
+    "tile13": [
+      {
+        "title": "싱가포르 8월 CPI 예상치 부합, 근원 인플레이션 2년 만에 최고",
+        "date": "2026.09.23",
+        "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBrUUNveGhtdDlLeDZEVEpvd19fQ1dlRmJSTm02OHY5WHRYRmxfdXpwaXF6Qk9yNC1tZzhjOHpDWmxXSFFBbW5IbEJaR0lJM2tUWFpOWGdtRTktVDJyb09maVdrRHN1TjhROWpLOUhweHdvVFE?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "[美 9월 금리] 연준, 3년 2개월 만에 금리 인상…\"물가 여전히 높아\"",
+        "date": "2026.09.17",
+        "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5LSGFfbmRDVm9XWXJGTm80WjZlS2Ytb1lwRHozOEF6MUoxZlpJeEl2M0h0c2VyYzNyNDA1eGVaTE9EY0NqMHpWNUFJOEo1OXpOQWFZWW9HdmtFY3V5SjBuX1dhWDhGYVJHMnVlaW4wa24?oc=5",
+        "source": "Investing.com"
+      }
+    ],
+    "tile14": [
+      {
+        "title": "슬로바키아 EU 정규화 소비자물가지수(CPI)",
+        "date": "2026.09.16",
+        "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBRN1cwT2dGTmNQaDNQRmtyWi1HM1RSdTZGWnNDbG5Rakpzc3h6WGlUU19vR2J2UGYtV1Q1d3NWSlJ4SzgzbGtkU0pQQmxXc1A3RkF1d2NJVVhzU01WcWVWRjFsTjEwb1dRempJVlM5TQ?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "스웨덴 일정한 이자율 기준 소비자물가지수(CPI)",
+        "date": "2026.09.13",
+        "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQeG4waUh4N3M0Y2ctVU9qVy1pZ0lfUkpVOFZ3d1FiN2lON29wNlNGZ0o2UF8yNzFXdWN2N2Rpcm03OTZ3RmE5ZThaWDlxM1VFcFFyRjNpVzlrU2VQNVF6aVZ5ZXFvbndtTlBJSmVDYVNLZEJqZmVObjV6V3RUMnJsY25Kcw?oc=5",
+        "source": "Investing.com"
+      }
+    ],
+    "tile15": [
+      {
+        "title": "미국 ADP 비농업부문 고용 변화",
+        "date": "2026.09.19",
+        "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9pZVNIS0otOC1VX3Z0cUQ3aklaazUxUzBYNjRnelEwbmdhYmdfVFdmUjBvRC0tckhLOVZCV0JvMzFwaTdLcjJLTGFZWEdJWFAzbFFCLXpfT3FTQ3JUckQ3dWNYcWVWXy1PSzhMMWJDWVVkaThL?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "10 Year Treasury Yield 뉴스",
+        "date": "2026.09.19",
+        "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE13Uk8ycmF0Zm5BTmJST1JqMFA5X3NUMjg0akx3RVpVYWxqM3VmTHFueGQzM01sYWNrNFBjMU9IRmZVTFFJYUpzQy1mbjQ2S1BqM3Z2YURVZW9yUEg1LVJFdEg2TjdmZnRYUkJ4YUxwUnA?oc=5",
+        "source": "Investing.com"
+      }
+    ],
+    "tile9": [
+      {
+        "title": "[美 9월 금리] 연준, 3년 2개월 만에 금리 인상…\"물가 여전히 높아\"",
+        "date": "2026.09.17",
+        "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5LSGFfbmRDVm9XWXJGTm80WjZlS2Ytb1lwRHozOEF6MUoxZlpJeEl2M0h0c2VyYzNyNDA1eGVaTE9EY0NqMHpWNUFJOEo1OXpOQWFZWW9HdmtFY3V5SjBuX1dhWDhGYVJHMnVlaW4wa24?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "\"12월 금리 또 올린다\"…골드만삭스, 연준 추가 인상 전망",
+        "date": "2026.09.17",
+        "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1lbnlxNVdUdXRTZDNzLVVsTXpnTVpKWC1CNUVpazdKdGZ4UXZOcGNoMFhTNkhjOExQN19iSTNxLVB4UFVuRmZ6Z3NWT3BaRThOeFIzMVdyNGFpSllDSGhTZDZ4cW9nRDZLNURNcXlIc20?oc=5",
+        "source": "Investing.com"
+      }
+    ],
+    "tile1": [
+      {
+        "title": "미국 10년물 국채 금리 채권수익률",
+        "date": "2017.01.08",
+        "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBoRENlTnBJYWxhUG52MnQ4UFE5WHhIR2NhUUN6RWpIWmxOdHBHOF9LTjUwTi1UQm8zaC1CalloemZtTjBKaGZZZF9iWTRUc0VVYU41OUVqc1NIaXJHeHVqZHVhcElIMFEyWWpONQ?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "미국 10년물 국채 금리 채권 뉴스",
+        "date": "2026.09.18",
+        "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE5zYkN4VFlhOXl1SFU2WWVJdTllTUhxZGg3TnpqdmR0T1VTM3k3ZXhaV2dwazRPSjJmQVZLa3BEUDYxS1Rqc2dWaENHWk81NGJxaDhaOTVzekRnYTZZYWN4R1NDRmZJUDZtMmc1bmRsSGxuR3pLYUR0cQ?oc=5",
+        "source": "Investing.com"
+      }
+    ],
+    "tile16": [
+      {
+        "title": "연준 금리 인상 앞두고 역사가 주는 3가지 교훈",
+        "date": "2026.09.16",
+        "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1oSm8zZXU3b1cwUmhDbWllbzlfYVg0cGJ0WlVCUmhZWi1tNnJ2bWlKSmxjemRqcm84MThaQ0JQQ09QQ004b3M2SVkwZGlXWFQxYVJQei05YmFRVG91ZjhTeUNFMWpaaUlWX3lfSXRPNE0?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "S&P 500 TR 뉴스",
+        "date": "2026.09.17",
+        "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBkb1c2d0V1cTdXcE5XNjdwVmUwNVNIU0dqMjNxZDBvQm9aTk1oWnlWTUoyTnp4bk5uSVNxOU5UWkcybGRXVFN6clg0LTBsU3MxZ0FnY1FDLS1iOU9fUGhuSGFR?oc=5",
+        "source": "Investing.com"
+      }
+    ]
+  },
+  "cycle": 2
 }
