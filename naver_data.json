@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-24 04:42:53",
+  "updated_at": "2026-09-24 04:47:54",
   "source": "네이버 국채수익률 (미국·한국·일본·중국·유럽 5개국 공식) & 실시간 환율·기준금리",
   "rates": {
     "USD_KRW": 1367.1,
@@ -1077,15 +1077,15 @@
     ],
     "tile14": [
       {
-        "title": "슬로바키아 EU 정규화 소비자물가지수(CPI)",
-        "date": "2026.09.16",
-        "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBRN1cwT2dGTmNQaDNQRmtyWi1HM1RSdTZGWnNDbG5Rakpzc3h6WGlUU19vR2J2UGYtV1Q1d3NWSlJ4SzgzbGtkU0pQQmxXc1A3RkF1d2NJVVhzU01WcWVWRjFsTjEwb1dRempJVlM5TQ?oc=5",
-        "source": "Investing.com"
-      },
-      {
         "title": "전월대비 일본 소비자물가지수(계절 미조정)",
         "date": "2022.03.29",
         "link": "https://news.google.com/rss/articles/CBMiwgJBVV95cUxQTUR2UFpMSTVyRGlCTmFsdlFDejY2TmFURDZFOE95VGQyTE9aYlprc2pxSmwzMjZMUmdmemRoNUdveUhrTlhXemUtbGdrenZ1dGp5cE8yMWZwczRyUW5HUXJScjhJZ1BfYzJwRWtmRUJXeGJjcC1zZDBZUlUzaElTNXFBcGpOOWtBZzZSR2R2NXBnQUtmbHAyeTVOV0pYbHBfei1abk1FeTZCUUg2Z1FCa0FTZWM1dFprRUdhQldKVXNVMVZmSDJlRDJIWUhGSnUwTGd3Mm9sYnBSUU01OE5XNWJjYTY0cE9KRVF3RnpvZUpDajZ2VkJkNjZFRi12alFZZlBsVFFOZ3pnaVgtbEpMSzhmOXdDNDhjSG5reE1oQ0VhX2dvdXppdGJtOVFWMTQtMnpBSU9xNlZ4bkNBbHpqS3VR?oc=5",
+        "source": "Investing.com"
+      },
+      {
+        "title": "독일 소비자물가지수(CPI)",
+        "date": "2026.09.16",
+        "link": "https://news.google.com/rss/articles/CBMitwJBVV95cUxQdjNvUE50RzJxVjNYUTBISzRNSHNDYTVKZzFUWmFjcjBwVjVwTXVUemlQOE9qLXVpZE9XMWJrSDNVeDVCV0Z5ZUhkUWJJVHhZcXdUSzRSVVBGUU1NOG9zX0lxc0Z2LUhqakVmZmI1eWd5RFpULUt1bGEtUmZCMDR1RGNBdzBoUTBqdWJlNFMzUXgwQmZXUzh0SW51cWZqUWRmWXQ2Uld6d2FHZjFobVVPV2UzNlozQUdBbUdZZHdsaDd6OE9oMGhfWHlYLXhhVmh4NzFyUUJaNVlVaGphcUJqNnMzRWh6dVh3cFFIaTdLcC1jczE1VWpaRzBZOHhHU211d3Y0OGFOeWZ3OTZ6bnc3cjE5VWluc0QycGFTb0ItT1R1Z1Z0OVhjTEtQWjBEcTdlUVBDdEJPTQ?oc=5",
         "source": "Investing.com"
       }
     ],
@@ -1146,5 +1146,5 @@
       }
     ]
   },
-  "cycle": 5200
+  "cycle": 5300
 }
