@@ -1,7 +1,7 @@
 {
   "status": "success",
-  "updated_at": "2026-09-23 17:02:00",
-  "timestamp": 1790150525815,
+  "updated_at": "2026-09-23 17:14:28",
+  "timestamp": 1790151274987,
   "source_pipeline": {
     "realtime_market": "Yahoo Finance (^TNX, KRW=X, JPY=X, GC=F) & 채권/외환 실시간 피드",
     "macro_releases": "경제 캘린더 발표치 & 한국은행·연준·일본은행 최신 고시",
@@ -9,9 +9,9 @@
   },
   "metrics": {
     "us_gold": {
-      "val": 4361.5,
-      "change": -14.9,
-      "formatted": "$4,361.50",
+      "val": 4356.8,
+      "change": -19.6,
+      "formatted": "$4,356.80",
       "unit": "$",
       "source": "Yahoo Finance (GC=F)",
       "tag": "실시간 선물/현물"
@@ -39,25 +39,25 @@
       "tag": "2000=100"
     },
     "us_dxy": {
-      "val": 100.76,
-      "formatted": "100.76 pt",
+      "val": 100.81,
+      "formatted": "100.81 pt",
       "unit": "pt",
       "source": "Yahoo Finance (DXY)",
       "tag": "기축통화 지수"
     },
     "us_ratio": {
-      "val": 13.46,
-      "formatted": "13.46",
+      "val": 13.45,
+      "formatted": "13.45",
       "unit": "배",
       "source": "Gold ÷ Case-Shiller",
       "tag": "역사적 배율"
     },
     "kr_gold": {
-      "val": 5956849,
-      "formatted": "₩5,956,849",
+      "val": 5948905,
+      "formatted": "₩5,948,905",
       "unit": "원",
       "source": "국제금 × 실시간환율",
-      "tag": "g당 ₩191,517"
+      "tag": "g당 ₩191,262"
     },
     "kr_real": {
       "val": 2.41,
@@ -82,25 +82,25 @@
       "tag": "2022=100"
     },
     "kr_fx": {
-      "val": 1365.78,
-      "formatted": "₩1,365.8",
+      "val": 1365.43,
+      "formatted": "₩1,365.4",
       "unit": "원",
       "source": "Yahoo Finance (KRW=X)",
       "tag": "외환시장 실시간"
     },
     "kr_ratio": {
-      "val": 5.84,
-      "formatted": "5.84",
+      "val": 5.83,
+      "formatted": "5.83",
       "unit": "배",
       "source": "원화금 ÷ 주택지수",
       "tag": "상대 강도"
     },
     "jp_gold": {
-      "val": 688114,
-      "formatted": "¥688,114",
+      "val": 687547,
+      "formatted": "¥687,547",
       "unit": "엔",
       "source": "국제금 × 실시간환율",
-      "tag": "g당 ¥22,123"
+      "tag": "g당 ¥22,105"
     },
     "jp_real": {
       "val": 0.19,
@@ -125,19 +125,19 @@
       "tag": "2010=100"
     },
     "jp_fx": {
-      "val": 157.77,
-      "formatted": "¥157.77",
+      "val": 157.81,
+      "formatted": "¥157.81",
       "unit": "엔",
       "source": "Yahoo Finance (JPY=X)",
       "tag": "도쿄외환 실시간"
     },
     "jp_ratio": {
-      "val": 4.97,
-      "formatted": "4.97",
+      "val": 4.96,
+      "formatted": "4.96",
       "unit": "배",
       "source": "엔화금 ÷ 부동산지수",
       "tag": "상대 강도"
     }
   },
-  "cycle": 120
+  "cycle": 240
 }
