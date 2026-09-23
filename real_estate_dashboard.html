@@ -211,17 +211,25 @@
         </span>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
+      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 xl:grid-cols-14 gap-2">
         <!-- 1. 단일 전체 지표 ON/OFF 토글 버튼 -->
         <button id="btn-toggle-all" type="button" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white border-2 border-emerald-400 shadow-md cursor-pointer transition transform active:scale-95">
           <span id="btn-toggle-all-icon" class="text-xs sm:text-sm font-extrabold">🟢 전체 ON/OFF</span>
           <span id="btn-toggle-all-text" class="text-[10px] text-emerald-100 font-bold mt-0.5">클릭 시 모두 OFF</span>
         </button>
 
-        <!-- 1-B. 7대 권역 매매가 변화율(%) 한눈에 비교 버튼 -->
-        <button id="btn-compare-7regions" type="button" onclick="compare7RegionsRates()" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-2 border-cyan-400 shadow-md cursor-pointer transition transform active:scale-95" title="서울·경기·인천·대구·부산·광주·충청 7대 권역 전체 매매가 및 전기 대비 변화율(QoQ %) 비교">
+        <!-- 1-B. 7대 권역 매매가 비교 버튼 -->
+        <button id="btn-compare-7regions" type="button" onclick="compare7RegionsRates()" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-2 border-cyan-400 shadow-md cursor-pointer transition transform active:scale-95" title="서울·경기·인천·대구·부산·광주·충청 7대 권역 전체 매매가 차트 일괄 비교">
           <span class="text-xs sm:text-sm font-black">📊 7대 권역 비교</span>
-          <span class="text-[10px] text-cyan-100 font-bold mt-0.5">변화율(%) 한눈에</span>
+          <span class="text-[10px] text-cyan-100 font-bold mt-0.5">권역 종합 차트</span>
+        </button>
+
+        <!-- 1-C. [변화율 전용 지표 버튼] 다른 지표 버튼과 동등하게 따로 분리된 변화율 토글 버튼 -->
+        <button id="btn-rate-mode-toggle" type="button" onclick="toggleRateModeBtn()" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border-2 border-slate-600 shadow-md cursor-pointer transition transform active:scale-95" title="전기 대비 변화율(QoQ %) 모드 전환">
+          <span id="rate-toggle-icon" class="text-xs sm:text-sm font-black flex items-center gap-1">
+            <span class="text-emerald-400">📈</span> 변화율(QoQ%)
+          </span>
+          <span id="rate-toggle-label" class="text-[10px] text-slate-400 font-bold mt-0.5">원시/변화율 전환</span>
         </button>
 
         <!-- 2~11. 10대 핵심 지표별 전 지역 일괄 버튼 컨테이너 (JS 렌더링) -->
@@ -918,7 +926,7 @@
         const row = document.createElement("div");
         row.className = "flex flex-col lg:flex-row items-stretch lg:items-center gap-2 p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 shadow-sm";
 
-        // 1. 좌측 권역 라벨 & 권역 일괄 매매가 토글 버튼 (클릭 시 권역 전체 선택 및 변화율 표시)
+        // 1. 좌측 권역 라벨 & 매매가 일괄 ON/OFF 토글 (변화율 버튼은 따로 분리됨)
         const regKey = `${rg.name} (전체)`;
         const isRegSelected = (selectedDistrict === regKey);
         const isCurrentInRegion = (districtProfiles[selectedDistrict] && districtProfiles[selectedDistrict].region === rg.name);
@@ -927,52 +935,24 @@
         const allRegSaleOn = rg.districts.every(d => activeState[d]["부동산 매매 가격"]) && (activeState[regKey] && activeState[regKey]["부동산 매매 가격"]);
         const someRegSaleOn = rg.districts.some(d => activeState[d]["부동산 매매 가격"]) || (activeState[regKey] && activeState[regKey]["부동산 매매 가격"]);
 
-        const regRates = getMetricChangeRates(dataset["부동산 매매 가격"][regKey]);
-
         const leftBox = document.createElement("div");
-        leftBox.className = `flex flex-col items-start justify-center p-2.5 rounded-xl border-2 shrink-0 lg:w-48 transition-all cursor-pointer shadow-sm ${
-          isRegSelected
-            ? 'bg-blue-950/90 border-blue-400 ring-2 ring-blue-400 shadow-blue-500/30'
-            : isCurrentInRegion
-              ? 'bg-slate-900 border-slate-600'
-              : 'bg-[#0F172A] border-slate-800 hover:border-slate-600'
-        }`;
+        leftBox.className = "flex flex-col items-start justify-center p-2.5 rounded-xl border-2 shrink-0 lg:w-40 bg-[#0F172A] border-slate-800";
         leftBox.style.borderLeftWidth = "5px";
         leftBox.style.borderLeftColor = rg.color;
 
         leftBox.innerHTML = `
-          <div class="flex items-center justify-between w-full mb-1">
+          <div class="flex items-center justify-between w-full">
             <span class="text-xs font-black text-white whitespace-nowrap">${rg.badge}</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded font-extrabold ${regRates.qoqPct >= 0 ? 'bg-emerald-500/25 text-emerald-300' : 'bg-rose-500/25 text-rose-300'}">
-              ${regRates.qoqPct >= 0 ? '▲+' : '▼'}${regRates.qoqPct.toFixed(1)}%
-            </span>
           </div>
-          <div class="flex items-center justify-between text-[11px] font-bold text-slate-300 w-full mb-2">
-            <span>평균 <b>${regRates.cur.toFixed(1)}억</b></span>
-            <span class="text-[10px] ${regOnCount > 0 ? 'text-cyan-400' : 'text-slate-500'}">활성 ${regOnCount}개</span>
+          <div class="text-[10px] text-slate-400 font-bold mt-0.5 mb-1.5">
+            소속 ${rg.districts.length}개 핵심구
           </div>
-          <div class="flex items-center gap-1 w-full">
-            <button type="button" class="btn-select-reg flex-1 py-1 px-1.5 rounded text-[11px] font-black transition cursor-pointer ${
-              isRegSelected ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow' : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700'
-            }" title="${rg.name} 전체 평균 및 10대 지표 상세 변화율 보기">
-              ${isRegSelected ? '✓ 권역 선택됨' : '🔍 ' + rg.name.replace(' 권역', '') + ' 전체·변화율'}
-            </button>
-            <button type="button" class="btn-reg-toggle px-2 py-1 rounded text-[10px] font-black border transition cursor-pointer ${
-              allRegSaleOn ? 'bg-emerald-600 text-white border-emerald-400' : someRegSaleOn ? 'bg-amber-600/80 text-white border-amber-400' : 'bg-slate-800 text-slate-300 border-slate-600 hover:bg-slate-700'
-            }" title="${rg.name} 소속 전 자치구 매매가 차트 일괄 ON/OFF">
-              매매가 ${allRegSaleOn ? 'OFF' : 'ON'}
-            </button>
-          </div>
+          <button type="button" class="btn-reg-toggle w-full py-1.5 rounded text-[11px] font-black border transition cursor-pointer ${
+            allRegSaleOn ? 'bg-emerald-600 text-white border-emerald-400' : someRegSaleOn ? 'bg-amber-600/80 text-white border-amber-400' : 'bg-slate-800 text-slate-300 border-slate-600 hover:bg-slate-700'
+          }" title="${rg.name} 소속 전 자치구 매매가 차트 일괄 ON/OFF">
+            매매가 ${allRegSaleOn ? '일괄 OFF' : '일괄 ON'}
+          </button>
         `;
-
-        leftBox.onclick = () => {
-          selectTarget(regKey);
-        };
-
-        leftBox.querySelector(".btn-select-reg").onclick = (e) => {
-          e.stopPropagation();
-          selectTarget(regKey);
-        };
 
         leftBox.querySelector(".btn-reg-toggle").onclick = (e) => {
           e.stopPropagation();
@@ -990,10 +970,41 @@
 
         row.appendChild(leftBox);
 
-        // 2. 우측 자치구 가로 정렬 버튼 그리드 (9열 균등 배치)
+        // 2. 우측 자치구 가로 정렬 버튼 그리드 (첫 번째 버튼에 [권역 전체] 배치)
         const distGrid = document.createElement("div");
-        distGrid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-1.5 flex-1";
+        distGrid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-1.5 flex-1";
 
+        // [권역 전체 버튼] - 강남구/서초구처럼 동일한 방식으로 10대 지표를 모두 볼 수 있는 독립 버튼
+        const regLatestPrice = dataset["부동산 매매 가격"][regKey].slice(-1)[0];
+        const regRates = getMetricChangeRates(dataset["부동산 매매 가격"][regKey]);
+        const regActiveCount = Object.values(activeState[regKey]).filter(Boolean).length;
+
+        const regBtn = document.createElement("button");
+        regBtn.type = "button";
+        regBtn.className = `flex flex-col items-center justify-center p-2 rounded-xl border-2 transition-all cursor-pointer shadow-sm ${
+          isRegSelected
+            ? "bg-gradient-to-r from-cyan-600 to-blue-600 border-cyan-300 text-white shadow-cyan-500/40 scale-[1.03] ring-2 ring-cyan-400"
+            : "bg-slate-900 border-cyan-600/60 hover:border-cyan-400 text-cyan-200 hover:bg-slate-800"
+        }`;
+
+        regBtn.innerHTML = `
+          <div class="flex items-center justify-between w-full px-0.5">
+            <span class="text-xs font-black truncate">${rg.name.replace(' 권역', '')} 전체</span>
+            <span class="text-[9px] font-bold ${regRates.qoqPct >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+              ${regRates.qoqPct >= 0 ? '+' : ''}${regRates.qoqPct.toFixed(1)}%
+            </span>
+          </div>
+          <span class="text-[10px] font-bold ${isRegSelected ? 'text-cyan-100' : 'text-cyan-400'} mt-0.5">
+            평균 ${regLatestPrice.toFixed(1)}억 | ${regActiveCount}/10
+          </span>
+        `;
+
+        regBtn.onclick = () => {
+          selectTarget(regKey);
+        };
+        distGrid.appendChild(regBtn);
+
+        // 소속 자치구 버튼들
         rg.districts.forEach(d => {
           const isSelected = (d === selectedDistrict);
           const p = districtProfiles[d];
@@ -1208,8 +1219,33 @@
           btn.className = "px-2.5 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white cursor-pointer";
         }
       });
+
+      // Update dedicated rate toggle button in top batch controls
+      const rateBtn = document.getElementById("btn-rate-mode-toggle");
+      const rateLabel = document.getElementById("rate-toggle-label");
+      if (rateBtn && rateLabel) {
+        if (mode === 'qoq') {
+          rateBtn.className = "flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-2 border-emerald-400 shadow-md cursor-pointer transition transform active:scale-95";
+          rateLabel.textContent = "변화율 ON (클릭 시 OFF)";
+        } else {
+          rateBtn.className = "flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-slate-800 hover:bg-slate-700 text-slate-200 border-2 border-slate-600 shadow-md cursor-pointer transition transform active:scale-95";
+          rateLabel.textContent = "원시/변화율 전환";
+        }
+      }
+
       updateChart();
       syncUrlState();
+    }
+
+        // 상단 [변화율(QoQ%)] 독립 지표 버튼 토글
+    function toggleRateModeBtn() {
+      if (chartViewMode === 'qoq') {
+        setChartViewMode('raw');
+        showToast('차트가 원시 수치(Raw) 모드로 전환되었습니다.', '📊');
+      } else {
+        setChartViewMode('qoq');
+        showToast('차트가 전기 대비 변화율(QoQ %) 모드로 전환되었습니다.', '📈');
+      }
     }
 
     function compare7RegionsRates() {
