@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-23 18:33:43",
+  "updated_at": "2026-09-23 18:38:43",
   "source": "네이버 국채수익률 (미국·한국·일본·중국·유럽 5개국 공식) & 실시간 환율·기준금리",
   "rates": {
     "USD_KRW": 1364.6,
@@ -1149,12 +1149,12 @@
         "source": "Investing.com"
       },
       {
-        "title": "미국 10년물 국채 금리 채권 뉴스",
-        "date": "2026.09.19",
-        "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9jSG9QakZFazRCR3V3Q19wMjdoOV9PaWlKU0F3Unp0MTlheEdNMGNOdG9BbmxSYnJPQl82NGgxU1J4TXdEM1dreHpqSWR4VzAzSmkyM0h3M3VUSm5LSURHUnBmLUdDSWZ3TTlxenNYODhtbUJ6S1h6Mw?oc=5",
+        "title": "S&P 500 TR 뉴스",
+        "date": "2026.09.17",
+        "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBkb1c2d0V1cTdXcE5XNjdwVmUwNVNIU0dqMjNxZDBvQm9aTk1oWnlWTUoyTnp4bk5uSVNxOU5UWkcybGRXVFN6clg0LTBsU3MxZ0FnY1FDLS1iOU9fUGhuSGFR?oc=5",
         "source": "Investing.com"
       }
     ]
   },
-  "cycle": 1300
+  "cycle": 1400
 }
