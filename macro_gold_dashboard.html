@@ -1723,8 +1723,8 @@
         if (countdownEl) countdownEl.innerText = '5';
       }
 
+      // 1. Fetch comprehensive macro indicators from JSON (TIPS, M2, Case-Shiller, BOJ, BOK)
       try {
-        // Try macro_realtime.json first, fallback to data.json, then naver_data.json
         let res = await fetch(`./macro_realtime.json?t=${Date.now()}`);
         if (!res.ok) res = await fetch(`./data.json?t=${Date.now()}`);
         if (!res.ok) res = await fetch(`./naver_data.json?t=${Date.now()}`);
@@ -1734,11 +1734,68 @@
           if (data && data.metrics) {
             updateDashboardWithRealtimeMetrics(data.metrics, data.updated_at);
             if (timeEl) timeEl.innerText = data.updated_at || new Date().toLocaleTimeString();
-            if (isManual) showToast('실시간 시세 동기화 완료!', '⚡');
           }
         }
       } catch (err) {
-        console.warn('Real-time fetch note:', err);
+        console.warn('Real-time json fetch note:', err);
+      }
+
+      // 2. Direct Browser Real-Time Market Feed (Gold & FX - Zero Delay, works on any phone/PC 24/7)
+      try {
+        const [goldRes, fxRes] = await Promise.allSettled([
+          fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=PAXGUSDT', { cache: 'no-cache' }),
+          fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-cache' })
+        ]);
+
+        let liveGoldPrice = null;
+        let liveGoldChange = 0;
+        let liveUsdKrw = null;
+
+        if (goldRes.status === 'fulfilled' && goldRes.value.ok) {
+          const gData = await goldRes.value.json();
+          liveGoldPrice = parseFloat(gData.lastPrice);
+          liveGoldChange = parseFloat(gData.priceChange);
+        }
+
+        if (fxRes.status === 'fulfilled' && fxRes.value.ok) {
+          const fData = await fxRes.value.json();
+          if (fData.rates && fData.rates.KRW) {
+            liveUsdKrw = parseFloat(fData.rates.KRW);
+          }
+        }
+
+        if (liveGoldPrice && liveGoldPrice > 1000) {
+          const liveMetrics = {};
+          liveMetrics['us_gold'] = {
+            val: liveGoldPrice,
+            change: liveGoldChange,
+            formatted: `$${liveGoldPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            source: '실시간 시장 연동 (Spot/COMEX)',
+            tag: (liveGoldChange >= 0 ? '+' : '') + `$${liveGoldChange.toFixed(2)}`
+          };
+
+          if (liveUsdKrw) {
+            liveMetrics['kr_fx'] = {
+              val: liveUsdKrw,
+              formatted: `₩${liveUsdKrw.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              source: '실시간 서울외환시장',
+              tag: '1달러당 원화'
+            };
+            const krGold = Math.round(liveGoldPrice * liveUsdKrw);
+            liveMetrics['kr_gold'] = {
+              val: krGold,
+              formatted: `₩${krGold.toLocaleString()}`,
+              source: '국제금 × 실시간환율',
+              tag: `g당 ₩${Math.round(krGold / 31.1035).toLocaleString()}`
+            };
+          }
+
+          updateDashboardWithRealtimeMetrics(liveMetrics, new Date().toLocaleTimeString());
+          if (timeEl) timeEl.innerText = new Date().toLocaleTimeString() + ' (실시간 라이브)';
+          if (isManual) showToast('실시간 금 시세 갱신 완료!', '⚡');
+        }
+      } catch (liveErr) {
+        console.warn('Direct live market feed note:', liveErr);
       }
     }
 

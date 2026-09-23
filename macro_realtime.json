@@ -1,7 +1,7 @@
 {
   "status": "success",
-  "updated_at": "2026-09-14 17:53:04",
-  "timestamp": 1789375990556,
+  "updated_at": "2026-09-23 16:47:09",
+  "timestamp": 1790149636312,
   "source_pipeline": {
     "realtime_market": "Yahoo Finance (^TNX, KRW=X, JPY=X, GC=F) & 채권/외환 실시간 피드",
     "macro_releases": "경제 캘린더 발표치 & 한국은행·연준·일본은행 최신 고시",
@@ -9,9 +9,9 @@
   },
   "metrics": {
     "us_gold": {
-      "val": 4353.7,
-      "change": -55.2,
-      "formatted": "$4,353.70",
+      "val": 4357.0,
+      "change": -19.4,
+      "formatted": "$4,357.00",
       "unit": "$",
       "source": "Yahoo Finance (GC=F)",
       "tag": "실시간 선물/현물"
@@ -19,7 +19,7 @@
     "us_tips": {
       "val": 2.67,
       "formatted": "+2.67%",
-      "nominal_10y": 4.975,
+      "nominal_10y": 4.97,
       "unit": "%",
       "source": "Yahoo Finance (^TNX) 연동",
       "tag": "10Y: 4.97%"
@@ -39,40 +39,40 @@
       "tag": "2000=100"
     },
     "us_dxy": {
-      "val": 99.57,
-      "formatted": "99.57 pt",
+      "val": 100.77,
+      "formatted": "100.77 pt",
       "unit": "pt",
       "source": "Yahoo Finance (DXY)",
       "tag": "기축통화 지수"
     },
     "us_ratio": {
-      "val": 13.44,
-      "formatted": "13.44",
+      "val": 13.45,
+      "formatted": "13.45",
       "unit": "배",
       "source": "Gold ÷ Case-Shiller",
       "tag": "역사적 배율"
     },
     "kr_gold": {
-      "val": 5856118,
-      "formatted": "₩5,856,118",
+      "val": 5944778,
+      "formatted": "₩5,944,778",
       "unit": "원",
       "source": "국제금 × 실시간환율",
-      "tag": "g당 ₩188,278"
+      "tag": "g당 ₩191,129"
     },
     "kr_real": {
-      "val": 2.53,
-      "formatted": "+2.53%",
-      "nominal_10y": 4.532,
+      "val": 2.41,
+      "formatted": "+2.41%",
+      "nominal_10y": 4.409,
       "unit": "%",
       "source": "한국 국고채 10년 피드",
-      "tag": "국고10Y: 4.53%"
+      "tag": "국고10Y: 4.41%"
     },
     "kr_m2": {
       "val": 4209.7,
       "formatted": "4,209.7 조원",
       "unit": "조원",
       "source": "한국은행 통화동향",
-      "tag": "환산 3.13조$"
+      "tag": "환산 3.09조$"
     },
     "kr_housing": {
       "val": 102.0,
@@ -82,33 +82,33 @@
       "tag": "2022=100"
     },
     "kr_fx": {
-      "val": 1345.09,
-      "formatted": "₩1,345.1",
+      "val": 1364.42,
+      "formatted": "₩1,364.4",
       "unit": "원",
       "source": "Yahoo Finance (KRW=X)",
       "tag": "외환시장 실시간"
     },
     "kr_ratio": {
-      "val": 5.74,
-      "formatted": "5.74",
+      "val": 5.83,
+      "formatted": "5.83",
       "unit": "배",
       "source": "원화금 ÷ 주택지수",
       "tag": "상대 강도"
     },
     "jp_gold": {
-      "val": 672603,
-      "formatted": "¥672,603",
+      "val": 687665,
+      "formatted": "¥687,665",
       "unit": "엔",
       "source": "국제금 × 실시간환율",
-      "tag": "g당 ¥21,625"
+      "tag": "g당 ¥22,109"
     },
     "jp_real": {
-      "val": 0.2,
-      "formatted": "+0.20%",
-      "nominal_10y": 2.996,
+      "val": 0.19,
+      "formatted": "+0.19%",
+      "nominal_10y": 2.985,
       "unit": "%",
       "source": "일본 국채 10년 피드",
-      "tag": "일본10Y: 3.00%"
+      "tag": "일본10Y: 2.98%"
     },
     "jp_m2": {
       "val": 1296.4,
@@ -125,15 +125,15 @@
       "tag": "2010=100"
     },
     "jp_fx": {
-      "val": 154.49,
-      "formatted": "¥154.49",
+      "val": 157.83,
+      "formatted": "¥157.83",
       "unit": "엔",
       "source": "Yahoo Finance (JPY=X)",
       "tag": "도쿄외환 실시간"
     },
     "jp_ratio": {
-      "val": 4.86,
-      "formatted": "4.86",
+      "val": 4.97,
+      "formatted": "4.97",
       "unit": "배",
       "source": "엔화금 ÷ 부동산지수",
       "tag": "상대 강도"

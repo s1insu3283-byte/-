@@ -49,14 +49,14 @@ def fetch_yahoo_finance_quote(symbol):
     """Yahoo Finance v8 chart API를 통해 실시간 시세 및 전일대비 변동률 조회 (query1 & query2 이중 페일오버 및 캐시 백업)"""
     quoted = urllib.parse.quote(symbol, safe='=^')
     for host in ['query1.finance.yahoo.com', 'query2.finance.yahoo.com']:
-        url = f"https://{host}/v8/finance/chart/{quoted}?interval=1d&range=1d"
-        req = urllib.request.Request(url, headers=HEADERS)
+        url = f"https://{host}/v8/finance/chart/{quoted}?interval=1m&range=1d"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         try:
             with urllib.request.urlopen(req, timeout=4) as resp:
                 data = json.loads(resp.read().decode('utf-8'))
                 meta = data['chart']['result'][0]['meta']
                 price = meta.get('regularMarketPrice')
-                prev_close = meta.get('previousClose') or meta.get('chartPreviousClose') or price
+                prev_close = meta.get('chartPreviousClose') or meta.get('previousClose') or price
                 change = price - prev_close if price and prev_close else 0.0
                 change_pct = (change / prev_close * 100) if prev_close else 0.0
                 res = {
@@ -64,7 +64,7 @@ def fetch_yahoo_finance_quote(symbol):
                     'price': round(float(price), 2) if price is not None else None,
                     'change': round(float(change), 2),
                     'change_pct': round(float(change_pct), 2),
-                    'source': 'Yahoo Finance'
+                    'source': f'Yahoo Finance ({symbol})'
                 }
                 set_cached_quote(symbol, res)
                 return res
