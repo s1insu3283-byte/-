@@ -51,6 +51,10 @@ def run_loop():
 
             print(f"[{now_str}] 🟢 [5초 갱신 #{cycle_count}] 美금: {gold_val} | TIPS: {tips_val} | 韓실질: {kr_real} | 환율: {krw_val} ➔ macro_realtime.json 완료")
 
+            # 10분(120사이클)마다 GitHub Pages로 자동 백그라운드 푸시 (핸드폰/도메인 최신화)
+            if cycle_count % 120 == 0:
+                os.system(f'cd "{curr_dir}" && git add macro_realtime.json data.json && git commit -m "chore: 🔄 실시간 매크로 자동 동기화" && git push origin main > /dev/null 2>&1 &')
+
         except Exception as e:
             print(f"[{now_str}] ⚠️ 갱신 중 예외 발생: {e}")
             traceback.print_exc()
