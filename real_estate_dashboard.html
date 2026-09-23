@@ -780,6 +780,7 @@
         el.innerHTML = `일괄 상태: <b class="${isAnyOn ? 'text-emerald-400' : 'text-slate-500'}">${isAnyOn ? 'ON' : 'OFF'}</b> (${count} / ${totalPossible}개)`;
       }
       renderCategoryAllButtons();
+      update7RegionsCompareBtn();
     }
 
     function renderCategoryAllButtons() {
@@ -916,6 +917,28 @@
       syncUrlState();
     };
 
+    // [지역 및 자치구 선택 타깃 전환 함수]
+    function selectTarget(targetId) {
+      if (!targetId || !districtProfiles[targetId]) return;
+      selectedDistrict = targetId;
+      const prof = districtProfiles[targetId];
+      const labelEl = document.getElementById("current-district-label");
+      if (labelEl) {
+        if (prof.isRegion) {
+          labelEl.innerHTML = `<span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-400/30 font-black">[권역 전체] ${prof.short}</span> (10대 지표 종합)`;
+        } else {
+          labelEl.textContent = `[${prof.region}] ${targetId}`;
+        }
+      }
+      renderHorizontalDistricts();
+      renderSelectedDistrictDetail();
+      syncUrlState();
+      const detailEl = document.getElementById("selected-district-detail");
+      if (detailEl) {
+        detailEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
     // 2. 7대 권역별 37개 자치구 가로 정렬 바 렌더링
     function renderHorizontalDistricts() {
       const container = document.getElementById("horizontal-districts-grid");
@@ -936,9 +959,19 @@
         const someRegSaleOn = rg.districts.some(d => activeState[d]["부동산 매매 가격"]) || (activeState[regKey] && activeState[regKey]["부동산 매매 가격"]);
 
         const leftBox = document.createElement("div");
-        leftBox.className = "flex flex-col items-start justify-center p-2.5 rounded-xl border-2 shrink-0 lg:w-40 bg-[#0F172A] border-slate-800";
+        leftBox.className = `flex flex-col items-start justify-center p-2.5 rounded-xl border-2 shrink-0 lg:w-40 transition-all cursor-pointer shadow-sm ${
+          isRegSelected
+            ? 'bg-blue-950/90 border-blue-400 ring-2 ring-blue-400 shadow-blue-500/30'
+            : isCurrentInRegion
+              ? 'bg-slate-900 border-slate-600 hover:border-slate-500'
+              : 'bg-[#0F172A] border-slate-800 hover:border-slate-600'
+        }`;
         leftBox.style.borderLeftWidth = "5px";
         leftBox.style.borderLeftColor = rg.color;
+
+        leftBox.onclick = () => {
+          selectTarget(regKey);
+        };
 
         leftBox.innerHTML = `
           <div class="flex items-center justify-between w-full">
@@ -1248,23 +1281,65 @@
       }
     }
 
+    // 7대 권역 매매가 비교 원클릭 ON/OFF 토글
     function compare7RegionsRates() {
-      allEntities.forEach(ent => {
-        Object.keys(indicatorsMeta).forEach(ind => {
-          activeState[ent][ind] = false;
+      const isAll7On = regionKeys.every(k => activeState[k] && activeState[k]["부동산 매매 가격"]);
+
+      if (!isAll7On) {
+        // [ON 동작]: 7대 권역 매매가 일괄 켜기
+        allEntities.forEach(ent => {
+          Object.keys(indicatorsMeta).forEach(ind => {
+            activeState[ent][ind] = false;
+          });
         });
-      });
-      regionKeys.forEach(k => {
-        activeState[k]["부동산 매매 가격"] = true;
-      });
-      setChartViewMode('qoq');
+        regionKeys.forEach(k => {
+          if (!activeState[k]) activeState[k] = {};
+          activeState[k]["부동산 매매 가격"] = true;
+        });
+        setChartViewMode('qoq');
+        showToast('7대 권역 전체 매매가 비교 차트 ON (전기 대비 변화율 %)', '📊');
+      } else {
+        // [OFF 동작]: 7대 권역 매매가 끄고 강남구 기본값으로 복원
+        regionKeys.forEach(k => {
+          if (activeState[k]) activeState[k]["부동산 매매 가격"] = false;
+        });
+        if (!activeState["강남구"]) activeState["강남구"] = {};
+        activeState["강남구"]["부동산 매매 가격"] = true;
+        setChartViewMode('raw');
+        showToast('7대 권역 전체 비교 OFF (기본값 복원)', '⚪');
+      }
+
+      update7RegionsCompareBtn();
       updateToggleAllButton();
       renderHorizontalDistricts();
       renderSelectedDistrictDetail();
       updateChart();
       syncUrlState();
-      document.getElementById("mainChart")?.scrollIntoView({ behavior: 'smooth' });
-      showToast('7대 권역 전체 매매가 전기 대비 변화율(QoQ %) 비교 차트가 활성화되었습니다!', '📊');
+      document.getElementById("mainChart")?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function update7RegionsCompareBtn() {
+      const btn = document.getElementById("btn-compare-7regions");
+      if (!btn) return;
+      const isAll7On = regionKeys.every(k => activeState[k] && activeState[k]["부동산 매매 가격"]);
+
+      if (isAll7On) {
+        btn.className = "flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-2 border-emerald-400 shadow-md cursor-pointer transition transform active:scale-95";
+        btn.innerHTML = `
+          <span class="text-xs sm:text-sm font-black flex items-center gap-1">
+            <span>🟢</span> 7대 권역 비교 ON
+          </span>
+          <span class="text-[10px] text-emerald-100 font-bold mt-0.5">클릭 시 OFF</span>
+        `;
+      } else {
+        btn.className = "flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-2 border-cyan-400 shadow-md cursor-pointer transition transform active:scale-95";
+        btn.innerHTML = `
+          <span class="text-xs sm:text-sm font-black flex items-center gap-1">
+            <span>📊</span> 7대 권역 비교
+          </span>
+          <span class="text-[10px] text-cyan-100 font-bold mt-0.5">클릭 시 일괄 ON</span>
+        `;
+      }
     }
 
     const indicatorDashStyles = {
