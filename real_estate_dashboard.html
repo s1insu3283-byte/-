@@ -218,6 +218,12 @@
           <span id="btn-toggle-all-text" class="text-[10px] text-emerald-100 font-bold mt-0.5">클릭 시 모두 OFF</span>
         </button>
 
+        <!-- 1-B. 7대 권역 매매가 변화율(%) 한눈에 비교 버튼 -->
+        <button id="btn-compare-7regions" type="button" onclick="compare7RegionsRates()" class="flex flex-col items-center justify-center p-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-2 border-cyan-400 shadow-md cursor-pointer transition transform active:scale-95" title="서울·경기·인천·대구·부산·광주·충청 7대 권역 전체 매매가 및 전기 대비 변화율(QoQ %) 비교">
+          <span class="text-xs sm:text-sm font-black">📊 7대 권역 비교</span>
+          <span class="text-[10px] text-cyan-100 font-bold mt-0.5">변화율(%) 한눈에</span>
+        </button>
+
         <!-- 2~11. 10대 핵심 지표별 전 지역 일괄 버튼 컨테이너 (JS 렌더링) -->
         <div id="category-all-buttons-grid" class="contents">
           <!-- JS 렌더링 -->
@@ -233,9 +239,9 @@
 
     <!-- [전국 7대 권역 37개 핵심 자치구 계층형 가로 정렬 바] -->
     <section class="space-y-2.5">
-      <div class="flex items-center justify-between px-1">
+      <div class="flex items-center justify-between px-1 flex-wrap gap-2">
         <span class="text-sm font-black text-cyan-400 tracking-wider">
-          🗺️ 전국 7대 권역별 핵심 자치구 (총 37곳 · 상위 광역권 행 라벨 + 가로 Row 정렬)
+          🗺️ 전국 7대 권역 및 37개 핵심 자치구 (좌측 권역 클릭 시 전체 평균 및 변화율 보기)
         </span>
         <span class="text-xs text-slate-400">
           현재 선택: <b id="current-district-label" class="text-cyan-400 text-sm font-black">[서울 권역] 강남구</b>
@@ -257,11 +263,25 @@
     <section class="bg-slate-900 border-2 border-blue-500/80 rounded-2xl p-5 sm:p-7 shadow-2xl mt-8">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-800 gap-3">
         <div>
-          <h2 class="text-lg sm:text-xl font-black text-white">
-            분기별 시계열 종합 비교 차트 (선택된 활성 지표 연동)
-          </h2>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="text-lg sm:text-xl font-black text-white">
+              분기별 시계열 종합 비교 차트 (선택된 활성 지표 연동)
+            </h2>
+            <!-- 차트 보기 모드 스위처 (원시 수치 vs 변화율 %) -->
+            <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-700 text-xs">
+              <button onclick="setChartViewMode('raw')" id="mode-raw" type="button" class="px-2.5 py-1 rounded-lg font-bold transition bg-blue-600 text-white shadow cursor-pointer">
+                원시 수치 (Raw)
+              </button>
+              <button onclick="setChartViewMode('qoq')" id="mode-qoq" type="button" class="px-2.5 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white cursor-pointer">
+                전기 대비 변화율 (QoQ %)
+              </button>
+              <button onclick="setChartViewMode('cum')" id="mode-cum" type="button" class="px-2.5 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white cursor-pointer">
+                누적 변화율 (%)
+              </button>
+            </div>
+          </div>
           <p class="text-xs text-slate-400 mt-1">
-            전국 37개 자치구에서 <b>ON</b> 상태인 지표들이 한눈에 겹쳐서 비교되며, 차트 호버 시 <b>통합 툴팁</b>이 표시됩니다.
+            전국 37개 자치구 및 <b>7대 권역 전체</b>의 수치와 <b>변화율(%)</b>을 한눈에 비교할 수 있습니다.
           </p>
         </div>
         <div class="flex flex-col sm:flex-row items-center gap-3 bg-slate-950/80 px-4 py-2 rounded-xl border border-slate-700">
@@ -458,6 +478,22 @@
       "세종특별자치시": { region: "충청 권역", short: "세종시", sub: "행정중심복합도시 나성동 주상복합·새롬동 학군", themeColor: "#DB2777", price95: 1.00, mul: 5.8, pop: 390000, trend: 780, sup: 1800, dec: 7.8, inc: 2150000, incG: 1.0132, hh: 3.55, hhEnd: 2.45, aptShare: 0.045, villaShare: 0.015, commShare: 0.035, listingShare: 0.046 }
     };
 
+    // 7대 권역 종합 집계 엔티티 등록
+    const regionKeys = regionGroups.map(g => `${g.name} (전체)`);
+    const allEntities = [...districts, ...regionKeys];
+
+    regionGroups.forEach(rg => {
+      const regKey = `${rg.name} (전체)`;
+      districtProfiles[regKey] = {
+        region: rg.name,
+        short: `${rg.name.replace(' 권역', '')} 전체`,
+        sub: `${rg.badge} 종합 집계 (평균 시세 & 권역 총량 변화율)`,
+        themeColor: rg.color,
+        isRegion: true,
+        memberDistricts: rg.districts
+      };
+    });
+
     function getAsilHousingSupply(d, yF, i) {
       const p = districtProfiles[d] || { sup: 1200 };
       const base = p.sup + Math.sin(i * 0.25) * (p.sup * 0.15);
@@ -592,7 +628,7 @@
     const dataset = {};
     Object.keys(indicatorsMeta).forEach(ind => {
       dataset[ind] = {};
-      districts.forEach(d => dataset[ind][d] = []);
+      allEntities.forEach(d => dataset[ind][d] = []);
     });
 
     districts.forEach(d => {
@@ -631,17 +667,88 @@
       });
     });
 
+    // 7대 권역 종합 집계(평균가 및 총거래량·총매물량 등) 계산
+    regionGroups.forEach(rg => {
+      const regKey = `${rg.name} (전체)`;
+      quarters.forEach((_, i) => {
+        // 매매 가격: 권역 평균
+        const pAvg = rg.districts.reduce((s, d) => s + dataset["부동산 매매 가격"][d][i], 0) / rg.districts.length;
+        dataset["부동산 매매 가격"][regKey].push(Math.round(pAvg * 100) / 100);
+
+        // 매물량: 권역 총합
+        const lSum = rg.districts.reduce((s, d) => s + dataset["부동산 매물량"][d][i], 0);
+        dataset["부동산 매물량"][regKey].push(lSum);
+
+        // 아파트 거래량: 권역 총합
+        const aSum = rg.districts.reduce((s, d) => s + dataset["아파트 거래량"][d][i], 0);
+        dataset["아파트 거래량"][regKey].push(aSum);
+
+        // 연립·단독 거래량: 권역 총합
+        const vSum = rg.districts.reduce((s, d) => s + dataset["연립다세대·단독다가구 거래량"][d][i], 0);
+        dataset["연립다세대·단독다가구 거래량"][regKey].push(vSum);
+
+        // 오피스·상업 거래량: 권역 총합
+        const cSum = rg.districts.reduce((s, d) => s + dataset["오피스텔·상업업무용 거래량"][d][i], 0);
+        dataset["오피스텔·상업업무용 거래량"][regKey].push(cSum);
+
+        // 주택 공급량: 권역 총합
+        const sSum = rg.districts.reduce((s, d) => s + dataset["주택 공급량"][d][i], 0);
+        dataset["주택 공급량"][regKey].push(sSum);
+
+        // 소득 분위: 권역 평균
+        const dAvg = rg.districts.reduce((s, d) => s + dataset["소득 분위"][d][i], 0) / rg.districts.length;
+        dataset["소득 분위"][regKey].push(Math.round(dAvg * 100) / 100);
+
+        // 가처분 소득: 권역 평균
+        const iAvg = rg.districts.reduce((s, d) => s + dataset["가처분 소득 금액"][d][i], 0) / rg.districts.length;
+        dataset["가처분 소득 금액"][regKey].push(Math.round(iAvg / 10000) * 10000);
+
+        // 인구 변화: 권역 총합
+        const popSum = rg.districts.reduce((s, d) => s + dataset["인구 변화"][d][i], 0);
+        dataset["인구 변화"][regKey].push(popSum);
+
+        // 가구원수: 권역 평균
+        const hhAvg = rg.districts.reduce((s, d) => s + dataset["가구별 구성 명수"][d][i], 0) / rg.districts.length;
+        dataset["가구별 구성 명수"][regKey].push(Math.round(hhAvg * 100) / 100);
+      });
+    });
+
     const activeState = {};
-    districts.forEach(d => {
+    allEntities.forEach(d => {
       activeState[d] = {};
       Object.keys(indicatorsMeta).forEach(ind => {
         activeState[d][ind] = (d === "강남구" && ind === "부동산 매매 가격");
       });
     });
 
+    // 변화율(QoQ, YoY, 누적) 계산 헬퍼 함수
+    function getMetricChangeRates(arr) {
+      if (!arr || arr.length < 2) {
+        return { cur: 0, prev: 0, diff: 0, qoqPct: 0, yoyPct: 0, cumPct: 0 };
+      }
+      const cur = arr[arr.length - 1];
+      const prev = arr[arr.length - 2];
+      const yoy = arr.length >= 5 ? arr[arr.length - 5] : arr[0];
+      const base = arr[0];
+
+      const diff = cur - prev;
+      const qoqPct = prev !== 0 ? ((cur - prev) / Math.abs(prev)) * 100 : 0;
+      const yoyPct = yoy !== 0 ? ((cur - yoy) / Math.abs(yoy)) * 100 : 0;
+      const cumPct = base !== 0 ? ((cur - base) / Math.abs(base)) * 100 : 0;
+
+      return {
+        cur,
+        prev,
+        diff,
+        qoqPct: Math.round(qoqPct * 100) / 100,
+        yoyPct: Math.round(yoyPct * 100) / 100,
+        cumPct: Math.round(cumPct * 10) / 10
+      };
+    }
+
     function updateToggleAllButton() {
       let count = 0;
-      districts.forEach(d => {
+      allEntities.forEach(d => {
         count += Object.values(activeState[d]).filter(Boolean).length;
       });
       const isAnyOn = (count > 0);
@@ -661,7 +768,7 @@
 
       const el = document.getElementById("active-count-indicator");
       if (el) {
-        const totalPossible = districts.length * Object.keys(indicatorsMeta).length;
+        const totalPossible = allEntities.length * Object.keys(indicatorsMeta).length;
         el.innerHTML = `일괄 상태: <b class="${isAnyOn ? 'text-emerald-400' : 'text-slate-500'}">${isAnyOn ? 'ON' : 'OFF'}</b> (${count} / ${totalPossible}개)`;
       }
       renderCategoryAllButtons();
@@ -769,31 +876,36 @@
     // [전체 지표 단일 ON/OFF 토글] 버튼 이벤트
     document.getElementById("btn-toggle-all").onclick = () => {
       let count = 0;
-      districts.forEach(d => {
+      allEntities.forEach(d => {
         count += Object.values(activeState[d]).filter(Boolean).length;
       });
       const newState = (count === 0);
-      districts.forEach(d => {
+      allEntities.forEach(d => {
         Object.keys(indicatorsMeta).forEach(ind => {
           activeState[d][ind] = newState;
-        });
-      });
-      updateToggleAllButton();
-      renderSelectedDistrictDetail();
-      updateChart();
-    };
-
-    // [기본값 복원] 버튼 이벤트
-    document.getElementById("btn-reset-default").onclick = () => {
-      districts.forEach(d => {
-        Object.keys(indicatorsMeta).forEach(ind => {
-          activeState[d][ind] = (d === "강남구" && ind === "부동산 매매 가격");
         });
       });
       updateToggleAllButton();
       renderHorizontalDistricts();
       renderSelectedDistrictDetail();
       updateChart();
+      syncUrlState();
+    };
+
+    // [기본값 복원] 버튼 이벤트
+    document.getElementById("btn-reset-default").onclick = () => {
+      allEntities.forEach(d => {
+        Object.keys(indicatorsMeta).forEach(ind => {
+          activeState[d][ind] = (d === "강남구" && ind === "부동산 매매 가격");
+        });
+      });
+      selectedDistrict = "강남구";
+      chartViewMode = "raw";
+      updateToggleAllButton();
+      renderHorizontalDistricts();
+      renderSelectedDistrictDetail();
+      updateChart();
+      syncUrlState();
     };
 
     // 2. 7대 권역별 37개 자치구 가로 정렬 바 렌더링
@@ -806,42 +918,74 @@
         const row = document.createElement("div");
         row.className = "flex flex-col lg:flex-row items-stretch lg:items-center gap-2 p-2.5 bg-slate-900/90 rounded-xl border border-slate-800 shadow-sm";
 
-        // 1. 좌측 권역 라벨 & 권역 일괄 매매가 토글 버튼
-        const isCurrentInRegion = (districtProfiles[selectedDistrict].region === rg.name);
-        const regOnCount = rg.districts.reduce((sum, d) => sum + Object.values(activeState[d]).filter(Boolean).length, 0);
-        const allRegSaleOn = rg.districts.every(d => activeState[d]["부동산 매매 가격"]);
-        const someRegSaleOn = rg.districts.some(d => activeState[d]["부동산 매매 가격"]);
+        // 1. 좌측 권역 라벨 & 권역 일괄 매매가 토글 버튼 (클릭 시 권역 전체 선택 및 변화율 표시)
+        const regKey = `${rg.name} (전체)`;
+        const isRegSelected = (selectedDistrict === regKey);
+        const isCurrentInRegion = (districtProfiles[selectedDistrict] && districtProfiles[selectedDistrict].region === rg.name);
+        const regOnCount = rg.districts.reduce((sum, d) => sum + Object.values(activeState[d]).filter(Boolean).length, 0)
+                          + (activeState[regKey] ? Object.values(activeState[regKey]).filter(Boolean).length : 0);
+        const allRegSaleOn = rg.districts.every(d => activeState[d]["부동산 매매 가격"]) && (activeState[regKey] && activeState[regKey]["부동산 매매 가격"]);
+        const someRegSaleOn = rg.districts.some(d => activeState[d]["부동산 매매 가격"]) || (activeState[regKey] && activeState[regKey]["부동산 매매 가격"]);
+
+        const regRates = getMetricChangeRates(dataset["부동산 매매 가격"][regKey]);
 
         const leftBox = document.createElement("div");
-        leftBox.className = "flex items-center justify-between lg:flex-col lg:items-start lg:justify-center p-2 rounded-lg border shrink-0 lg:w-44 transition-all";
-        leftBox.style.backgroundColor = "#0F172A";
-        leftBox.style.borderColor = isCurrentInRegion ? rg.color : "#334155";
-        leftBox.style.borderLeftWidth = "4px";
+        leftBox.className = `flex flex-col items-start justify-center p-2.5 rounded-xl border-2 shrink-0 lg:w-48 transition-all cursor-pointer shadow-sm ${
+          isRegSelected
+            ? 'bg-blue-950/90 border-blue-400 ring-2 ring-blue-400 shadow-blue-500/30'
+            : isCurrentInRegion
+              ? 'bg-slate-900 border-slate-600'
+              : 'bg-[#0F172A] border-slate-800 hover:border-slate-600'
+        }`;
+        leftBox.style.borderLeftWidth = "5px";
         leftBox.style.borderLeftColor = rg.color;
 
         leftBox.innerHTML = `
-          <div class="flex flex-col">
+          <div class="flex items-center justify-between w-full mb-1">
             <span class="text-xs font-black text-white whitespace-nowrap">${rg.badge}</span>
-            <span class="text-[10px] font-bold ${regOnCount > 0 ? 'text-cyan-400' : 'text-slate-500'}">
-              활성 ${regOnCount}개 지표
+            <span class="text-[10px] px-1.5 py-0.5 rounded font-extrabold ${regRates.qoqPct >= 0 ? 'bg-emerald-500/25 text-emerald-300' : 'bg-rose-500/25 text-rose-300'}">
+              ${regRates.qoqPct >= 0 ? '▲+' : '▼'}${regRates.qoqPct.toFixed(1)}%
             </span>
           </div>
-          <button type="button" class="btn-reg-toggle mt-1 px-2.5 py-1 rounded text-[11px] font-black border transition cursor-pointer ${
-            allRegSaleOn ? 'bg-emerald-600 text-white border-emerald-400' : someRegSaleOn ? 'bg-amber-600/80 text-white border-amber-400' : 'bg-slate-800 text-slate-300 border-slate-600 hover:bg-slate-700'
-          }">
-            매매가 ${allRegSaleOn ? 'OFF' : 'ON'}
-          </button>
+          <div class="flex items-center justify-between text-[11px] font-bold text-slate-300 w-full mb-2">
+            <span>평균 <b>${regRates.cur.toFixed(1)}억</b></span>
+            <span class="text-[10px] ${regOnCount > 0 ? 'text-cyan-400' : 'text-slate-500'}">활성 ${regOnCount}개</span>
+          </div>
+          <div class="flex items-center gap-1 w-full">
+            <button type="button" class="btn-select-reg flex-1 py-1 px-1.5 rounded text-[11px] font-black transition cursor-pointer ${
+              isRegSelected ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow' : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700'
+            }" title="${rg.name} 전체 평균 및 10대 지표 상세 변화율 보기">
+              ${isRegSelected ? '✓ 권역 선택됨' : '🔍 ' + rg.name.replace(' 권역', '') + ' 전체·변화율'}
+            </button>
+            <button type="button" class="btn-reg-toggle px-2 py-1 rounded text-[10px] font-black border transition cursor-pointer ${
+              allRegSaleOn ? 'bg-emerald-600 text-white border-emerald-400' : someRegSaleOn ? 'bg-amber-600/80 text-white border-amber-400' : 'bg-slate-800 text-slate-300 border-slate-600 hover:bg-slate-700'
+            }" title="${rg.name} 소속 전 자치구 매매가 차트 일괄 ON/OFF">
+              매매가 ${allRegSaleOn ? 'OFF' : 'ON'}
+            </button>
+          </div>
         `;
 
-        leftBox.querySelector(".btn-reg-toggle").onclick = () => {
+        leftBox.onclick = () => {
+          selectTarget(regKey);
+        };
+
+        leftBox.querySelector(".btn-select-reg").onclick = (e) => {
+          e.stopPropagation();
+          selectTarget(regKey);
+        };
+
+        leftBox.querySelector(".btn-reg-toggle").onclick = (e) => {
+          e.stopPropagation();
           const targetState = !allRegSaleOn;
           rg.districts.forEach(d => {
             activeState[d]["부동산 매매 가격"] = targetState;
           });
+          if (activeState[regKey]) activeState[regKey]["부동산 매매 가격"] = targetState;
           updateToggleAllButton();
           renderHorizontalDistricts();
           renderSelectedDistrictDetail();
           updateChart();
+          syncUrlState();
         };
 
         row.appendChild(leftBox);
@@ -854,6 +998,7 @@
           const isSelected = (d === selectedDistrict);
           const p = districtProfiles[d];
           const latestPrice = dataset["부동산 매매 가격"][d].slice(-1)[0];
+          const dRates = getMetricChangeRates(dataset["부동산 매매 가격"][d]);
           const dOnCount = Object.values(activeState[d]).filter(Boolean).length;
 
           const btn = document.createElement("button");
@@ -865,17 +1010,19 @@
           }`;
 
           btn.innerHTML = `
-            <span class="text-xs font-black truncate w-full text-center">${p.short}</span>
+            <div class="flex items-center justify-between w-full px-0.5">
+              <span class="text-xs font-black truncate">${p.short}</span>
+              <span class="text-[9px] font-bold ${dRates.qoqPct >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+                ${dRates.qoqPct >= 0 ? '+' : ''}${dRates.qoqPct.toFixed(1)}%
+              </span>
+            </div>
             <span class="text-[10px] font-bold ${isSelected ? 'text-blue-100' : 'text-slate-400'} mt-0.5">
               ${latestPrice.toFixed(1)}억 | ${dOnCount}/10
             </span>
           `;
 
           btn.onclick = () => {
-            selectedDistrict = d;
-            document.getElementById("current-district-label").textContent = `[${p.region}] ${d}`;
-            renderHorizontalDistricts();
-            renderSelectedDistrictDetail();
+            selectTarget(d);
           };
 
           distGrid.appendChild(btn);
@@ -886,13 +1033,13 @@
       });
     }
 
-    // 3. 선택된 지역의 상세 10개 지표 카드 펼침
+    // 3. 선택된 지역 및 권역의 상세 10개 지표 카드 펼침 (변화율 표기)
     function renderSelectedDistrictDetail() {
       const container = document.getElementById("selected-district-detail");
       container.innerHTML = "";
 
       const d = selectedDistrict;
-      const prof = districtProfiles[d];
+      const prof = districtProfiles[d] || districtProfiles["강남구"];
 
       const box = document.createElement("div");
       box.className = "bg-slate-900 border-2 rounded-2xl p-5 sm:p-6 shadow-xl";
@@ -900,17 +1047,44 @@
 
       const header = document.createElement("div");
       header.className = "flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-800 gap-2";
-      header.innerHTML = `
-        <div class="flex items-center gap-3">
-          <h3 class="text-lg sm:text-xl font-black text-white">[${prof.region}] ${d} 실시간 시세 및 10대 핵심 지표</h3>
-          <span class="text-xs text-slate-400 font-semibold">(${prof.sub}) · ${latestQ} 기준 (실시간 자동 확장)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-white px-3 py-1 rounded-lg" style="background: ${prof.themeColor};">
-            ${numQ}분기 시계열 집계 (1995 1Q ~ ${latestQ})
-          </span>
-        </div>
-      `;
+
+      if (prof.isRegion) {
+        header.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 text-2xl font-black">🏢</span>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-lg sm:text-xl font-black text-white">
+                  [권역 전체] ${prof.region} 10대 핵심 지표 종합 집계 및 실시간 변화율
+                </h3>
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30">
+                  소속 ${prof.memberDistricts.length}개 핵심구 통합 평균 & 총량
+                </span>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">
+                소속 자치구: <b>${prof.memberDistricts.join(', ')}</b> · ${latestQ} 기준 (실시간 자동 확장)
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-white px-3 py-1.5 rounded-xl shadow" style="background: ${prof.themeColor};">
+              권역 종합 집계 (${numQ}분기 시계열)
+            </span>
+          </div>
+        `;
+      } else {
+        header.innerHTML = `
+          <div class="flex items-center gap-3">
+            <h3 class="text-lg sm:text-xl font-black text-white">[${prof.region}] ${d} 실시간 시세 및 10대 핵심 지표</h3>
+            <span class="text-xs text-slate-400 font-semibold">(${prof.sub}) · ${latestQ} 기준 (실시간 자동 확장)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-white px-3 py-1 rounded-lg" style="background: ${prof.themeColor};">
+              ${numQ}분기 시계열 집계 (1995 1Q ~ ${latestQ})
+            </span>
+          </div>
+        `;
+      }
       box.appendChild(header);
 
       const cardsGrid = document.createElement("div");
@@ -918,11 +1092,10 @@
 
       Object.keys(indicatorsMeta).forEach(indName => {
         const meta = indicatorsMeta[indName];
-        const isOn = activeState[d][indName];
+        const isOn = (activeState[d] && activeState[d][indName]);
         const arr = dataset[indName][d];
-        const curVal = arr[arr.length - 1];
-        const prevVal = arr[arr.length - 2];
-        const diff = curVal - prevVal;
+        const rates = getMetricChangeRates(arr);
+        const curVal = rates.cur;
 
         let valStr = "";
         let diffStr = "";
@@ -930,43 +1103,43 @@
 
         if (indName === "부동산 매매 가격") {
           valStr = `${curVal.toFixed(2)} 억원`;
-          diffStr = `${diff >= 0 ? "+" : ""}${diff.toFixed(2)} 억원`;
-          subLeft = "실거래 평균 매매가";
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${rates.diff.toFixed(2)} 억원`;
+          subLeft = prof.isRegion ? "권역 평균 매매가" : "실거래 평균 매매가";
         } else if (indName === "부동산 매물량") {
           valStr = `${Math.round(curVal).toLocaleString()} 건`;
-          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
-          subLeft = "네이버 매물 크롤링";
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${Math.round(rates.diff).toLocaleString()} 건`;
+          subLeft = prof.isRegion ? "권역 총 매물량" : "네이버 매물 크롤링";
         } else if (indName === "아파트 거래량") {
           valStr = `${Math.round(curVal).toLocaleString()} 건`;
-          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
-          subLeft = "아파트 매매 실거래";
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${Math.round(rates.diff).toLocaleString()} 건`;
+          subLeft = prof.isRegion ? "권역 아파트 총거래" : "아파트 매매 실거래";
         } else if (indName === "연립다세대·단독다가구 거래량") {
           valStr = `${Math.round(curVal).toLocaleString()} 건`;
-          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
-          subLeft = "빌라·단독 매매 실거래";
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${Math.round(rates.diff).toLocaleString()} 건`;
+          subLeft = prof.isRegion ? "권역 빌라·단독 총거래" : "빌라·단독 매매 실거래";
         } else if (indName === "오피스텔·상업업무용 거래량") {
           valStr = `${Math.round(curVal).toLocaleString()} 건`;
-          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 건`;
-          subLeft = "오피스·상가 실거래";
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${Math.round(rates.diff).toLocaleString()} 건`;
+          subLeft = prof.isRegion ? "권역 오피스·상가 총거래" : "오피스·상가 실거래";
         } else if (indName === "주택 공급량") {
           valStr = `${Math.round(curVal).toLocaleString()} 호`;
-          diffStr = `${diff >= 0 ? "+" : ""}${Math.round(diff).toLocaleString()} 호`;
-          subLeft = "아실 입주물량 통계";
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${Math.round(rates.diff).toLocaleString()} 호`;
+          subLeft = prof.isRegion ? "권역 총 입주물량" : "아실 입주물량 통계";
         } else if (indName === "소득 분위") {
           valStr = `${curVal.toFixed(2)} 분위`;
-          diffStr = `${diff >= 0 ? "+" : ""}${diff.toFixed(2)} pt`;
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${rates.diff.toFixed(2)} pt`;
           subLeft = "가처분소득 분위";
         } else if (indName === "가처분 소득 금액") {
           valStr = `${Math.round(curVal / 10000).toLocaleString()} 만원`;
-          diffStr = `월평균 실질소득`;
+          diffStr = `월평균 소득`;
           subLeft = `${curVal.toLocaleString()}원/월`;
         } else if (indName === "인구 변화") {
           valStr = `${(curVal / 10000).toFixed(1)} 만명`;
           diffStr = `총 ${curVal.toLocaleString()}명`;
-          subLeft = "주민등록 인구";
+          subLeft = prof.isRegion ? "권역 총인구" : "주민등록 인구";
         } else {
           valStr = `${curVal.toFixed(2)} 명`;
-          diffStr = `${diff >= 0 ? "+" : ""}${diff.toFixed(2)} 명`;
+          diffStr = `${rates.diff >= 0 ? "+" : ""}${rates.diff.toFixed(2)} 명`;
           subLeft = "가구당 평균원수";
         }
 
@@ -979,112 +1152,84 @@
         if (isOn) card.style.boxShadow = `0 0 16px -2px ${meta.bgBadge}`;
 
         card.innerHTML = `
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-black text-slate-100 flex items-center gap-1.5">
-              <span style="color: ${meta.color}; font-size: 1.1rem;">●</span> ${indName}
-            </span>
-            <span class="text-xs font-black px-2.5 py-0.5 rounded-md border" style="background: ${isOn ? meta.color : '#1E293B'}; color: ${isOn ? '#000000' : '#94A3B8'}; border-color: ${meta.color};">
-              ${isOn ? "ON" : "OFF"}
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-black text-white truncate">${indName}</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-extrabold ${rates.qoqPct >= 0 ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/25 text-rose-300 border border-rose-500/40'}">
+              ${rates.qoqPct >= 0 ? '▲+' : '▼'}${rates.qoqPct.toFixed(2)}% QoQ
             </span>
           </div>
-          <div class="text-2xl font-black text-white tracking-tight my-1">
+          <div class="text-xl sm:text-2xl font-black text-white my-1 tracking-tight">
             ${valStr}
           </div>
-          <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800 mt-2">
-            <span>${subLeft}</span>
-            <span class="font-extrabold ${diff >= 0 ? 'text-rose-400' : 'text-blue-400'}">${diffStr}</span>
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2 pt-2 border-t border-slate-800">
+            <span class="truncate">${subLeft} (${diffStr})</span>
+            <span class="${rates.yoyPct >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-extrabold whitespace-nowrap ml-1">
+              ${rates.yoyPct >= 0 ? '+' : ''}${rates.yoyPct.toFixed(1)}% YoY
+            </span>
           </div>
-          <div class="flex items-center justify-between text-[10px] text-slate-500 mt-1.5 pt-1 border-t border-slate-800/60">
-            <span class="${isOn ? 'text-emerald-400' : 'text-slate-400'} font-bold">👆 박스 클릭: ${isOn ? '해제' : '선택'}</span>
-            <span>출처: ${meta.source || '국토교통부'}</span>
+          <div class="flex items-center justify-between text-[10px] text-slate-500 mt-1">
+            <span>1995년 대비 누적:</span>
+            <span class="font-extrabold text-cyan-400">${rates.cumPct >= 0 ? '+' : ''}${rates.cumPct}%</span>
+          </div>
+          <div class="mt-2 text-center text-[10px] font-bold py-1 rounded bg-slate-900 border border-slate-800 ${isOn ? 'text-cyan-400' : 'text-slate-500'}">
+            ${isOn ? '● 차트 비교 표시 중 (클릭 시 해제)' : '○ 클릭 시 차트에 추가'}
           </div>
         `;
 
         card.onclick = () => {
+          if (!activeState[d]) activeState[d] = {};
           activeState[d][indName] = !activeState[d][indName];
           updateToggleAllButton();
+          renderHorizontalDistricts();
           renderSelectedDistrictDetail();
           updateChart();
+          syncUrlState();
         };
 
         cardsGrid.appendChild(card);
       });
 
       box.appendChild(cardsGrid);
-
-      // 데이터 인라인 수정 에디터
-      const editBox = document.createElement("div");
-      editBox.className = "mt-4 pt-4 border-t border-slate-800 bg-slate-950 p-4 rounded-xl";
-      editBox.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-          <span class="text-xs font-black text-white">[${d}] 분기별 데이터 수치 직접 수정 및 [업데이트] 버튼</span>
-          <div class="flex items-center gap-2">
-            <label class="text-xs font-bold text-slate-300">수정 분기:</label>
-            <select class="q-select text-xs bg-slate-800 border-2 border-slate-600 text-white font-bold rounded p-1.5">
-              ${quarters.slice().reverse().map(q => `<option value="${q}">${q}</option>`).join("")}
-            </select>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-2.5 text-xs">
-          <div><span class="text-[11px] font-bold text-slate-300">매매가(억)</span><input type="number" step="0.1" class="inp-p w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">매물량(건)</span><input type="number" class="inp-list w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">아파트거래(건)</span><input type="number" class="inp-apt w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">연립·단독(건)</span><input type="number" class="inp-villa w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">오피스·상업(건)</span><input type="number" class="inp-comm w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">공급(호)</span><input type="number" class="inp-s w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">소득분위</span><input type="number" step="0.1" class="inp-d w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">소득(원)</span><input type="number" class="inp-i w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">인구(명)</span><input type="number" class="inp-pop w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div><span class="text-[11px] font-bold text-slate-300">가구원수(명)</span><input type="number" step="0.01" class="inp-hh w-full bg-slate-800 border-2 border-slate-600 rounded p-1.5 text-white font-bold" /></div>
-          <div class="flex items-end"><button type="button" class="btn-save w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs border-2 border-emerald-400 cursor-pointer">업데이트</button></div>
-        </div>
-      `;
-
-      box.appendChild(editBox);
-
-      const qSel = editBox.querySelector(".q-select");
-      function loadInputs() {
-        const q = qSel.value;
-        const qIdx = quarters.indexOf(q);
-        editBox.querySelector(".inp-p").value = dataset["부동산 매매 가격"][d][qIdx];
-        editBox.querySelector(".inp-list").value = dataset["부동산 매물량"][d][qIdx];
-        editBox.querySelector(".inp-apt").value = dataset["아파트 거래량"][d][qIdx];
-        editBox.querySelector(".inp-villa").value = dataset["연립다세대·단독다가구 거래량"][d][qIdx];
-        editBox.querySelector(".inp-comm").value = dataset["오피스텔·상업업무용 거래량"][d][qIdx];
-        editBox.querySelector(".inp-s").value = dataset["주택 공급량"][d][qIdx];
-        editBox.querySelector(".inp-d").value = dataset["소득 분위"][d][qIdx];
-        editBox.querySelector(".inp-i").value = dataset["가처분 소득 금액"][d][qIdx];
-        editBox.querySelector(".inp-pop").value = dataset["인구 변화"][d][qIdx];
-        editBox.querySelector(".inp-hh").value = dataset["가구별 구성 명수"][d][qIdx];
-      }
-      qSel.onchange = loadInputs;
-      loadInputs();
-
-      editBox.querySelector(".btn-save").onclick = () => {
-        const q = qSel.value;
-        const qIdx = quarters.indexOf(q);
-        dataset["부동산 매매 가격"][d][qIdx] = parseFloat(editBox.querySelector(".inp-p").value);
-        dataset["부동산 매물량"][d][qIdx] = parseInt(editBox.querySelector(".inp-list").value);
-        dataset["아파트 거래량"][d][qIdx] = parseInt(editBox.querySelector(".inp-apt").value);
-        dataset["연립다세대·단독다가구 거래량"][d][qIdx] = parseInt(editBox.querySelector(".inp-villa").value);
-        dataset["오피스텔·상업업무용 거래량"][d][qIdx] = parseInt(editBox.querySelector(".inp-comm").value);
-        dataset["주택 공급량"][d][qIdx] = parseInt(editBox.querySelector(".inp-s").value);
-        dataset["소득 분위"][d][qIdx] = parseFloat(editBox.querySelector(".inp-d").value);
-        dataset["가처분 소득 금액"][d][qIdx] = parseInt(editBox.querySelector(".inp-i").value);
-        dataset["인구 변화"][d][qIdx] = parseInt(editBox.querySelector(".inp-pop").value);
-        dataset["가구별 구성 명수"][d][qIdx] = parseFloat(editBox.querySelector(".inp-hh").value);
-        renderHorizontalDistricts();
-        renderSelectedDistrictDetail();
-        updateChart();
-        alert(`[${d}] ${q} 데이터가 성공적으로 업데이트되었습니다!`);
-      };
-
       container.appendChild(box);
     }
 
     // 4. 최하단 차트 & 조회 기간 레일 슬라이더
     let chartInstance = null;
-    const districtLineColors = Object.fromEntries(districts.map(d => [d, districtProfiles[d].themeColor]));
+    let chartViewMode = 'raw'; // 'raw' | 'qoq' | 'cum'
+
+    function setChartViewMode(mode) {
+      chartViewMode = mode;
+      ['raw', 'qoq', 'cum'].forEach(m => {
+        const btn = document.getElementById(`mode-${m}`);
+        if (!btn) return;
+        if (m === mode) {
+          btn.className = "px-2.5 py-1 rounded-lg font-bold transition bg-cyan-600 text-white shadow cursor-pointer";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-lg font-bold transition text-slate-400 hover:text-white cursor-pointer";
+        }
+      });
+      updateChart();
+      syncUrlState();
+    }
+
+    function compare7RegionsRates() {
+      allEntities.forEach(ent => {
+        Object.keys(indicatorsMeta).forEach(ind => {
+          activeState[ent][ind] = false;
+        });
+      });
+      regionKeys.forEach(k => {
+        activeState[k]["부동산 매매 가격"] = true;
+      });
+      setChartViewMode('qoq');
+      updateToggleAllButton();
+      renderHorizontalDistricts();
+      renderSelectedDistrictDetail();
+      updateChart();
+      syncUrlState();
+      document.getElementById("mainChart")?.scrollIntoView({ behavior: 'smooth' });
+      showToast('7대 권역 전체 매매가 전기 대비 변화율(QoQ %) 비교 차트가 활성화되었습니다!', '📊');
+    }
 
     const indicatorDashStyles = {
       "부동산 매매 가격": [],
@@ -1155,6 +1300,7 @@
           }).length;
       document.getElementById("slider-range-label").innerHTML = `<b class="text-cyan-400">${s}년</b> ~ <b class="text-cyan-400">${eVal}년</b> (${countY}개년 / ${countQ}분기)`;
       updateChart();
+      syncUrlState();
     }
 
     document.getElementById("range-start-year").oninput = handleRangeSliderChange;
@@ -1173,26 +1319,53 @@
 
       const datasets = [];
 
-      districts.forEach(d => {
+      allEntities.forEach(d => {
         const p = districtProfiles[d];
+        if (!p) return;
         Object.keys(indicatorsMeta).forEach(ind => {
-          if (activeState[d][ind]) {
-            const dataSlice = validIndices.map(i => dataset[ind][d][i]);
+          if (activeState[d] && activeState[d][ind]) {
+            const rawSlice = validIndices.map(i => dataset[ind][d][i]);
+            let dataSlice = rawSlice;
+
+            if (chartViewMode === 'qoq') {
+              dataSlice = rawSlice.map((v, idx, arr) => {
+                if (idx === 0) return 0;
+                const prev = arr[idx - 1];
+                return prev !== 0 ? Math.round(((v - prev) / Math.abs(prev)) * 10000) / 100 : 0;
+              });
+            } else if (chartViewMode === 'cum') {
+              const base = rawSlice[0];
+              dataSlice = rawSlice.map(v => {
+                return base !== 0 ? Math.round(((v - base) / Math.abs(base)) * 1000) / 10 : 0;
+              });
+            }
+
+            const isReg = p.isRegion;
+            const labelText = isReg
+              ? `[권역] ${p.short} - ${ind}`
+              : `[${p.region.replace(' 권역', '')}] ${p.short} - ${ind}`;
+
             datasets.push({
-              label: `[${p.region.replace(' 권역', '')}] ${p.short} - ${ind}`,
+              label: labelText,
               data: dataSlice,
               borderColor: p.themeColor,
               backgroundColor: p.themeColor,
-              borderWidth: 2.5,
-              borderDash: indicatorDashStyles[ind] || [],
+              borderWidth: isReg ? 3.5 : 2.0,
+              borderDash: isReg ? [] : (indicatorDashStyles[ind] || []),
               pointStyle: indicatorPointStyles[ind] || "circle",
-              pointRadius: subQuarters.length > 50 ? 2.5 : (subQuarters.length > 20 ? 3.5 : 4.5),
-              pointHoverRadius: 6,
+              pointRadius: isReg ? 4.0 : (subQuarters.length > 50 ? 2.0 : 3.0),
+              pointHoverRadius: 7,
               tension: 0.3,
             });
           }
         });
       });
+
+      const yAxisTitle = (chartViewMode === 'qoq')
+        ? '전기 대비 변화율 (QoQ %)'
+        : (chartViewMode === 'cum')
+          ? '기준시점 대비 누적 상승률 (%)'
+          : '지표 원시 수치';
 
       if (!chartInstance) {
         const ctx = document.getElementById("mainChart").getContext("2d");
@@ -1216,25 +1389,165 @@
                   font: { family: "Pretendard", size: 12, weight: "700" }
                 }
               },
-              tooltip: { backgroundColor: "rgba(15, 23, 42, 0.96)", titleColor: "#FFFFFF", bodyColor: "#F1F5F9", borderColor: "#38BDF8", borderWidth: 1.5, padding: 14, cornerRadius: 12, callbacks: { title: (items) => `${items[0].label} 전국 37개구 실시간 수치` } }
+              tooltip: {
+                backgroundColor: "rgba(15, 23, 42, 0.96)",
+                titleColor: "#FFFFFF",
+                bodyColor: "#F1F5F9",
+                borderColor: "#38BDF8",
+                borderWidth: 1.5,
+                padding: 14,
+                cornerRadius: 12,
+                callbacks: {
+                  title: (items) => `${items[0].label} (${chartViewMode === 'qoq' ? 'QoQ 변화율' : chartViewMode === 'cum' ? '누적 변화율' : '실시간 수치'})`,
+                  label: (context) => {
+                    const val = context.parsed.y;
+                    if (chartViewMode === 'qoq' || chartViewMode === 'cum') {
+                      return ` ${context.dataset.label}: ${val >= 0 ? '+' : ''}${val.toFixed(2)}%`;
+                    }
+                    return ` ${context.dataset.label}: ${val.toLocaleString()}`;
+                  }
+                }
+              }
             },
             scales: {
-              x: { grid: { color: "rgba(30, 41, 59, 0.8)" }, ticks: { color: "#94A3B8", font: { family: "Pretendard", size: 12, weight: "600" }, callback: function(val, index) { const q = this.getLabelForValue(val); if (subQuarters.length > 60) { if (q.includes("1Q") && parseInt(q.split(" ")[0]) % 5 === 0) return q; if (index === subQuarters.length - 1) return q; return ""; } if (subQuarters.length > 24) { if (q.includes("1Q") && parseInt(q.split(" ")[0]) % 2 === 0) return q; if (index === subQuarters.length - 1) return q; return ""; } if (q.includes("1Q") || index === subQuarters.length - 1) return q; return ""; } } },
-              y: { grid: { color: "rgba(30, 41, 59, 0.8)" }, ticks: { color: "#94A3B8", font: { family: "Pretendard", size: 12, weight: "600" } } }
+              x: {
+                grid: { color: "rgba(30, 41, 59, 0.8)" },
+                ticks: {
+                  color: "#94A3B8",
+                  font: { family: "Pretendard", size: 12, weight: "600" },
+                  callback: function(val, index) {
+                    const q = this.getLabelForValue(val);
+                    if (subQuarters.length > 60) {
+                      if (q.includes("1Q") && parseInt(q.split(" ")[0]) % 5 === 0) return q;
+                      if (index === subQuarters.length - 1) return q;
+                      return "";
+                    }
+                    if (subQuarters.length > 24) {
+                      if (q.includes("1Q") && parseInt(q.split(" ")[0]) % 2 === 0) return q;
+                      if (index === subQuarters.length - 1) return q;
+                      return "";
+                    }
+                    if (q.includes("1Q") || index === subQuarters.length - 1) return q;
+                    return "";
+                  }
+                }
+              },
+              y: {
+                grid: { color: "rgba(30, 41, 59, 0.8)" },
+                ticks: {
+                  color: "#94A3B8",
+                  font: { family: "Pretendard", size: 12, weight: "600" },
+                  callback: function(val) {
+                    if (chartViewMode === 'qoq' || chartViewMode === 'cum') {
+                      return (val >= 0 ? '+' : '') + val + '%';
+                    }
+                    return val.toLocaleString();
+                  }
+                },
+                title: {
+                  display: true,
+                  text: yAxisTitle,
+                  color: '#38BDF8',
+                  font: { family: 'Pretendard', size: 11, weight: '700' }
+                }
+              }
             }
           }
         });
       } else {
         chartInstance.data.labels = subQuarters;
         chartInstance.data.datasets = datasets;
+        chartInstance.options.scales.y.title.text = yAxisTitle;
         chartInstance.update();
       }
     }
 
+    // =========================================================================
+    // 🌐 URL Deep-Linking & State Sync (인터넷 주소에 즉각 반영)
+    // =========================================================================
+    function syncUrlState() {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('target', selectedDistrict);
+        url.searchParams.set('mode', chartViewMode);
+        url.searchParams.set('start', startYear);
+        url.searchParams.set('end', endYear);
+
+        const onItems = [];
+        allEntities.forEach(ent => {
+          Object.keys(indicatorsMeta).forEach(ind => {
+            if (activeState[ent] && activeState[ent][ind]) {
+              onItems.push(`${ent}__${ind}`);
+            }
+          });
+        });
+
+        if (onItems.length > 0 && onItems.length <= 40) {
+          url.searchParams.set('on', onItems.join(','));
+        } else if (onItems.length > 40) {
+          url.searchParams.set('on', 'all');
+        } else {
+          url.searchParams.delete('on');
+        }
+
+        window.history.replaceState(null, '', url.toString());
+
+        const input = document.getElementById("mobileDirectUrl");
+        if (input) input.value = url.toString();
+      } catch (e) {
+        console.warn('URL sync failed:', e);
+      }
+    }
+
+    function initFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const target = params.get('target');
+        if (target && (districtProfiles[target] || regionKeys.includes(target))) {
+          selectedDistrict = target;
+        }
+        const mode = params.get('mode');
+        if (mode && ['raw', 'qoq', 'cum'].includes(mode)) {
+          chartViewMode = mode;
+        }
+        const s = parseInt(params.get('start'));
+        const e = parseInt(params.get('end'));
+        if (s >= 1995 && s <= currYear) startYear = s;
+        if (e >= 1995 && e <= currYear) endYear = e;
+
+        const on = params.get('on');
+        if (on) {
+          if (on === 'all') {
+            allEntities.forEach(ent => {
+              Object.keys(indicatorsMeta).forEach(ind => {
+                activeState[ent][ind] = true;
+              });
+            });
+          } else {
+            allEntities.forEach(ent => {
+              Object.keys(indicatorsMeta).forEach(ind => {
+                activeState[ent][ind] = false;
+              });
+            });
+            on.split(',').forEach(item => {
+              const [ent, ind] = item.split('__');
+              if (activeState[ent] && indicatorsMeta[ind]) {
+                activeState[ent][ind] = true;
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('initFromUrl error:', err);
+      }
+    }
+
+    initFromUrl();
     renderHorizontalDistricts();
     renderSelectedDistrictDetail();
     updateToggleAllButton();
     updateChart();
+    syncUrlState();
 
     // =========================================================================
     // 📱 Mobile & Social Sharing Functions
@@ -1266,7 +1579,7 @@
     }
 
     function copyPageUrl() {
-      const url = 'https://s1insu3283-byte.github.io/-/real_estate_dashboard.html';
+      const url = window.location.href;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(() => {
           showToast('전국 부동산 대시보드 주소가 복사되었습니다!', '📋');
@@ -1289,7 +1602,7 @@
     }
 
     function shareKakao() {
-      const url = 'https://s1insu3283-byte.github.io/-/real_estate_dashboard.html';
+      const url = window.location.href;
       if (window.Kakao && Kakao.isInitialized && Kakao.isInitialized()) {
         try {
           Kakao.Share.sendDefault({
