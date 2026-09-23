@@ -1,7 +1,7 @@
 {
   "status": "success",
-  "updated_at": "2026-09-23 16:49:45",
-  "timestamp": 1790149791848,
+  "updated_at": "2026-09-23 17:02:00",
+  "timestamp": 1790150525815,
   "source_pipeline": {
     "realtime_market": "Yahoo Finance (^TNX, KRW=X, JPY=X, GC=F) & 채권/외환 실시간 피드",
     "macro_releases": "경제 캘린더 발표치 & 한국은행·연준·일본은행 최신 고시",
@@ -9,9 +9,9 @@
   },
   "metrics": {
     "us_gold": {
-      "val": 4358.6,
-      "change": -17.8,
-      "formatted": "$4,358.60",
+      "val": 4361.5,
+      "change": -14.9,
+      "formatted": "$4,361.50",
       "unit": "$",
       "source": "Yahoo Finance (GC=F)",
       "tag": "실시간 선물/현물"
@@ -46,18 +46,18 @@
       "tag": "기축통화 지수"
     },
     "us_ratio": {
-      "val": 13.45,
-      "formatted": "13.45",
+      "val": 13.46,
+      "formatted": "13.46",
       "unit": "배",
       "source": "Gold ÷ Case-Shiller",
       "tag": "역사적 배율"
     },
     "kr_gold": {
-      "val": 5950709,
-      "formatted": "₩5,950,709",
+      "val": 5956849,
+      "formatted": "₩5,956,849",
       "unit": "원",
       "source": "국제금 × 실시간환율",
-      "tag": "g당 ₩191,320"
+      "tag": "g당 ₩191,517"
     },
     "kr_real": {
       "val": 2.41,
@@ -82,25 +82,25 @@
       "tag": "2022=100"
     },
     "kr_fx": {
-      "val": 1365.28,
-      "formatted": "₩1,365.3",
+      "val": 1365.78,
+      "formatted": "₩1,365.8",
       "unit": "원",
       "source": "Yahoo Finance (KRW=X)",
       "tag": "외환시장 실시간"
     },
     "kr_ratio": {
-      "val": 5.83,
-      "formatted": "5.83",
+      "val": 5.84,
+      "formatted": "5.84",
       "unit": "배",
       "source": "원화금 ÷ 주택지수",
       "tag": "상대 강도"
     },
     "jp_gold": {
-      "val": 687874,
-      "formatted": "¥687,874",
+      "val": 688114,
+      "formatted": "¥688,114",
       "unit": "엔",
       "source": "국제금 × 실시간환율",
-      "tag": "g당 ¥22,116"
+      "tag": "g당 ¥22,123"
     },
     "jp_real": {
       "val": 0.19,
@@ -125,8 +125,8 @@
       "tag": "2010=100"
     },
     "jp_fx": {
-      "val": 157.82,
-      "formatted": "¥157.82",
+      "val": 157.77,
+      "formatted": "¥157.77",
       "unit": "엔",
       "source": "Yahoo Finance (JPY=X)",
       "tag": "도쿄외환 실시간"
@@ -139,5 +139,5 @@
       "tag": "상대 강도"
     }
   },
-  "cycle": 3
+  "cycle": 120
 }
