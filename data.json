@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-24 05:01:19",
+  "updated_at": "2026-09-24 05:02:55",
   "source": "네이버 국채수익률 (미국·한국·일본·중국·유럽 5개국 공식) & 실시간 환율·기준금리",
   "rates": {
     "USD_KRW": 1367.1,
@@ -14,43 +14,43 @@
     "US": {
       "items": {
         "미국 국채 10년": {
-          "val": 5.096,
-          "change": 0.1285,
+          "val": 5.104,
+          "change": 0.1368,
           "direction": "상승"
         },
         "미국 국채 2년": {
-          "val": 4.897,
-          "change": 0.1202,
+          "val": 4.891,
+          "change": 0.114,
           "direction": "상승"
         },
         "미국 국채 3년": {
-          "val": 4.96,
-          "change": 0.1372,
+          "val": 4.963,
+          "change": 0.1401,
           "direction": "상승"
         },
         "미국 국채 5년": {
-          "val": 4.983,
-          "change": 0.1408,
+          "val": 4.988,
+          "change": 0.1463,
           "direction": "상승"
         },
         "미국 국채 30년": {
-          "val": 5.39,
-          "change": 0.0872,
+          "val": 5.396,
+          "change": 0.0926,
           "direction": "상승"
         },
         "미국 국채 20년": {
-          "val": 5.445,
-          "change": 0.1026,
+          "val": 5.454,
+          "change": 0.1119,
           "direction": "상승"
         },
         "미국 국채 7년": {
-          "val": 5.038,
-          "change": 0.1397,
+          "val": 5.043,
+          "change": 0.1452,
           "direction": "상승"
         },
         "미국 국채 1년": {
-          "val": 4.463,
-          "change": 0.0535,
+          "val": 4.447,
+          "change": 0.0374,
           "direction": "상승"
         },
         "미국 국채 6개월": {
@@ -59,86 +59,86 @@
           "direction": "상승"
         },
         "미국 국채 3개월": {
-          "val": 4.128,
-          "change": 0.021,
+          "val": 4.136,
+          "change": 0.0288,
           "direction": "상승"
         },
         "미국 국채 2개월": {
-          "val": 3.995,
-          "change": 0.0124,
+          "val": 3.998,
+          "change": 0.015,
           "direction": "상승"
         },
         "미국 국채 1개월": {
-          "val": 3.879,
-          "change": -0.0033,
-          "direction": "하락"
+          "val": 3.884,
+          "change": 0.0018,
+          "direction": "상승"
         }
       },
       "maturities": {
         "10Y": {
-          "val": 5.096,
-          "change": 0.1285,
+          "val": 5.104,
+          "change": 0.1368,
           "direction": "상승"
         },
         "5Y": {
-          "val": 4.983,
-          "change": 0.1408,
+          "val": 4.988,
+          "change": 0.1463,
           "direction": "상승"
         },
         "30Y": {
-          "val": 5.39,
-          "change": 0.0872,
+          "val": 5.396,
+          "change": 0.0926,
           "direction": "상승"
         },
         "1Y": {
-          "val": 4.463,
-          "change": 0.0535,
+          "val": 4.447,
+          "change": 0.0374,
           "direction": "상승"
         },
         "3M": {
-          "val": 4.128,
-          "change": 0.021,
+          "val": 4.136,
+          "change": 0.0288,
           "direction": "상승"
         }
       },
       "미국 국채 10년": {
-        "val": 5.096,
-        "change": 0.1285,
+        "val": 5.104,
+        "change": 0.1368,
         "direction": "상승"
       },
       "미국 국채 2년": {
-        "val": 4.897,
-        "change": 0.1202,
+        "val": 4.891,
+        "change": 0.114,
         "direction": "상승"
       },
       "미국 국채 3년": {
-        "val": 4.96,
-        "change": 0.1372,
+        "val": 4.963,
+        "change": 0.1401,
         "direction": "상승"
       },
       "미국 국채 5년": {
-        "val": 4.983,
-        "change": 0.1408,
+        "val": 4.988,
+        "change": 0.1463,
         "direction": "상승"
       },
       "미국 국채 30년": {
-        "val": 5.39,
-        "change": 0.0872,
+        "val": 5.396,
+        "change": 0.0926,
         "direction": "상승"
       },
       "미국 국채 20년": {
-        "val": 5.445,
-        "change": 0.1026,
+        "val": 5.454,
+        "change": 0.1119,
         "direction": "상승"
       },
       "미국 국채 7년": {
-        "val": 5.038,
-        "change": 0.1397,
+        "val": 5.043,
+        "change": 0.1452,
         "direction": "상승"
       },
       "미국 국채 1년": {
-        "val": 4.463,
-        "change": 0.0535,
+        "val": 4.447,
+        "change": 0.0374,
         "direction": "상승"
       },
       "미국 국채 6개월": {
@@ -147,19 +147,19 @@
         "direction": "상승"
       },
       "미국 국채 3개월": {
-        "val": 4.128,
-        "change": 0.021,
+        "val": 4.136,
+        "change": 0.0288,
         "direction": "상승"
       },
       "미국 국채 2개월": {
-        "val": 3.995,
-        "change": 0.0124,
+        "val": 3.998,
+        "change": 0.015,
         "direction": "상승"
       },
       "미국 국채 1개월": {
-        "val": 3.879,
-        "change": -0.0033,
-        "direction": "하락"
+        "val": 3.884,
+        "change": 0.0018,
+        "direction": "상승"
       }
     },
     "KR": {
@@ -1146,5 +1146,5 @@
       }
     ]
   },
-  "cycle": 5568
+  "cycle": 5600
 }
