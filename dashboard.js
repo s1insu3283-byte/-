@@ -809,10 +809,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
           }
         }
+      } catch (e) {
+        // offline fallback
       }
-    } catch (e) {
-      // offline fallback
-    }
 
     updateDashboardInPlace();
 
