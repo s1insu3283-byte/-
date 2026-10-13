@@ -12319,7 +12319,8 @@
     
     // Application State
     let selectedCompany = 'moodys'; // 'moodys', 'sp', 'fitch', 'kr', 'ec', 'nice', 'big3'
-    let chartMode = 'perf'; // 'perf', 'stock', 'dps', 'roe'
+    let chartMode = 'perf'; // 'perf', 'dps', 'roe'
+    let showStockOverlay = true; // 실적 막대 위에 주식 차트를 올려줌 (토글 가능)
     let tableSortOrder = 'desc'; // 'desc' or 'asc'
     let selectedYearIndex = 24; // 2024 (index 24)
 
@@ -12546,14 +12547,53 @@
       document.getElementById('chart-sub-title').textContent = `단위: ${cfg.unit} | 막대를 클릭하면 해당 연도로 동기화됩니다.`;
       document.getElementById('chart-company-badge').textContent = cfg.nameKo;
 
+      updateStockToggleButton();
       updateViews();
+    }
+
+    // Switch Chart Mode
+        // Toggle Stock Overlay on/off over the performance graph
+    function toggleStockOverlay() {
+      const cfg = COMPANY_CONFIG[selectedCompany];
+      if (!cfg.isListed) {
+        alert('피치 레이팅스는 모기업 허스트(Hearst)의 100% 비상장 자회사로 주식 차트가 제공되지 않습니다.');
+        return;
+      }
+      showStockOverlay = !showStockOverlay;
+      updateStockToggleButton();
+      renderChart();
+    }
+
+    function updateStockToggleButton() {
+      const cfg = COMPANY_CONFIG[selectedCompany];
+      const btn = document.getElementById('btn-chart-stock-toggle');
+      const label = document.getElementById('stock-toggle-label');
+      const icon = document.getElementById('stock-toggle-icon');
+      if (!btn || !label) return;
+
+      if (!cfg.isListed) {
+        btn.className = 'px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-500 border border-slate-700 font-semibold flex items-center gap-1 cursor-not-allowed opacity-50';
+        label.textContent = '주가 (비상장)';
+        if (icon) icon.textContent = '🔒';
+        return;
+      }
+
+      if (showStockOverlay) {
+        btn.className = 'px-2.5 py-1.5 rounded-lg bg-sky-600/30 text-sky-300 border border-sky-400/60 hover:bg-sky-600/40 transition-all font-bold flex items-center gap-1 shadow-sm shadow-sky-500/20';
+        label.textContent = '주가 겹치기 (ON)';
+        if (icon) icon.textContent = '📈';
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-lg bg-slate-800/80 text-slate-400 border border-slate-700 hover:text-white transition-all font-semibold flex items-center gap-1';
+        label.textContent = '주가 겹치기 (OFF)';
+        if (icon) icon.textContent = '📉';
+      }
     }
 
     // Switch Chart Mode
     function setChartMode(mode) {
       chartMode = mode;
       
-      const modes = ['perf', 'stock', 'dps', 'roe'];
+      const modes = ['perf', 'dps', 'roe'];
       modes.forEach(m => {
         const btn = document.getElementById(`btn-chart-${m}`);
         if (btn) {
@@ -12568,7 +12608,6 @@
       renderChart();
     }
 
-    // Table Sort Order
     function setTableSortOrder(order) {
       tableSortOrder = order;
       const btnDesc = document.getElementById('btn-sort-desc');
@@ -12667,42 +12706,19 @@
       const items = cfg.getData();
       const count = items.length;
       const currentYear = YEARS[selectedYearIndex];
+      const hasStock = (showStockOverlay && cfg.isListed);
 
       const rect = svg.getBoundingClientRect();
       const W = rect.width || 760;
       const H = rect.height || 350;
-      const padding = { top: 25, right: 30, bottom: 42, left: 65 };
+      const padding = { top: 28, right: (hasStock ? 65 : 30), bottom: 42, left: 65 };
       const plotW = W - padding.left - padding.right;
       const plotH = H - padding.top - padding.bottom;
 
-      // Handle Non-Listed Stock Chart Case (e.g. Fitch)
-      if (chartMode === 'stock' && !cfg.isListed) {
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', W / 2);
-        text.setAttribute('y', H / 2);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('class', 'text-sm fill-slate-400 font-bold');
-        text.textContent = '피치 레이팅스는 모기업 허스트(Hearst)의 100% 비상장 자회사로 주식 차트가 제공되지 않습니다.';
-        svg.appendChild(text);
-
-        const sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        sub.setAttribute('x', W / 2);
-        sub.setAttribute('y', H / 2 + 25);
-        sub.setAttribute('text-anchor', 'middle');
-        sub.setAttribute('class', 'text-xs fill-indigo-400 cursor-pointer underline font-semibold');
-        sub.textContent = '[실적 막대 그래프 모드로 보기]';
-        sub.onclick = () => setChartMode('perf');
-        svg.appendChild(sub);
-        return;
-      }
-
-      // Determine Values for Chart based on Mode
-      let maxVal = 0;
+      // Determine Values for Left Y-Axis
+      let maxVal = 100;
       if (chartMode === 'perf') {
         maxVal = Math.max(...items.map(d => d.revenue)) * 1.18;
-      } else if (chartMode === 'stock') {
-        const validStocks = items.map(d => d.stockClose).filter(v => v !== null && v > 0);
-        maxVal = validStocks.length ? Math.max(...validStocks) * 1.18 : 100;
       } else if (chartMode === 'dps') {
         const validDps = items.map(d => d.dps).filter(v => v > 0);
         maxVal = validDps.length ? Math.max(...validDps) * 1.18 : 100;
@@ -12710,7 +12726,14 @@
         maxVal = Math.max(...items.map(d => d.roe)) * 1.25;
       }
 
-      // Draw Grid & Y-Ticks
+      // Determine Stock Max for Right Y-Axis
+      let maxStockVal = 100;
+      if (hasStock) {
+        const validStocks = items.map(d => d.stockClose).filter(v => v !== null && v > 0);
+        maxStockVal = validStocks.length ? Math.max(...validStocks) * 1.15 : 100;
+      }
+
+      // Draw Grid & Left Y-Ticks
       const yTicks = 5;
       for (let i = 0; i <= yTicks; i++) {
         const v = (maxVal / yTicks) * i;
@@ -12721,7 +12744,7 @@
         line.setAttribute('x2', padding.left + plotW);
         line.setAttribute('y1', y);
         line.setAttribute('y2', y);
-        line.setAttribute('stroke', 'rgba(51, 65, 85, 0.4)');
+        line.setAttribute('stroke', 'rgba(51, 65, 85, 0.35)');
         line.setAttribute('stroke-dasharray', '3 3');
         svg.appendChild(line);
 
@@ -12732,7 +12755,7 @@
         txt.setAttribute('class', 'text-[10px] fill-slate-400 font-mono-num');
         if (chartMode === 'perf') {
           txt.textContent = `${Math.round(v).toLocaleString()}${cfg.currencySymbol === '원' ? '억' : 'M'}`;
-        } else if (chartMode === 'stock' || chartMode === 'dps') {
+        } else if (chartMode === 'dps') {
           txt.textContent = `${cfg.currencySymbol === '$' ? '$' : ''}${Math.round(v).toLocaleString()}${cfg.currencySymbol === '원' ? '원' : ''}`;
         } else {
           txt.textContent = `${Math.round(v)}%`;
@@ -12740,36 +12763,79 @@
         svg.appendChild(txt);
       }
 
-      // Step & Dimensions
-      const stepX = plotW / count;
-      const barWidth = Math.max(8, stepX * 0.72);
+      // Draw Right Y-Ticks (Stock Price) when stock overlay is active
+      if (hasStock) {
+        for (let i = 0; i <= yTicks; i++) {
+          const sv = (maxStockVal / yTicks) * i;
+          const sy = padding.top + plotH - (sv / maxStockVal) * plotH;
 
-      // Draw Chart Legend
+          const stxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          stxt.setAttribute('x', padding.left + plotW + 8);
+          stxt.setAttribute('y', sy + 4);
+          stxt.setAttribute('text-anchor', 'start');
+          stxt.setAttribute('class', 'text-[10px] fill-sky-400 font-mono-num font-bold');
+          if (cfg.currencySymbol === '원') {
+            stxt.textContent = `${Math.round(sv).toLocaleString()}원`;
+          } else {
+            stxt.textContent = `$${Math.round(sv).toLocaleString()}`;
+          }
+          svg.appendChild(stxt);
+        }
+      }
+
+      // Draw Legend
       const legContainer = document.getElementById('chart-legend-items');
       if (chartMode === 'perf') {
-        legContainer.innerHTML = `
+        let legHtml = `
           <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded" style="background:${cfg.themeColor}"></span><span>매출액</span></div>
           <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500"></span><span>영업이익</span></div>
           <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-cyan-400"></span><span>당기순이익</span></div>
         `;
-      } else if (chartMode === 'stock') {
-        legContainer.innerHTML = `
-          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-cyan-400"></span><span>연말 주가 종가 (${cfg.ticker})</span></div>
-          <div class="flex items-center gap-1.5"><span class="w-3 h-1 bg-indigo-400"></span><span>주가 추세선</span></div>
-        `;
+        if (hasStock) {
+          legHtml += `
+            <div class="flex items-center gap-1.5 ml-2 pl-2 border-l border-slate-700">
+              <span class="w-4 h-0.5 bg-sky-400"></span>
+              <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+              <span class="text-sky-300 font-bold">주가 꺾은선 (우측 Y축)</span>
+            </div>
+          `;
+        }
+        legContainer.innerHTML = legHtml;
       } else if (chartMode === 'dps') {
-        legContainer.innerHTML = `
+        let legHtml = `
           <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-400"></span><span>주당 배당금 (DPS)</span></div>
           <div class="flex items-center gap-1.5"><span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px]">특별배당 연도</span></div>
         `;
+        if (hasStock) {
+          legHtml += `
+            <div class="flex items-center gap-1.5 ml-2 pl-2 border-l border-slate-700">
+              <span class="w-4 h-0.5 bg-sky-400"></span>
+              <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+              <span class="text-sky-300 font-bold">주가 꺾은선 (우측 Y축)</span>
+            </div>
+          `;
+        }
+        legContainer.innerHTML = legHtml;
       } else if (chartMode === 'roe') {
-        legContainer.innerHTML = `
+        let legHtml = `
           <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500"></span><span>ROE 자기자본이익률 (%)</span></div>
         `;
+        if (hasStock) {
+          legHtml += `
+            <div class="flex items-center gap-1.5 ml-2 pl-2 border-l border-slate-700">
+              <span class="w-4 h-0.5 bg-sky-400"></span>
+              <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+              <span class="text-sky-300 font-bold">주가 꺾은선 (우측 Y축)</span>
+            </div>
+          `;
+        }
+        legContainer.innerHTML = legHtml;
       }
 
-      // Draw Series / Bars
-      let stockLinePoints = [];
+      // Step & Dimensions
+      const stepX = plotW / count;
+      const barWidth = Math.max(8, stepX * 0.72);
+      let stockPoints = [];
 
       items.forEach((item, idx) => {
         const cx = padding.left + idx * stepX + stepX / 2;
@@ -12791,9 +12857,9 @@
         // Mode 1: Performance (Revenue, Op Income, Net Income)
         if (chartMode === 'perf') {
           const subW = (barWidth / 3) - 1;
-          const rH = (item.revenue / maxVal) * plotH;
-          const opH = (item.opIncome / maxVal) * plotH;
-          const netH = (item.netIncome / maxVal) * plotH;
+          const rH = Math.max(0, (item.revenue / maxVal) * plotH);
+          const opH = Math.max(0, (item.opIncome / maxVal) * plotH);
+          const netH = Math.max(0, (item.netIncome / maxVal) * plotH);
 
           // Revenue Bar
           const bRev = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -12825,58 +12891,21 @@
           bNet.setAttribute('rx', 1.5);
           svg.appendChild(bNet);
         }
-        // Mode 2: Stock Price
-        else if (chartMode === 'stock') {
-          if (item.stockClose && item.stockClose > 0) {
-            const sH = (item.stockClose / maxVal) * plotH;
-            const cy = padding.top + plotH - sH;
-            stockLinePoints.push(`${cx},${cy}`);
-
-            const bStock = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            bStock.setAttribute('x', x);
-            bStock.setAttribute('y', cy);
-            bStock.setAttribute('width', barWidth);
-            bStock.setAttribute('height', sH);
-            bStock.setAttribute('fill', isSelected ? '#38bdf8' : 'rgba(56, 189, 248, 0.45)');
-            bStock.setAttribute('rx', 2);
-            svg.appendChild(bStock);
-
-            const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            dot.setAttribute('cx', cx);
-            dot.setAttribute('cy', cy);
-            dot.setAttribute('r', isSelected ? 5 : 3);
-            dot.setAttribute('fill', isSelected ? '#ffffff' : '#38bdf8');
-            dot.setAttribute('stroke', '#0284c7');
-            dot.setAttribute('stroke-width', 2);
-            svg.appendChild(dot);
-          }
-        }
-        // Mode 3: DPS
+        // Mode 2: DPS
         else if (chartMode === 'dps') {
-          if (item.dps > 0) {
-            const dH = (item.dps / maxVal) * plotH;
-            const isSpecial = (item.dps >= (cfg.currencySymbol === '원' ? 2000 : 2.5));
-            const bDps = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            bDps.setAttribute('x', x);
-            bDps.setAttribute('y', padding.top + plotH - dH);
-            bDps.setAttribute('width', barWidth);
-            bDps.setAttribute('height', dH);
-            bDps.setAttribute('fill', isSpecial ? '#f43f5e' : (isSelected ? '#fbbf24' : '#d97706'));
-            bDps.setAttribute('rx', 2);
-            svg.appendChild(bDps);
-
-            if (isSpecial) {
-              const tag = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-              tag.setAttribute('x', cx);
-              tag.setAttribute('y', padding.top + plotH - dH - 4);
-              tag.setAttribute('text-anchor', 'middle');
-              tag.setAttribute('class', 'text-[9px] fill-rose-300 font-bold font-mono-num');
-              tag.textContent = `${item.dps.toLocaleString()}${cfg.currencySymbol}`;
-              svg.appendChild(tag);
-            }
-          }
+          const isKrw = (cfg.currencySymbol === '원');
+          const isSpecial = (item.dps >= (isKrw ? 2000 : 2.5));
+          const dpsH = (item.dps / maxVal) * plotH;
+          const bDps = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          bDps.setAttribute('x', x);
+          bDps.setAttribute('y', padding.top + plotH - dpsH);
+          bDps.setAttribute('width', barWidth);
+          bDps.setAttribute('height', dpsH);
+          bDps.setAttribute('fill', isSpecial ? '#f43f5e' : (isSelected ? '#fbbf24' : '#f59e0b'));
+          bDps.setAttribute('rx', 2);
+          svg.appendChild(bDps);
         }
-        // Mode 4: ROE
+        // Mode 3: ROE
         else if (chartMode === 'roe') {
           const roeH = (item.roe / maxVal) * plotH;
           const bRoe = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -12895,6 +12924,18 @@
           tag.setAttribute('class', 'text-[9px] fill-rose-200 font-bold font-mono-num');
           tag.textContent = `${item.roe}%`;
           svg.appendChild(tag);
+        }
+
+        // Collect Stock Point if Listed
+        if (hasStock && item.stockClose && item.stockClose > 0) {
+          const sy = padding.top + plotH - (item.stockClose / maxStockVal) * plotH;
+          stockPoints.push({
+            x: cx,
+            y: sy,
+            price: item.stockClose,
+            year: item.year,
+            isSelected: isSelected
+          });
         }
 
         // X-Axis Year Labels
@@ -12918,19 +12959,75 @@
         svg.appendChild(hit);
       });
 
-      // Draw Stock Polyline if in stock mode
-      if (chartMode === 'stock' && stockLinePoints.length > 1) {
+      // Draw Stock Polyline Overlay directly ON TOP OF THE BARS
+      if (hasStock && stockPoints.length > 0) {
+        // Polyline connecting points
+        const pointsStr = stockPoints.map(p => `${p.x},${p.y}`).join(' ');
         const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-        poly.setAttribute('points', stockLinePoints.join(' '));
+        poly.setAttribute('points', pointsStr);
         poly.setAttribute('fill', 'none');
         poly.setAttribute('stroke', '#38bdf8');
-        poly.setAttribute('stroke-width', '2.5');
+        poly.setAttribute('stroke-width', '3');
+        poly.setAttribute('stroke-linecap', 'round');
         poly.setAttribute('stroke-linejoin', 'round');
         svg.appendChild(poly);
+
+        // Point Circles and Floating Badge on Selected Year
+        stockPoints.forEach(p => {
+          // Glow halo
+          const halo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          halo.setAttribute('cx', p.x);
+          halo.setAttribute('cy', p.y);
+          halo.setAttribute('r', p.isSelected ? '7.5' : '4');
+          halo.setAttribute('fill', p.isSelected ? '#f59e0b' : '#38bdf8');
+          halo.setAttribute('opacity', '0.45');
+          svg.appendChild(halo);
+
+          // Center dot
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', p.x);
+          dot.setAttribute('cy', p.y);
+          dot.setAttribute('r', p.isSelected ? '5' : '3');
+          dot.setAttribute('fill', p.isSelected ? '#ffffff' : '#38bdf8');
+          dot.setAttribute('stroke', p.isSelected ? '#f59e0b' : '#0f172a');
+          dot.setAttribute('stroke-width', '2');
+          svg.appendChild(dot);
+
+          // Badge on Selected Year
+          if (p.isSelected) {
+            const isKrw = (cfg.currencySymbol === '원');
+            const pfx = isKrw ? '' : '$';
+            const sfx = isKrw ? '원' : '';
+            const priceStr = `${pfx}${p.price.toLocaleString()}${sfx}`;
+
+            const badgeW = Math.max(62, priceStr.length * 7.5 + 16);
+            const badgeH = 20;
+            const badgeY = Math.max(padding.top - 6, p.y - 25);
+            const badgeX = p.x - badgeW / 2;
+
+            const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            bg.setAttribute('x', badgeX);
+            bg.setAttribute('y', badgeY);
+            bg.setAttribute('width', badgeW);
+            bg.setAttribute('height', badgeH);
+            bg.setAttribute('rx', '4');
+            bg.setAttribute('fill', '#0284c7');
+            bg.setAttribute('stroke', '#38bdf8');
+            bg.setAttribute('stroke-width', '1.5');
+            svg.appendChild(bg);
+
+            const bt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            bt.setAttribute('x', p.x);
+            bt.setAttribute('y', badgeY + 14);
+            bt.setAttribute('text-anchor', 'middle');
+            bt.setAttribute('class', 'text-[10px] fill-white font-mono-num font-bold');
+            bt.textContent = priceStr;
+            svg.appendChild(bt);
+          }
+        });
       }
     }
 
-    // Render Bottom Full-Width Table
     function renderFullTable() {
       const tbody = document.getElementById('company-full-table-body');
       if (!tbody) return;
